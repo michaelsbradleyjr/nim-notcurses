@@ -1,34 +1,39 @@
+import # std libs
+  std/random
+
 import # notcurses lib
   notcurses/[core/direct, locale]
 
+randomize()
 setlocale(LC_ALL, "")
 
-var nc = ncdirect_core_init(nil, stdout, NCDIRECT_OPTION_INHIBIT_CBREAK)
+proc rrgb(): cuint =
+  let
+    r = (rand 255).cuint
+    g = (rand 255).cuint
+    b = (rand 255).cuint
 
+  (r shl 16) + (g shl 8) + b
+
+let nc = ncdirect_core_init(nil, stdout, NCDIRECT_OPTION_INHIBIT_CBREAK)
+
+discard nc.ncdirect_set_bg_default
 discard nc.ncdirect_set_fg_default
 
-for r in 0..16:
-  for g in 0..16:
-    for b in 0..16:
-      var
-        rr = r * 16
-        gg = g * 16
-        bb = b * 16
+discard nc.ncdirect_set_bg_rgb rrgb()
 
-      if rr > 255: rr = 255
-      if gg > 255: gg = 255
-      if bb > 255: bb = 255
+for n in 0..255:
+  discard nc.ncdirect_set_fg_rgb rrgb()
 
-      discard nc.ncdirect_set_fg_rgb(
-        (rr shl 16).cuint + (gg shl 8).cuint + bb.cuint)
+  stdout.write "Hello"
 
-      stdout.write "Hello"
+  if n == 255:
+    discard nc.ncdirect_set_bg_default
+    discard nc.ncdirect_set_fg_default
+    stdout.write "\n"
+  else:
+    stdout.write " "
 
-      if r + g + b == 48:
-        stdout.write "\n"
-      else:
-        stdout.write " "
-
-      stdout.flushFile
+  stdout.flushFile
 
 discard nc.ncdirect_stop
