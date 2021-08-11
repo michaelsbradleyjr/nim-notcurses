@@ -3,10 +3,8 @@
 #   cDebug()
 
 const
-  sep = when isDefined(windows): "\\" else: "/"
-
   ncBaseDir {.strdefine.} = getProjectCacheDir(
-    "notcurses" & sep & (when isDefined(release): "release" else: "debug"))
+    "notcurses" / (when isDefined(release): "release" else: "debug"))
 
   ncCmakeFlags {.strdefine.} =
     when isDefined(release):

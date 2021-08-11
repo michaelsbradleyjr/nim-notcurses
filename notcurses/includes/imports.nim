@@ -1,5 +1,5 @@
 import # std libs
-  std/[os, strformat]
+  std/strformat
 
 import # nimble libs
   nimterop/[build, cimport]

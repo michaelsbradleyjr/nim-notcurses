@@ -1,9 +1,12 @@
+import # std libs
+  std/os
+
 import # notcurses modules
   notcurses/version
 
 const
   ncAltNames {.strdefine.} = "libnotcurses"
-  ncHeaderRelPath {.strdefine.} = "include/notcurses/notcurses.h"
+  ncHeaderRelPath {.strdefine.} = "include" / "notcurses" / "notcurses.h"
 
 include notcurses/includes/imports
 include notcurses/includes/defines_notcurses
