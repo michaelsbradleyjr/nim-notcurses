@@ -4,7 +4,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Stability: experimental](https://img.shields.io/badge/Stability-experimental-orange.svg)](https://github.com/michaelsbradleyjr/nim-notcurses#nim-notcurses)
 
-A low-level Nim wrapper for [Notcurses](https://github.com/dankamongmen/notcurses#readme), which builds and exposes its raw C API via [nimterop](https://github.com/nimterop/nimterop#readme).
+A low-level Nim wrapper for [Notcurses](https://github.com/dankamongmen/notcurses#readme): blingful TUIs and character graphics.
+
+The wrapper builds and exposes Notcurses' raw C API via [nimterop](https://github.com/nimterop/nimterop#readme).
 
 ## :construction: Under construction :construction:
 
