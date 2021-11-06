@@ -1,1 +1,1 @@
-const versionTag* = "v2.4.5"
+const versionTag* = "v2.4.6"
