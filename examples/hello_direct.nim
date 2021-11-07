@@ -4,36 +4,64 @@ import # std libs
 import # notcurses lib
   notcurses/[core/direct, locale]
 
-randomize()
-setlocale(LC_ALL, "")
+const
+  Greetings = 255
+  Hello = "Hello"
 
 proc rrgb(): cuint =
   let
-    r = (rand 255).cuint
-    g = (rand 255).cuint
-    b = (rand 255).cuint
+    r = (rand Greetings).cuint
+    g = (rand Greetings).cuint
+    b = (rand Greetings).cuint
 
   (r shl 16) + (g shl 8) + b
 
-let nc = ncdirect_core_init(nil, stdout, NCDIRECT_OPTION_INHIBIT_CBREAK)
+when isMainModule:
+  randomize()
+  setlocale(LC_ALL, "")
+  setStdIoUnbuffered()
 
-discard nc.ncdirect_set_bg_default
-discard nc.ncdirect_set_fg_default
+  let nc = ncdirect_core_init(nil, stdout, NCDIRECT_OPTION_INHIBIT_CBREAK)
 
-discard nc.ncdirect_set_bg_rgb rrgb()
+  discard nc.ncdirect_set_bg_default
+  discard nc.ncdirect_set_fg_default
 
-for n in 0..255:
-  discard nc.ncdirect_set_fg_rgb rrgb()
+  discard nc.ncdirect_set_bg_rgb rrgb()
 
-  stdout.write "Hello"
+  var
+    i = 0
+    j = 0
 
-  if n == 255:
-    discard nc.ncdirect_set_bg_default
-    discard nc.ncdirect_set_fg_default
-    stdout.write "\n"
-  else:
-    stdout.write " "
+  # `except: discard` below provides naive "retry logic" in case of
+  # e.g. EAGAIN; however, even with retries on all exceptions, what's written
+  # to stdout isn't always what's expected, may see e.g. "Hel Hello". It's
+  # unclear at present why that happens and how to fix it.
 
-  stdout.flushFile
+  while i <= Greetings:
+    try:
+      discard nc.ncdirect_set_fg_rgb rrgb()
 
-discard nc.ncdirect_stop
+      while j <= Hello.len:
+        try:
+          if j < Hello.len:
+            stdout.write Hello[j]
+          else:
+            var sep = " "
+
+            if i == Greetings:
+              sep = "\n"
+              discard nc.ncdirect_set_bg_default
+              discard nc.ncdirect_set_fg_default
+
+            stdout.write sep
+
+          j = j + 1
+
+        except: discard
+
+      i = i + 1
+      j = 0
+
+    except: discard
+
+  discard nc.ncdirect_stop

@@ -42,20 +42,19 @@ import notcurses/core/direct
 
 ### Compiling
 
-Make sure to pass the desired options to nimterop:
+Make sure to pass the desired options to nimterop and the compiler:
 
 ```
 $ mkdir -p build
 $ nim c \
-  -d:notcursesDl \
-  -d:danger -d:strip --hints:off --opt:size --passC:-flto --passL:-flto \
-  --outdir:build \
+  -d:danger -d:strip --hints:off --opt:size --outdir:build \
+  --passC:-flto --passL:-flto \
   examples/hello_direct.nim
 
 $ build/hello_direct
 ```
 
-`-d:notcursesDl` configures nimterop to download Notcurses' sources from GitHub. There are additional options that can be set; see [nimterop's README](https://github.com/nimterop/nimterop#readme) and the `{.strdefine.}` constants in e.g. [`notcurses.nim`](https://github.com/michaelsbradleyjr/nim-notcurses/blob/master/notcurses.nim) and [`notcurses/includes/generator_top.nim`](https://github.com/michaelsbradleyjr/nim-notcurses/blob/master/notcurses/includes/generator_top.nim).
+There are additional options that can be set; see [nimterop's README](https://github.com/nimterop/nimterop#readme) and the `{.strdefine.}` constants in e.g. [`notcurses.nim`](https://github.com/michaelsbradleyjr/nim-notcurses/blob/master/notcurses.nim) and [`notcurses/includes/generator_top.nim`](https://github.com/michaelsbradleyjr/nim-notcurses/blob/master/notcurses/includes/generator_top.nim).
 
 For information on how to work with Notcurses, see its [Usage](https://github.com/dankamongmen/notcurses/blob/master/USAGE.md#usage) doc.
 
@@ -64,7 +63,7 @@ In time, this repo will likely provide guidance specific to programming with the
 ## Versioning
 
 This library follows the [version number](https://github.com/dankamongmen/notcurses/releases) of Notcurses:
-* currently [`v2.4.7`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/v2.4.7) (upstream: [`v2.4.7`](https://github.com/dankamongmen/notcurses/releases/tag/v2.4.7))
+* currently [`v2.4.8`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/v2.4.8) (upstream: [`v2.4.8`](https://github.com/dankamongmen/notcurses/releases/tag/v2.4.8))
 * beginning with [`v2.3.13`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/v2.3.13) (upstream: [`v2.3.13`](https://github.com/dankamongmen/notcurses/releases/tag/v2.3.13)).
 
 ## License

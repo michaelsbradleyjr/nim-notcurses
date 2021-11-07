@@ -3,29 +3,30 @@
 #   cDebug()
 
 const
-  ncBaseDir {.strdefine.} = getProjectCacheDir(
+  notcursesBaseDir {.strdefine.} = getProjectCacheDir(
     "notcurses" / (when isDefined(release): "release" else: "debug"))
 
-  ncCmakeFlags {.strdefine.} =
+  notcursesCmakeFlags {.strdefine.} =
     when isDefined(release):
       "-DCMAKE_BUILD_TYPE=Release"
     else:
       "-DCMAKE_BUILD_TYPE=Debug"
 
-  ncOutDir {.strdefine.} = ncBaseDir
+  notcursesOutDir {.strdefine.} = notcursesBaseDir
 
-  ncRepo {.strdefine.} = "https://github.com/dankamongmen/notcurses"
+  notcursesRepo {.strdefine.} = "https://github.com/dankamongmen/notcurses"
 
-  ncTag {.strdefine.} = versionTag
+  notcursesTag {.strdefine.} = "v2.4.8"
 
-  ncDlUrl {.strdefine.} = fmt"{ncRepo}/archive/refs/tags/{ncTag}.tar.gz"
+  notcursesDlUrl {.strdefine.} =
+    fmt"{notcursesRepo}/archive/refs/tags/{notcursesTag}.tar.gz"
 
 getHeader(
-  ncHeaderRelPath,
-  dlUrl = ncDlUrl,
-  outDir = ncOutDir,
-  cmakeFlags = ncCmakeFlags,
-  altNames = ncAltNames
+  notcursesHeaderRelPath,
+  dlUrl = notcursesDlUrl,
+  outDir = notcursesOutDir,
+  cmakeFlags = notcursesCmakeFlags,
+  altNames = notcursesAltNames
 )
 
 cPlugin:

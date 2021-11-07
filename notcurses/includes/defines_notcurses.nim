@@ -1,3 +1,5 @@
-when isDefined(ncDl): setDefines(@["notcursesDL"])
-when isDefined(ncStatic): setDefines(@["notcursesStatic"])
-when isDefined(ncStd): setDefines(@["notcursesStd"])
+const
+  notcursesDownload {.booldefine.} = true
+  notcursesHeaderRelPath {.strdefine.} = "include" / "notcurses" / "notcurses.h"
+
+when notcursesDownload: setDefines(@["notcursesDL"])
