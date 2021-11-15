@@ -16,7 +16,7 @@ const
 
   notcursesRepo {.strdefine.} = "https://github.com/dankamongmen/notcurses"
 
-  notcursesTag {.strdefine.} = "v2.4.8"
+  notcursesTag {.strdefine.} = "v2.4.9"
 
   notcursesDlUrl {.strdefine.} =
     fmt"{notcursesRepo}/archive/refs/tags/{notcursesTag}.tar.gz"
