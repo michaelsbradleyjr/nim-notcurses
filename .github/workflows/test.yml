@@ -1,0 +1,172 @@
+name: Tests
+
+# on:
+#   pull_request:
+#   push:
+#     branches:
+#       - master
+
+on: [pull_request, push]
+
+jobs:
+  tests:
+    env:
+      NPROC: 2
+
+    strategy:
+      fail-fast: false
+      matrix:
+        cache_nonce: [ 1 ]
+        nim_version: [ 1.2.14, 1.4.8, 1.6.0 ]
+        platform:
+          - {
+            icon: 🍎,
+            os: macos,
+            shell: bash --noprofile --norc -eo pipefail
+          }
+          - {
+            icon: 🐧,
+            os: ubuntu,
+            shell: bash --noprofile --norc -eo pipefail
+          }
+          - {
+            icon: 🏁,
+            os: windows,
+            shell: msys2
+          }
+
+    name: ${{ matrix.platform.icon }} ${{ matrix.platform.os }} - Nim v${{ matrix.nim_version }}
+
+    runs-on: ${{ matrix.platform.os }}-latest
+
+    defaults:
+      run:
+        shell: ${{ matrix.platform.shell }} {0}
+
+    steps:
+      - name: Install tools and libraries via APT (Linux)
+        if: matrix.platform.os == 'ubuntu'
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            doctest-dev \
+            ffmpeg \
+            libavcodec-dev \
+            libavformat-dev \
+            libdeflate-dev \
+            libswscale-dev \
+            libunistring-dev \
+            pandoc \
+            valgrind
+
+      - name: Install tools and libraries via Homebrew (macOS)
+        if: matrix.platform.os == 'macos'
+        run: |
+          brew install \
+            coreutils \
+            doctest \
+            ffmpeg \
+            findutils \
+            gawk \
+            libdeflate \
+            ncurses \
+            pandoc
+
+      - name: Install tools and libraries via MSYS2 (Windows)
+        if: matrix.platform.os == 'windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          install: >
+            base-devel
+            git
+            unzip
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-doctest
+            mingw-w64-ucrt-x86_64-ffmpeg
+            mingw-w64-ucrt-x86_64-toolchain
+
+      - name: Checkout sources from GitHub
+        uses: actions/checkout@v2
+
+      - name: Calculate cache member paths
+        id: calc-paths
+        run: |
+          if [[ ${{ matrix.platform.os }} = windows ]]; then
+            echo "::set-output name=bash_env::$(cygpath -m "${HOME}")/.bash_env"
+            echo "::set-output name=choosenim::$(cygpath -m "${USERPROFILE}")/.choosenim"
+            echo "::set-output name=nimble::$(cygpath -m "${HOME}")/.nimble"
+          else
+            echo "::set-output name=bash_env::${HOME}/.bash_env"
+            echo "::set-output name=choosenim::${HOME}/.choosenim"
+            echo "::set-output name=nimble::${HOME}/.nimble"
+          fi
+
+      - name: Restore choosenim and Nim tooling from cache
+        id: choosenim-nim-tooling-cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ${{ steps.calc-paths.outputs.bash_env }}
+            ${{ steps.calc-paths.outputs.choosenim }}
+            ${{ steps.calc-paths.outputs.nimble }}/bin
+          key: ${{ matrix.platform.os }}-nim_version:${{ matrix.nim_version }}-cache_nonce:${{ matrix.cache_nonce }}
+
+      - name: Install choosenim and Nim tooling
+        if: steps.choosenim-nim-tooling-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p "${HOME}/Downloads"
+          cd "${HOME}/Downloads"
+          curl https://nim-lang.org/choosenim/init.sh -sSf -O
+          chmod +x init.sh
+          if [[ ${{ matrix.platform.os }} = windows ]]; then
+            mkdir -p "$(cygpath "${USERPROFILE}")/.nimble/bin"
+          fi
+          CHOOSENIM_CHOOSE_VERSION=${{ matrix.nim_version }} ./init.sh -y
+          if [[ ${{ matrix.platform.os }} = windows ]]; then
+            mv "$(cygpath "${USERPROFILE}")/.nimble" "${HOME}/"
+          fi
+          echo 'export NIMBLE_DIR="${HOME}/.nimble"' >> "${HOME}/.bash_env"
+          echo 'export PATH="${NIMBLE_DIR}/bin:${PATH}"' >> "${HOME}/.bash_env"
+
+      - name: Install project dependencies
+        run: |
+          source "${HOME}/.bash_env"
+          cd "${NIMBLE_DIR}/bin"
+          # delete broken symlinks, which can arise because e.g. the cache
+          # restored a symlink that points to an executable within
+          # ../pkgs/foo-1.2.3/ but the project's .nimble file has been updated
+          # to install foo-#head. In the case of a broken symlink, nimble's
+          # auto-overwrite fails (only sometimes? only on macOS?)
+          if [[ ${{ matrix.platform.os }} = macos ]]; then
+            gfind . -xtype l -delete
+          else
+            find . -xtype l -delete
+          fi
+          cd -
+          nimble --accept install
+
+      # - name: Build and run tests
+      - name: Build... something, for now
+        run: |
+          source "${HOME}/.bash_env"
+          # nimble test
+          mkdir -p build
+          if [[ ${{ matrix.platform.os }} = windows ]]; then
+            nim c \
+              -d:danger -d:strip --hints:off --opt:size --outdir:build \
+              --passC:-flto --passL:-flto \
+              -d:notcursesCmakeFlags="-DCMAKE_BUILD_TYPE=Release -DUSE_DOCTEST=off -DUSE_PANDOC=off" \
+              examples/hello_direct.nim
+          else
+            nim c \
+              -d:danger -d:strip --hints:off --opt:size --outdir:build \
+              --passC:-flto --passL:-flto \
+              examples/hello_direct.nim
+          fi
+
+      # - name: Build and run helgrind tasks (Linux)
+      #   if: matrix.platform.os == 'ubuntu'
+      #   run: |
+      #     source "${HOME}/.bash_env"
+      #     nimble ...
