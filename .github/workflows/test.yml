@@ -154,13 +154,13 @@ jobs:
           mkdir -p build
           if [[ ${{ matrix.platform.os }} = windows ]]; then
             nim c \
-              -d:danger -d:strip --hints:off --opt:size --outdir:build \
+              -d:danger -d:strip --hints:off --opt:size \
               --passC:-flto --passL:-flto \
               -d:notcursesCmakeFlags="-DCMAKE_BUILD_TYPE=Release -DUSE_DOCTEST=off -DUSE_PANDOC=off" \
               examples/hello_direct.nim
           else
             nim c \
-              -d:danger -d:strip --hints:off --opt:size --outdir:build \
+              -d:danger -d:strip --hints:off --opt:size \
               --passC:-flto --passL:-flto \
               examples/hello_direct.nim
           fi
