@@ -1,9 +1,11 @@
+*
+!*/
+!*.*
 *.dll
 *.dylib
 *.so
 .DS_Store
 .idea
 .vscode
-/build
 /notcurses.nims
 TODO

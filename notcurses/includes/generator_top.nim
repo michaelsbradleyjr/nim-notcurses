@@ -3,8 +3,11 @@
 #   cDebug()
 
 const
+  notcursesTag {.strdefine.} = "v3.0.9"
+
   notcursesBaseDir {.strdefine.} = getProjectCacheDir(
-    "notcurses" / (when isDefined(release): "release" else: "debug"))
+    "notcurses" / notcursesTag /
+    (when isDefined(release): "release" else: "debug"))
 
   notcursesCmakeFlags {.strdefine.} =
     when isDefined(release):
@@ -15,8 +18,6 @@ const
   notcursesOutDir {.strdefine.} = notcursesBaseDir
 
   notcursesRepo {.strdefine.} = "https://github.com/dankamongmen/notcurses"
-
-  notcursesTag {.strdefine.} = "v3.0.9"
 
   notcursesDlUrl {.strdefine.} =
     fmt"{notcursesRepo}/archive/refs/tags/{notcursesTag}.tar.gz"
