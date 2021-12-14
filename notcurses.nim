@@ -1,7 +1,6 @@
-include notcurses/includes/imports
+import ./notcurses/abi
+include ./notcurses/abi/version
+include ./notcurses/api/constants
+include ./notcurses/api/impl
 
-const notcursesAltNames {.strdefine.} = "libnotcurses.3"
-
-include notcurses/includes/defines_notcurses
-include notcurses/includes/generator_top
-include notcurses/includes/generator_bottom_notcurses
+defineNcInit(Notcurses, notcurses_init)
