@@ -6,6 +6,4 @@ license       = "Apache License 2.0 or MIT"
 installDirs = @["notcurses"]
 installFiles  = @["notcurses.nim"]
 
-### Dependencies
-requires "nim >= 1.2.12",
-  "nimterop >= 0.6.13"
+requires "nimterop >= 0.6.13"
