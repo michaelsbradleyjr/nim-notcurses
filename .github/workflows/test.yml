@@ -49,14 +49,12 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y \
-            doctest-dev \
             ffmpeg \
             libavcodec-dev \
             libavformat-dev \
             libdeflate-dev \
             libswscale-dev \
             libunistring-dev \
-            pandoc \
             valgrind
 
       - name: Install tools and libraries via Homebrew (macOS)
@@ -64,13 +62,12 @@ jobs:
         run: |
           brew install \
             coreutils \
-            doctest \
             ffmpeg \
             findutils \
             gawk \
             libdeflate \
-            ncurses \
-            pandoc
+            libunistring \
+            ncurses
 
       - name: Install tools and libraries via MSYS2 (Windows)
         if: matrix.platform.os == 'windows'
@@ -82,8 +79,9 @@ jobs:
             git
             unzip
             mingw-w64-ucrt-x86_64-cmake
-            mingw-w64-ucrt-x86_64-doctest
             mingw-w64-ucrt-x86_64-ffmpeg
+            mingw-w64-ucrt-x86_64-libdeflate
+            mingw-w64-ucrt-x86_64-libunistring
             mingw-w64-ucrt-x86_64-toolchain
 
       - name: Checkout sources from GitHub
@@ -147,23 +145,14 @@ jobs:
           nimble --accept install
 
       # - name: Build and run tests
+      #   run: |
+      #     source "${HOME}/.bash_env"
+      #     nimble test
+
       - name: Build... something, for now
         run: |
           source "${HOME}/.bash_env"
-          # nimble test
-          mkdir -p build
-          if [[ ${{ matrix.platform.os }} = windows ]]; then
-            nim c \
-              -d:danger -d:strip --hints:off --opt:size \
-              --passC:-flto --passL:-flto \
-              -d:notcursesCmakeFlags="-DCMAKE_BUILD_TYPE=Release -DUSE_DOCTEST=off -DUSE_PANDOC=off" \
-              examples/hello_direct.nim
-          else
-            nim c \
-              -d:danger -d:strip --hints:off --opt:size \
-              --passC:-flto --passL:-flto \
-              examples/hello_direct.nim
-          fi
+          nim c examples/hello_direct.nim
 
       # - name: Build and run helgrind tasks (Linux)
       #   if: matrix.platform.os == 'ubuntu'
