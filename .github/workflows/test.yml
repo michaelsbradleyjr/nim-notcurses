@@ -10,9 +10,6 @@ on: [pull_request, push]
 
 jobs:
   tests:
-    env:
-      NPROC: 2
-
     strategy:
       fail-fast: false
       matrix:
@@ -149,7 +146,18 @@ jobs:
       #     source "${HOME}/.bash_env"
       #     nimble test
 
-      - name: Build... something, for now
+      - name: Build and run... something, for now (Linux, macOS)
+        if: matrix.platform.os != 'windows'
+        env:
+          COLORTERM: truecolor
+          TERM: xterm-256color
+        run: |
+          source "${HOME}/.bash_env"
+          nim c examples/hello_direct.nim
+          examples/hello_direct
+
+      - name: Build... something, for now (Windows)
+        if: matrix.platform.os == 'windows'
         run: |
           source "${HOME}/.bash_env"
           nim c examples/hello_direct.nim
