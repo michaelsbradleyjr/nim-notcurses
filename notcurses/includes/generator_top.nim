@@ -5,7 +5,7 @@
 import std/[sequtils, strutils, uri]
 
 const
-  notcursesTag {.strdefine.} = "v3.0.9"
+  notcursesCommitish {.strdefine.} = "v3.0.9"
 
   notcursesRepo {.strdefine.} = "https://github.com/dankamongmen/notcurses"
 
@@ -19,21 +19,23 @@ const
   notcursesRepoUrlEncSafe = notcursesRepoUrlEncShort.multiReplace(underscores)
 
   notcursesBaseDir {.strdefine.} = getProjectCacheDir(
-    "notcurses" / notcursesRepoUrlEncSafe / notcursesTag /
+    "notcurses" / notcursesRepoUrlEncSafe / notcursesCommitish /
     (when isDefined(release): "release" else: "debug"))
+
+  commonCmakeFlags =
+    "-DBUILD_EXECUTABLES=off -DUSE_CXX=off -DUSE_DOCTEST=off " &
+    "-DUSE_PANDOC=off -DUSE_POC=off"
 
   notcursesCmakeFlags {.strdefine.} =
     when isDefined(release):
-      "-DCMAKE_BUILD_TYPE=Release -DUSE_CXX=off -DUSE_DOCTEST=off " &
-      "-DUSE_PANDOC=off -DUSE_POC=off"
+      fmt"-DCMAKE_BUILD_TYPE=Release {commonCmakeFlags}"
     else:
-      "-DCMAKE_BUILD_TYPE=Debug -DUSE_CXX=off -DUSE_DOCTEST=off " &
-      "-DUSE_PANDOC=off -DUSE_POC=off"
+      fmt"-DCMAKE_BUILD_TYPE=Debug {commonCmakeFlags}"
 
   notcursesOutDir {.strdefine.} = notcursesBaseDir
 
   notcursesDlUrl {.strdefine.} =
-    fmt"{notcursesRepo}/archive/refs/tags/{notcursesTag}.tar.gz"
+    fmt"{notcursesRepo}/archive/{notcursesCommitish}.tar.gz"
 
 getHeader(
   notcursesHeaderRelPath,
