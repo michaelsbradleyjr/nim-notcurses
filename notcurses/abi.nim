@@ -1,6 +1,6 @@
 {.passL: "-lnotcurses.3 -lnotcurses-core.3".}
 
-import ./wrapper/common
+import ./abi/common
 
 const NotcursesImportPrefix = "notcurses_"
 
@@ -10,5 +10,6 @@ const NotcursesLib =
   else:
     "libnotcurses.3.so"
 
-include ./wrapper/private/wrapper
-include ./wrapper/private/exports
+include ./abi/private/abi
+include ./abi/private/constants
+include ./abi/private/exports

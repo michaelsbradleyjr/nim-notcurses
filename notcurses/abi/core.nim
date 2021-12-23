@@ -10,5 +10,6 @@ const NotcursesLib =
   else:
     "libnotcurses-core.3.so"
 
-include ./private/wrapper
+include ./private/abi
+include ./private/constants
 include ./private/exports

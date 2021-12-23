@@ -1,11 +1,14 @@
-import notcurses
+# import notcurses
 
-when isMainModule:
-  let
-    opts = Options.init(NCOPTION_NO_ALTERNATE_SCREEN, NCOPTION_PRESERVE_CURSOR,
-      NCOPTION_NO_CLEAR_BITMAPS, NCOPTION_DRAIN_INPUT)
+# should be able to depend on --path in nim.cfg but nimlsp and/or Emacs
+# lsp-mode doesn't (always?) handle it correctly, so import with relative paths
+# instead when developing with those tools
 
-    nc = Notcurses.init opts
+import ../../notcurses
 
-  nc.notcurses_render
-  nc.notcurses_stop
+let
+  opts = [DrainInput, NoAlternateScreen, NoClearBitmaps, PreserveCursor]
+  nc = Notcurses.init Options.init(opts)
+
+discard nc.render
+discard nc.stop
