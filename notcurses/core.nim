@@ -6,9 +6,9 @@
 
 import std/bitops
 
-import ./notcurses/wrapper
+import ./wrapper/core
 
-export wrapper
+export core
 
 type
   Ncoption* = culonglong
