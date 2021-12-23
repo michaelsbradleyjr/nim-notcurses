@@ -1,9 +1,11 @@
-import notcurses/raw
+import notcurses
 
 when isMainModule:
-  const opts = ...
+  let
+    opts = Options.init(NCOPTION_NO_ALTERNATE_SCREEN, NCOPTION_PRESERVE_CURSOR,
+      NCOPTION_NO_CLEAR_BITMAPS, NCOPTION_DRAIN_INPUT)
 
-  let nc = notcurses_init ops
+    nc = Notcurses.init opts
 
-  notcurses_render nc
-  notcurses_stop nc
+  nc.notcurses_render
+  nc.notcurses_stop
