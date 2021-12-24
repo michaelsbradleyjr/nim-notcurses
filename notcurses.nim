@@ -4,30 +4,48 @@
 
 # consider how to eliminate duplication in notcurses.nim and notcurses/core.nim
 
-# procs here and in notcurses/core.nim whose wrapped function returns numerical
-# status code should probably use Result
+{.push raises: [Defect].}
 
-# provide a rawPointer func for type Notcurses and an init that takes the raw
-# pointer instead of options and file; will facilitate e.g. communicating nc
-# pointer to another thread and building a Notcurses instance without
-# re-initialization (which would fail, since notcurses can only be init'd once
-# per process)
+import std/[atomics, bitops]
 
-import std/bitops
+import ./notcurses/[abi, constants, vendor/stew/results]
 
-import ./notcurses/[abi, constants]
-
-export constants
+export constants, results
 
 type
   Notcurses* = object
-    nc: ptr notcurses
+    ncPtr: ptr notcurses
+
+  NotcursesError* = enum
+    RenderError = "Notcurses.render failed!"
+    StopError = "Notcurses.stop failed!"
+
   Options* = object
     opts: notcurses_options
 
-var initd = false
+const
+  AlreadyInitialized = "Notcurses is already initialized!"
+  FailedInitialize = "Notcurses failed to initialize!"
+  FailureNotExpected = "failure not expected"
+  NotInitialized = "Notcurses is not initialized!"
 
-func init*(T: type Options , options: varargs[Ncoption]): T =
+var
+  ncObject {.threadvar.}: Notcurses
+  ncPtr: Atomic[ptr notcurses]
+
+proc acquire*(T: type Notcurses): T =
+  if ncObject.ncPtr.isNil:
+    let p = ncPtr.load
+    if p.isNil:
+      raise newException(Defect, NotInitialized)
+    else:
+      ncObject = T(ncPtr: p)
+  ncObject
+
+func expect*(res: Result[void, NotcursesError]) =
+  expect(res, FailureNotExpected)
+
+proc init*(T: type Options , options: varargs[Ncoption]): T =
   var opts: culonglong
   if options.len == 0:
     opts = 0.culonglong
@@ -40,14 +58,25 @@ func init*(T: type Options , options: varargs[Ncoption]): T =
   T(opts: notcurses_options(flags: opts))
 
 proc init*(T: type Notcurses, opts: Options, file: File = stdout): T =
-  if initd: raise newException(Defect, "Notcurses is already initialized!")
-  let nc = notcurses_init(unsafeAddr opts.opts, file)
-  if isNil(nc): raise newException(Defect, "Notcurses failed to initialize!")
-  initd = true
-  T(nc: nc)
+  var p = ncPtr.load
+  if not p.isNil:
+    raise newException(Defect, AlreadyInitialized)
+  else:
+    let nc = notcurses_init(unsafeAddr opts.opts, file)
+    if nc.isNil: raise newException(Defect, FailedInitialize)
+    ncObject = T(ncPtr: nc)
+    if not ncPtr.exchange(ncObject.ncPtr).isNil:
+      raise newException(Defect, AlreadyInitialized)
+    ncObject
 
-proc render*(nc: Notcurses): int =
-  nc.nc.notcurses_render().int
+proc render*(nc: Notcurses): Result[void, NotcursesError] =
+  if nc.ncPtr.notcurses_render() < 0:
+    err(RenderError)
+  else:
+    ok()
 
-proc stop*(nc: Notcurses): int =
-  nc.nc.notcurses_stop().int
+proc stop*(nc: Notcurses): Result[void, NotcursesError] =
+  if nc.ncPtr.notcurses_stop() < 0:
+    err(StopError)
+  else:
+    ok()
