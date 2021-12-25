@@ -11,7 +11,7 @@ type
     incompleteStruct.} = object
 
   notcurses_options {.bycopy, header: notcurses_header,
-    importc: "struct notcurses_options".} = object
+      importc: "struct notcurses_options".} = object
     flags*: culonglong
 
 proc ncpile_rasterize(n: ptr ncplane): cint
