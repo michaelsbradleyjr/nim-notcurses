@@ -2,6 +2,7 @@ include ./abi/private/constants
 
 type Ncoption* = distinct culonglong
 
+# prefer/use enum instead/somehow?
 const
   DrainInput* = NCOPTION_DRAIN_INPUT.Ncoption
   InhibitSetlocale* = NCOPTION_INHIBIT_SETLOCALE.Ncoption
