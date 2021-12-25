@@ -1,13 +1,15 @@
-# Eventually this module should export a high/er-level "Nim oriented" API.
-# For now it's a thin wrapper around the "plain vanilla" wrapper around
-# Notcurses C ABI... and some niceties in the direction of a high/er-level API.
-
 # consider how to eliminate duplication in notcurses.nim and notcurses/core.nim
 
-{.push raises: [Defect].}
+# should implement top-level policy re: {.push raises: [...].} but it's not
+# working as expected, maybe because of changes in Nim v1.6 or aspects I have
+# yet to understand properly; need to investigate further.
+
+# {.push raises: [Defect].}
+# {.push raises: [].}
 
 import std/[atomics, bitops]
 
+# will this syntax work in Nim version < 1.6, 1.4?
 import ./notcurses/[abi, constants, vendor/stew/results]
 
 export constants, results
@@ -15,19 +17,56 @@ export constants, results
 type
   Notcurses* = object
     ncPtr: ptr notcurses
-
-  NotcursesError* = enum
-    RenderError = "Notcurses.render failed!"
-    StopError = "Notcurses.stop failed!"
-
-  Options* = object
+  NotcursesOptions* = object
     opts: notcurses_options
+  # only use Result[V, E] in return type if success code other than 0 is
+  # possible, otherwise use Result[void, E]
+  NotcursesSuccess* = object
+    code*: int
 
+# Defects
+type
+  NotcursesDefect* = object of Defect
+
+# Errors
+type
+  NotcursesError* = object of CatchableError
+    code*: int
+  NotcursesErrorRender* = object of NotcursesError
+  NotcursesErrorStop* = object of NotcursesError
+
+# Friendly aliases: should foment joy, curtail if a source of lamentations
+# Limit to intuitive shortenings
+type
+  Nc* = Notcurses
+  NcDefect* = NotcursesDefect
+  NcErr* = NotcursesError
+  NcError* = NotcursesError
+  NcOpts* = NotcursesOptions
+  NcOptions* = NotcursesOptions
+  NcRenderErr* = NotcursesErrorRender
+  NcRenderError* = NotcursesErrorRender
+  NcStopErr* = NotcursesErrorStop
+  NcStopError* = NotcursesErrorStop
+  NcSuc* = NotcursesSuccess
+  NcSucc* = NotcursesSuccess
+  NcSuccess* = NotcursesSuccess
+  NotcursesRenderErr* = NotcursesErrorRender
+  NotcursesRenderError* = NotcursesErrorRender
+  NotcursesStopErr* = NotcursesErrorStop
+  NotcursesStopError* = NotcursesErrorStop
+
+# Defect messages
 const
   AlreadyInitialized = "Notcurses is already initialized!"
-  FailedInitialize = "Notcurses failed to initialize!"
+  FailedToInitialize = "Notcurses failed to initialize!"
   FailureNotExpected = "failure not expected"
   NotInitialized = "Notcurses is not initialized!"
+
+# Error messages
+const
+  ErrorRenderMsg = "Notcurses.render failed!"
+  ErrorStopMsg = "Notcurses.stop failed!"
 
 var
   ncObject {.threadvar.}: Notcurses
@@ -35,17 +74,28 @@ var
 
 proc acquire*(T: type Notcurses): T =
   if ncObject.ncPtr.isNil:
-    let p = ncPtr.load
-    if p.isNil:
-      raise newException(Defect, NotInitialized)
+    let ncP = ncPtr.load
+    if ncP.isNil:
+      raise (ref NotcursesDefect)(msg: NotInitialized)
     else:
-      ncObject = T(ncPtr: p)
+      ncObject = T(ncPtr: ncP)
   ncObject
 
-func expect*(res: Result[void, NotcursesError]) =
+proc expect*(res: Result[void, NotcursesError]) =
   expect(res, FailureNotExpected)
 
-proc init*(T: type Options , options: varargs[Ncoption]): T =
+proc init*(T: type Notcurses, opts: NotcursesOptions, file: File = stdout): T =
+  if not ncObject.ncPtr.isNil or not ncPtr.load.isNil:
+    raise (ref NotcursesDefect)(msg: AlreadyInitialized)
+  else:
+    let ncP = notcurses_init(unsafeAddr opts.opts, file)
+    if ncP.isNil: raise (ref NotcursesDefect)(msg: FailedToInitialize)
+    ncObject = T(ncPtr: ncP)
+    if not ncPtr.exchange(ncObject.ncPtr).isNil:
+      raise (ref NotcursesDefect)(msg: AlreadyInitialized)
+    ncObject
+
+proc init*(T: type NotcursesOptions , options: varargs[Ncoption]): T =
   var opts: culonglong
   if options.len == 0:
     opts = 0.culonglong
@@ -57,26 +107,16 @@ proc init*(T: type Options , options: varargs[Ncoption]): T =
       opts = bitor(opts, o.culonglong)
   T(opts: notcurses_options(flags: opts))
 
-proc init*(T: type Notcurses, opts: Options, file: File = stdout): T =
-  var p = ncPtr.load
-  if not p.isNil:
-    raise newException(Defect, AlreadyInitialized)
-  else:
-    let nc = notcurses_init(unsafeAddr opts.opts, file)
-    if nc.isNil: raise newException(Defect, FailedInitialize)
-    ncObject = T(ncPtr: nc)
-    if not ncPtr.exchange(ncObject.ncPtr).isNil:
-      raise newException(Defect, AlreadyInitialized)
-    ncObject
-
 proc render*(nc: Notcurses): Result[void, NotcursesError] =
-  if nc.ncPtr.notcurses_render() < 0:
-    err(RenderError)
+  let code = nc.ncPtr.notcurses_render.int
+  if code < 0:
+    err NotcursesErrorRender(code: code, msg: ErrorRenderMsg)
   else:
     ok()
 
 proc stop*(nc: Notcurses): Result[void, NotcursesError] =
-  if nc.ncPtr.notcurses_stop() < 0:
-    err(StopError)
+  let code = nc.ncPtr.notcurses_stop.int
+  if code < 0:
+    err NotcursesErrorStop(code: code, msg: ErrorStopMsg)
   else:
     ok()

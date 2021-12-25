@@ -1,7 +1,3 @@
-# Eventually this module should export a high/er-level "Nim oriented" API.
-# For now it's a thin wrapper around the "plain vanilla" wrapper around
-# Notcurses C ABI... and some niceties in the direction of a high/er-level API.
-
 # consider how to eliminate duplication in notcurses.nim and notcurses/core.nim
 
 import std/bitops
