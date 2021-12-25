@@ -72,7 +72,10 @@ var
   ncObject {.threadvar.}: Notcurses
   ncPtr: Atomic[ptr notcurses]
 
-proc acquire*(T: type Notcurses): T =
+proc expect*(res: Result[void, NotcursesError]) =
+  expect(res, FailureNotExpected)
+
+proc get*(T: type Notcurses): T =
   if ncObject.ncPtr.isNil:
     let ncP = ncPtr.load
     if ncP.isNil:
@@ -80,9 +83,6 @@ proc acquire*(T: type Notcurses): T =
     else:
       ncObject = T(ncPtr: ncP)
   ncObject
-
-proc expect*(res: Result[void, NotcursesError]) =
-  expect(res, FailureNotExpected)
 
 proc init*(T: type Notcurses, opts: NotcursesOptions, file: File = stdout): T =
   if not ncObject.ncPtr.isNil or not ncPtr.load.isNil:
