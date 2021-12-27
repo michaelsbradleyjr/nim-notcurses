@@ -16,7 +16,7 @@ const
 
   notcursesRepoUrlEncSafe = notcursesRepoUrlEncShort.multiReplace(underscores)
 
-  notcursesCommitish {.strdefine.} = "v3.0.1"
+  notcursesCommitish {.strdefine.} = "v3.0.2"
 
   notcursesBaseDir {.strdefine.} = getProjectCacheDir(
     "notcurses" / notcursesRepoUrlEncSafe / notcursesCommitish /
