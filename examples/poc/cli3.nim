@@ -9,7 +9,7 @@ import ../../notcurses
 
 let
   opts = [DrainInput, NoClearBitmaps, PreserveCursor]
-  nc = Notcurses.init NotcursesOptions.init(opts)
+  nc = Nc.init NcOpts.init opts
 
-nc.render.expect()
-nc.stop.expect()
+nc.render.expect
+nc.stop.expect
