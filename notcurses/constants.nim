@@ -7,6 +7,7 @@ type
     FailureNotExpected = "failure not expected"
     NotInitialized = "Notcurses is not initialized!"
   ErrorMessages* {.pure.} = enum
+    PutStr = "Notcurses.putStr failed!"
     Render = "Notcurses.render failed!"
     Stop = "Notcurses.stop failed!"
   InitOption* = distinct culonglong

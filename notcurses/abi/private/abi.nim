@@ -5,7 +5,11 @@ const
   notcurses_lib: string = NotcursesLib
 
 type
-  ncplane {.header: notcurses_header, importc: "struct ncplane".} = object
+  ncinput {.bycopy, header: notcurses_header,
+    importc: "struct ncinput".} = object
+
+  ncplane {.header: notcurses_header, importc: "struct ncplane",
+    incompleteStruct.} = object
 
   notcurses {.header: notcurses_header, importc: "struct notcurses",
     incompleteStruct.} = object
@@ -15,20 +19,25 @@ type
     flags*: culonglong
 
 proc ncpile_rasterize(n: ptr ncplane): cint
-  {.cdecl, discardable, dynlib: notcurses_lib, importc.}
+  {.cdecl, dynlib: notcurses_lib, importc.}
 
 proc ncpile_render(n: ptr ncplane): cint
-  {.cdecl, discardable, dynlib: notcurses_lib, importc.}
+  {.cdecl, dynlib: notcurses_lib, importc.}
 
-proc notcurses_init(opts: ptr notcurses_options, fp: File):
-  ptr notcurses {.cdecl, dynlib: notcurses_lib, importc: notcurses_init_name.}
+proc ncplane_putstr(n: ptr ncplane, gclustarr: cstring): cint
+  {.cdecl, header: notcurses_header, importc.}
+
+proc ncplane_set_scrolling(n: ptr ncplane, scrollp: cuint): bool
+  {.cdecl, dynlib: notcurses_lib, importc.}
+
+proc notcurses_init(opts: ptr notcurses_options, fp: File): ptr notcurses
+  {.cdecl, dynlib: notcurses_lib, importc: notcurses_init_name.}
 
 proc notcurses_render(nc: ptr notcurses): cint
-  {.cdecl, discardable, dynlib: notcurses_lib, header: notcurses_header,
-  importc.}
+  {.cdecl, header: notcurses_header, importc.}
 
 proc notcurses_stdplane(nc: ptr notcurses): ptr ncplane
   {.cdecl, dynlib: notcurses_lib, importc.}
 
 proc notcurses_stop(nc: ptr notcurses): cint
-  {.cdecl, discardable, dynlib: notcurses_lib, importc.}
+  {.cdecl, dynlib: notcurses_lib, importc.}
