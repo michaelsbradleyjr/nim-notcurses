@@ -1,15 +1,22 @@
 include ./abi/private/constants
 
-type Ncoption* = distinct culonglong
-
-# prefer/use enum instead/somehow?
-const
-  DrainInput* = NCOPTION_DRAIN_INPUT.Ncoption
-  InhibitSetlocale* = NCOPTION_INHIBIT_SETLOCALE.Ncoption
-  NoAlternateScreen* = NCOPTION_NO_ALTERNATE_SCREEN.Ncoption
-  NoClearBitmaps* = NCOPTION_NO_CLEAR_BITMAPS.Ncoption
-  NoFontChanges* = NCOPTION_NO_FONT_CHANGES.Ncoption
-  NoQuitSighandlers* = NCOPTION_NO_QUIT_SIGHANDLERS.Ncoption
-  NoWinchSighandler* = NCOPTION_NO_WINCH_SIGHANDLER.Ncoption
-  PreserveCursor* = NCOPTION_PRESERVE_CURSOR.Ncoption
-  SuppressBanners* = NCOPTION_SUPPRESS_BANNERS.Ncoption
+type
+  DefectMessages* {.pure.} = enum
+    AlreadyInitialized = "Notcurses is already initialized!"
+    FailedToInitialize = "Notcurses failed to initialize!"
+    FailureNotExpected = "failure not expected"
+    NotInitialized = "Notcurses is not initialized!"
+  ErrorMessages* {.pure.} = enum
+    Render = "Notcurses.render failed!"
+    Stop = "Notcurses.stop failed!"
+  InitOption* = distinct culonglong
+  InitOptions* {.pure.} = enum
+    InhibitSetlocale = NCOPTION_INHIBIT_SETLOCALE.InitOption,
+    NoClearBitmaps = NCOPTION_NO_CLEAR_BITMAPS.InitOption,
+    NoWinchSighandler = NCOPTION_NO_WINCH_SIGHANDLER.InitOption,
+    NoQuitSighandlers = NCOPTION_NO_QUIT_SIGHANDLERS.InitOption,
+    PreserveCursor = NCOPTION_PRESERVE_CURSOR.InitOption,
+    SuppressBanners = NCOPTION_SUPPRESS_BANNERS.InitOption,
+    NoAlternateScreen = NCOPTION_NO_ALTERNATE_SCREEN.InitOption,
+    NoFontChanges = NCOPTION_NO_FONT_CHANGES.InitOption,
+    DrainInput = NCOPTION_DRAIN_INPUT.InitOption
