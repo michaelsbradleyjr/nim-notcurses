@@ -12,11 +12,14 @@ import std/[atomics, bitops]
 # will this syntax work in Nim version < 1.6, 1.4?
 import ./notcurses/[abi, constants, vendor/stew/results]
 
-export constants, results
+export InitOptions, results
 
 type
   Notcurses* = object
     ncPtr: ptr notcurses
+  NotcursesDefect* = object of Defect
+  NotcursesError* = object of CatchableError
+    code*: int
   NotcursesOptions* = object
     opts: notcurses_options
   # only use Result[V, E] in return type if success code other than 0 is
@@ -24,78 +27,55 @@ type
   NotcursesSuccess* = object
     code*: int
 
-# Defects
-type
-  NotcursesDefect* = object of Defect
-
-# Errors
-type
-  NotcursesError* = object of CatchableError
-    code*: int
-  NotcursesErrorRender* = object of NotcursesError
-  NotcursesErrorStop* = object of NotcursesError
-
-# Friendly aliases: should foment joy, curtail if a source of lamentations
-# Limit to intuitive shortenings
+# Friendly aliases: should foment joy, curtail if a source of lamentations;
+# limit to intuitive shortenings
 type
   Nc* = Notcurses
   NcDefect* = NotcursesDefect
   NcErr* = NotcursesError
   NcError* = NotcursesError
+  NcInitOption* = InitOption
+  NcInitOptions* = InitOptions
+  NcInitOpt* = InitOption
+  NcInitOpts* = InitOptions
+  NcOption* = InitOption
+  NcOpt* = InitOption
   NcOpts* = NotcursesOptions
   NcOptions* = NotcursesOptions
-  NcRenderErr* = NotcursesErrorRender
-  NcRenderError* = NotcursesErrorRender
-  NcStopErr* = NotcursesErrorStop
-  NcStopError* = NotcursesErrorStop
   NcSuc* = NotcursesSuccess
   NcSucc* = NotcursesSuccess
   NcSuccess* = NotcursesSuccess
-  NotcursesRenderErr* = NotcursesErrorRender
-  NotcursesRenderError* = NotcursesErrorRender
-  NotcursesStopErr* = NotcursesErrorStop
-  NotcursesStopError* = NotcursesErrorStop
-
-# Defect messages
-const
-  AlreadyInitialized = "Notcurses is already initialized!"
-  FailedToInitialize = "Notcurses failed to initialize!"
-  FailureNotExpected = "failure not expected"
-  NotInitialized = "Notcurses is not initialized!"
-
-# Error messages
-const
-  ErrorRenderMsg = "Notcurses.render failed!"
-  ErrorStopMsg = "Notcurses.stop failed!"
+  ncoption* = InitOption
 
 var
   ncObject {.threadvar.}: Notcurses
   ncPtr: Atomic[ptr notcurses]
 
 proc expect*(res: Result[void, NotcursesError]) =
-  expect(res, FailureNotExpected)
+  expect(res, $DefectMessages.FailureNotExpected)
 
 proc get*(T: type Notcurses): T =
   if ncObject.ncPtr.isNil:
     let ncP = ncPtr.load
     if ncP.isNil:
-      raise (ref NotcursesDefect)(msg: NotInitialized)
+      raise (ref NotcursesDefect)(msg: $DefectMessages.NotInitialized)
     else:
       ncObject = T(ncPtr: ncP)
   ncObject
 
 proc init*(T: type Notcurses, opts: NotcursesOptions, file: File = stdout): T =
   if not ncObject.ncPtr.isNil or not ncPtr.load.isNil:
-    raise (ref NotcursesDefect)(msg: AlreadyInitialized)
+    raise (ref NotcursesDefect)(msg: $DefectMessages.AlreadyInitialized)
   else:
     let ncP = notcurses_init(unsafeAddr opts.opts, file)
-    if ncP.isNil: raise (ref NotcursesDefect)(msg: FailedToInitialize)
+    if ncP.isNil: raise (ref NotcursesDefect)(
+      msg: $DefectMessages.FailedToInitialize)
     ncObject = T(ncPtr: ncP)
     if not ncPtr.exchange(ncObject.ncPtr).isNil:
-      raise (ref NotcursesDefect)(msg: AlreadyInitialized)
+      raise (ref NotcursesDefect)(msg: $DefectMessages.AlreadyInitialized)
     ncObject
 
-proc init*(T: type NotcursesOptions , options: varargs[Ncoption]): T =
+proc init*(T: type NotcursesOptions , options: varargs[InitOptions]): T =
   var opts: culonglong
   if options.len == 0:
     opts = 0.culonglong
@@ -110,13 +90,13 @@ proc init*(T: type NotcursesOptions , options: varargs[Ncoption]): T =
 proc render*(nc: Notcurses): Result[void, NotcursesError] =
   let code = nc.ncPtr.notcurses_render.int
   if code < 0:
-    err NotcursesErrorRender(code: code, msg: ErrorRenderMsg)
+    err NotcursesError(code: code, msg: $ErrorMessages.Render)
   else:
     ok()
 
 proc stop*(nc: Notcurses): Result[void, NotcursesError] =
   let code = nc.ncPtr.notcurses_stop.int
   if code < 0:
-    err NotcursesErrorStop(code: code, msg: ErrorStopMsg)
+    err NotcursesError(code: code, msg: $ErrorMessages.Stop)
   else:
     ok()
