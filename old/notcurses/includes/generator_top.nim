@@ -18,6 +18,8 @@ const
 
   notcursesRepoUrlEncSafe = notcursesRepoUrlEncShort.multiReplace(underscores)
 
+  notcursesCommitish {.strdefine.} = "v3.0.9"
+
   notcursesBaseDir {.strdefine.} = getProjectCacheDir(
     "notcurses" / notcursesRepoUrlEncSafe / notcursesCommitish /
     (when isDefined(release): "release" else: "debug"))
