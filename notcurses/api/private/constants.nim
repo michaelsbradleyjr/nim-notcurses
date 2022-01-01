@@ -1,5 +1,3 @@
-include ../../abi/private/constants
-
 type
   DefectMessages* {.pure.} = enum
     AlreadyInitialized = "Notcurses is already initialized!"
