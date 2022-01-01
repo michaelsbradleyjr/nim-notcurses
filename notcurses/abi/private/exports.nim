@@ -15,6 +15,7 @@ export
   ncplane_putstr,
   ncplane_set_scrolling,
   notcurses,
+  notcurses_get_blocking,
   notcurses_init,
   notcurses_options,
   notcurses_render,
