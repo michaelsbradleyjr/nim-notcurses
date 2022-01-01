@@ -15,6 +15,7 @@ export
   NcInitOptions,
   NcInitOpt,
   NcInitOpts,
+  NcInput,
   NcOption,
   NcOpt,
   NcOpts,
@@ -26,11 +27,15 @@ export
   Notcurses,
   NotcursesDefect,
   NotcursesError,
+  NotcursesInput,
   NotcursesOptions,
   NotcursesPlane,
   NotcursesSuccess,
+  evType,
   expect,
   get,
+  getBlocking,
+  id,
   ncoption,
   putStr,
   putString,
@@ -43,6 +48,9 @@ export
 var
   ncObject {.threadvar.}: Notcurses
   ncPtr: Atomic[ptr notcurses]
+
+proc init*(T: type NotcursesInput): T =
+  T(ni: ncinput())
 
 proc init*(T: type NotcursesOptions , options: varargs[InitOptions]): T =
   var opts = 0.culonglong

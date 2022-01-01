@@ -16,12 +16,16 @@ export InitOption, InitOptions, results
 type
  Notcurses* = object
    # don't want this field public, fix with more use of include vs. import
-   ncPtr* : ptr notcurses
+   ncPtr*: ptr notcurses
 
  NotcursesDefect* = object of Defect
 
  NotcursesError* = object of CatchableError
-   code*: int
+   code*: cint
+
+ NotcursesInput* = object
+   # don't want this field public, fix with more use of include vs. import
+   ni*: ncinput
 
  NotcursesOptions* = object
    # don't want this field public, fix with more use of include vs. import
@@ -34,11 +38,14 @@ type
  # only use Result[NotcursesSuccess, NotcursesError] in return type if success
  # code other than 0 is possible, otherwise use Result[void, NotcursesError]
  NotcursesSuccess* = object
-   code*: int
+   code*: cint
 
 var
  ncObject {.threadvar.}: Notcurses
  ncPtr: Atomic[ptr notcurses]
+
+proc evType*(ni: NotcursesInput): cint =
+  ni.ni.evtype
 
 proc expect*(res: Result[void, NotcursesError]) =
  expect(res, $DefectMessages.FailureNotExpected)
@@ -51,6 +58,21 @@ proc get*(T: type Notcurses): T =
    else:
      ncObject = T(ncPtr: ncP)
  ncObject
+
+proc getBlocking*(nc: Notcurses, ni: var NotcursesInput): uint32
+    {.discardable.} =
+  nc.ncPtr.notcurses_get_blocking(unsafeAddr ni.ni)
+
+proc init*(T: type NotcursesInput): T =
+  T(ni: ncinput())
+
+proc getBlocking*(nc: Notcurses): NotcursesInput {.discardable.} =
+  var ni = NotcursesInput.init
+  nc.getBlocking ni
+  ni
+
+proc id*(ni: NotcursesInput): uint32 =
+  ni.ni.id
 
 proc init*(T: type NotcursesOptions , options: varargs[InitOptions]): T =
  var opts: culonglong
@@ -78,14 +100,14 @@ proc init*(T: type Notcurses, opts: NotcursesOptions = NotcursesOptions.init,
    ncObject
 
 proc putStr*(plane: NotcursesPlane, s: string): Result[void, NotcursesError] =
- let code = plane.planePtr.ncplane_putstr(s.cstring).int
+ let code = plane.planePtr.ncplane_putstr(s.cstring)
  if code < 0:
   err NotcursesError(code: code, msg: $ErrorMessages.PutStr)
  else:
    ok()
 
 proc render*(nc: Notcurses): Result[void, NotcursesError] =
- let code = nc.ncPtr.notcurses_render.int
+ let code = nc.ncPtr.notcurses_render
  if code < 0:
    err NotcursesError(code: code, msg: $ErrorMessages.Render)
  else:
@@ -99,7 +121,7 @@ proc stdPlane*(nc: Notcurses): NotcursesPlane =
  NotcursesPlane(planePtr: planePtr)
 
 proc stop*(nc: Notcurses): Result[void, NotcursesError] =
- let code = nc.ncPtr.notcurses_stop.int
+ let code = nc.ncPtr.notcurses_stop
  if code < 0:
    err NotcursesError(code: code, msg: $ErrorMessages.Stop)
  else:
@@ -107,6 +129,7 @@ proc stop*(nc: Notcurses): Result[void, NotcursesError] =
 
 # Friendly aliases: should foment joy, curtail if a source of lamentations;
 # limit to intuitive shortenings
+# consider renaming InitOption/s to NotcursesInitOption/s and shorten from there
 type
  Nc* = Notcurses
  NcDefect* = NotcursesDefect
@@ -116,6 +139,7 @@ type
  NcInitOptions* = InitOptions
  NcInitOpt* = InitOption
  NcInitOpts* = InitOptions
+ NcInput* = NotcursesInput
  NcOption* = InitOption
  NcOpt* = InitOption
  NcOpts* = NotcursesOptions
