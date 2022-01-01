@@ -15,8 +15,7 @@ export InitOption, InitOptions, results
 
 type
  Notcurses* = object
-   # don't want this field public, fix with more use of include vs. import
-   ncPtr*: ptr notcurses
+   ncPtr: ptr notcurses
 
  NotcursesDefect* = object of Defect
 
@@ -24,16 +23,13 @@ type
    code*: cint
 
  NotcursesInput* = object
-   # don't want this field public, fix with more use of include vs. import
-   ni*: ncinput
+   ni: ncinput
 
  NotcursesOptions* = object
-   # don't want this field public, fix with more use of include vs. import
-   opts*: notcurses_options
+   opts: notcurses_options
 
  NotcursesPlane* = object
-   # don't want this field public, fix with more use of include vs. import
-   planePtr*: ptr ncplane
+   planePtr: ptr ncplane
 
  # only use Result[NotcursesSuccess, NotcursesError] in return type if success
  # code other than 0 is possible, otherwise use Result[void, NotcursesError]
