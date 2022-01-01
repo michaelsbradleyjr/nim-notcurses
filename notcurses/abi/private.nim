@@ -11,6 +11,8 @@ const
 # out?... or maybe here can just use cint here in the abi and have proper enum
 # in the api
 
+include ./private/constants
+
 type
   ncinput {.bycopy, header: notcurses_header,
       importc: "struct ncinput".} = object
