@@ -1,4 +1,4 @@
-include ./abi/private/constants
+include ../../abi/private/constants
 
 type
   DefectMessages* {.pure.} = enum
@@ -6,11 +6,14 @@ type
     FailedToInitialize = "Notcurses failed to initialize!"
     FailureNotExpected = "failure not expected"
     NotInitialized = "Notcurses is not initialized!"
+
   ErrorMessages* {.pure.} = enum
     PutStr = "Notcurses.putStr failed!"
     Render = "Notcurses.render failed!"
     Stop = "Notcurses.stop failed!"
+
   InitOption* = distinct culonglong
+
   InitOptions* {.pure.} = enum
     InhibitSetlocale = NCOPTION_INHIBIT_SETLOCALE.InitOption,
     NoClearBitmaps = NCOPTION_NO_CLEAR_BITMAPS.InitOption,

@@ -11,11 +11,11 @@ let
   nc = Nc.init
   stdn = nc.stdPlane
 
-template putAndRender(s: string) =
+proc putAndRender(s: string) =
   stdn.putStr(s & "\n").expect
   nc.render.expect
 
-template blankLine() =
+proc blankLine() =
   putAndRender ""
 
 blankLine()

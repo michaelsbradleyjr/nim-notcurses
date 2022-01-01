@@ -1,1 +1,1 @@
-const NotcursesHeader* = "notcurses/notcurses.h"
+const NotcursesHeader = "notcurses/notcurses.h"
