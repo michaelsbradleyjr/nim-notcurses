@@ -1,6 +1,8 @@
 type
   NotcursesDefectMessages {.pure.} = enum
+    AlreadyAdded = "Notcurses exit proc is already added!"
     AlreadyInitialized = "Notcurses is already initialized!"
+    AlreadyStopped = "Notcurses is already stopped!"
     FailedToInitialize = "Notcurses failed to initialize!"
     FailureNotExpected = "failure not expected"
     NotInitialized = "Notcurses is not initialized!"

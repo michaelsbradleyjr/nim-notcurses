@@ -1,10 +1,10 @@
-import std/exitprocs
-
 import notcurses
+# or: import notcurses/core
 
 let
   opts = [DrainInput, NoAlternateScreen, NoClearBitmaps, PreserveCursor]
   nc = Nc.init NcOpts.init opts
 
-addExitProc stopNc
+addNcExitProc()
+
 nc.render.expect

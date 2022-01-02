@@ -5,7 +5,7 @@
 # {.push raises: [Defect].}
 # {.push raises: [].}
 
-import std/[atomics, bitops]
+import std/[atomics, bitops, exitprocs]
 
 import ./vendor/stew/results
 
@@ -38,8 +38,10 @@ type
     code*: cint
 
 var
+  ncExitProcAdded: Atomic[bool]
   ncObject {.threadvar.}: Notcurses
   ncPtr: Atomic[ptr notcurses]
+  ncStopped: Atomic[bool]
 
 proc evType(ni: NotcursesInput): cint =
   ni.ni.evtype
@@ -98,11 +100,17 @@ proc stdPlane(nc: Notcurses): NotcursesPlane =
   NotcursesPlane(planePtr: planePtr)
 
 proc stop(nc: Notcurses): Result[void, NotcursesError] =
+  if ncStopped.load: raise (ref NotcursesDefect)(msg: $AlreadyStopped)
   let code = nc.ncPtr.notcurses_stop
   if code < 0:
     err NotcursesError(code: code, msg: $Stop)
+  elif ncStopped.exchange(true):
+    raise (ref NotcursesDefect)(msg: $AlreadyStopped)
   else:
     ok()
 
 proc stopNotcurses() {.noconv.} =
   Notcurses.get.stop.expect
+
+template addNotcursesExitProc() =
+  if not ncExitProcAdded.exchange(true): addExitProc stopNotcurses

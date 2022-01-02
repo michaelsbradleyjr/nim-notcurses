@@ -9,6 +9,7 @@ export
   NotcursesInput,
   NotcursesOptions,
   NotcursesPlane,
+  addNotcursesExitProc,
   evType,
   expect,
   get,
@@ -47,3 +48,5 @@ type
 const
   putString* = putStr
   stopNc* = stopNotcurses
+
+template addNcExitProc*() = addNotcursesExitProc()
