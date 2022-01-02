@@ -1,24 +1,24 @@
 type
-  DefectMessages* {.pure.} = enum
+  NotcursesDefectMessages {.pure.} = enum
     AlreadyInitialized = "Notcurses is already initialized!"
     FailedToInitialize = "Notcurses failed to initialize!"
     FailureNotExpected = "failure not expected"
     NotInitialized = "Notcurses is not initialized!"
 
-  ErrorMessages* {.pure.} = enum
+  NotcursesErrorMessages {.pure.} = enum
     PutStr = "Notcurses.putStr failed!"
     Render = "Notcurses.render failed!"
     Stop = "Notcurses.stop failed!"
 
-  InitOption* = distinct culonglong
+  NotcursesInitOption = distinct culonglong
 
-  InitOptions* {.pure.} = enum
-    InhibitSetlocale = NCOPTION_INHIBIT_SETLOCALE.InitOption,
-    NoClearBitmaps = NCOPTION_NO_CLEAR_BITMAPS.InitOption,
-    NoWinchSighandler = NCOPTION_NO_WINCH_SIGHANDLER.InitOption,
-    NoQuitSighandlers = NCOPTION_NO_QUIT_SIGHANDLERS.InitOption,
-    PreserveCursor = NCOPTION_PRESERVE_CURSOR.InitOption,
-    SuppressBanners = NCOPTION_SUPPRESS_BANNERS.InitOption,
-    NoAlternateScreen = NCOPTION_NO_ALTERNATE_SCREEN.InitOption,
-    NoFontChanges = NCOPTION_NO_FONT_CHANGES.InitOption,
-    DrainInput = NCOPTION_DRAIN_INPUT.InitOption
+  NotcursesInitOptions {.pure.} = enum
+    InhibitSetlocale = NCOPTION_INHIBIT_SETLOCALE.NotcursesInitOption,
+    NoClearBitmaps = NCOPTION_NO_CLEAR_BITMAPS.NotcursesInitOption,
+    NoWinchSighandler = NCOPTION_NO_WINCH_SIGHANDLER.NotcursesInitOption,
+    NoQuitSighandlers = NCOPTION_NO_QUIT_SIGHANDLERS.NotcursesInitOption,
+    PreserveCursor = NCOPTION_PRESERVE_CURSOR.NotcursesInitOption,
+    SuppressBanners = NCOPTION_SUPPRESS_BANNERS.NotcursesInitOption,
+    NoAlternateScreen = NCOPTION_NO_ALTERNATE_SCREEN.NotcursesInitOption,
+    NoFontChanges = NCOPTION_NO_FONT_CHANGES.NotcursesInitOption,
+    DrainInput = NCOPTION_DRAIN_INPUT.NotcursesInitOption
