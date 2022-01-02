@@ -1,4 +1,5 @@
-proc init*(T: type NotcursesOptions , options: varargs[InitOptions]): T =
+proc init(T: type NotcursesOptions , options: varargs[NotcursesInitOptions]):
+    T =
   var opts = 0.culonglong
   opts = bitor(opts, NoAlternateScreen.culonglong)
   opts = bitor(opts, NoClearBitmaps.culonglong)
@@ -10,16 +11,15 @@ proc init*(T: type NotcursesOptions , options: varargs[InitOptions]): T =
       opts = bitor(opts, o.culonglong)
   T(opts: notcurses_options(flags: opts))
 
-proc init*(T: type Notcurses, opts: NotcursesOptions = NotcursesOptions.init,
+proc init(T: type Notcurses, opts: NotcursesOptions = NotcursesOptions.init,
     file: File = stdout): T =
   if not ncObject.ncPtr.isNil or not ncPtr.load.isNil:
-    raise (ref NotcursesDefect)(msg: $DefectMessages.AlreadyInitialized)
+    raise (ref NotcursesDefect)(msg: $AlreadyInitialized)
   else:
     let ncP = notcurses_init(unsafeAddr opts.opts, file)
-    if ncP.isNil: raise (ref NotcursesDefect)(
-      msg: $DefectMessages.FailedToInitialize)
+    if ncP.isNil: raise (ref NotcursesDefect)(msg: $FailedToInitialize)
     ncObject = T(ncPtr: ncP)
     if not ncPtr.exchange(ncObject.ncPtr).isNil:
-      raise (ref NotcursesDefect)(msg: $DefectMessages.AlreadyInitialized)
+      raise (ref NotcursesDefect)(msg: $AlreadyInitialized)
     ncObject.stdPlane.setScrolling true
     ncObject
