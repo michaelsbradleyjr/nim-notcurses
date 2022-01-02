@@ -1,8 +1,12 @@
+import std/exitprocs
+
 import notcurses/cli
 
 let
   nc = Nc.init
   stdn = nc.stdPlane
+
+addExitProc stopNc
 
 proc putAndRender(s: string) =
   stdn.putStr(s & "\n").expect
@@ -33,4 +37,3 @@ while true:
 
   if not (ni.evType == 3 or ni.id != 113): break
 blankLine()
-nc.stop.expect

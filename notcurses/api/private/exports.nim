@@ -20,7 +20,8 @@ export
   results,
   setScrolling,
   stdPlane,
-  stop
+  stop,
+  stopNotcurses
 
 # Friendly aliases, limit to intuitive shortenings:
 type
@@ -43,4 +44,6 @@ type
   NcSuccess* = NotcursesSuccess
   ncoption* = NotcursesInitOption
 
-const putString* = putStr
+const
+  putString* = putStr
+  stopNc* = stopNotcurses

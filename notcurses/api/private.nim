@@ -103,3 +103,6 @@ proc stop(nc: Notcurses): Result[void, NotcursesError] =
     err NotcursesError(code: code, msg: $Stop)
   else:
     ok()
+
+proc stopNotcurses() {.noconv.} =
+  Notcurses.get.stop.expect
