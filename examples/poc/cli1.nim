@@ -1,12 +1,11 @@
-import std/exitprocs
-
 import notcurses/cli
+# or: import notcurses/core/cli
 
 let
   nc = Nc.init
   stdn = nc.stdPlane
 
-addExitProc stopNc
+addNcExitProc()
 
 proc putAndRender(s: string) =
   stdn.putStr(s & "\n").expect
@@ -16,6 +15,7 @@ proc blankLine() =
   putAndRender ""
 
 blankLine()
+
 while true:
   putAndRender "press any key, q to quit"
   let ni = nc.getBlocking
@@ -36,4 +36,5 @@ while true:
   # putAndRender "NI.ID: " & $ni.id
 
   if not (ni.evType == 3 or ni.id != 113): break
+
 blankLine()
