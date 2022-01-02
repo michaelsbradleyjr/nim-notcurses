@@ -1,13 +1,11 @@
-proc init(T: type NotcursesOptions , options: varargs[NotcursesInitOptions]):
+proc init(T: type NotcursesOptions, options: varargs[NotcursesInitOptions]):
     T =
   var opts = 0.culonglong
   opts = bitor(opts, NoAlternateScreen.culonglong)
   opts = bitor(opts, NoClearBitmaps.culonglong)
   opts = bitor(opts, PreserveCursor.culonglong)
-  if options.len == 1:
-    opts = bitor(opts, options[0].culonglong)
-  elif options.len > 1:
-    for o in options[1..^1]:
+  if options.len >= 1:
+    for o in options[0..^1]:
       opts = bitor(opts, o.culonglong)
   T(opts: notcurses_options(flags: opts))
 
