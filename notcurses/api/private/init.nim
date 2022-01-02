@@ -1,13 +1,8 @@
-proc init(T: type NotcursesOptions , options: varargs[NotcursesInitOptions]):
+proc init(T: type NotcursesOptions, options: varargs[NotcursesInitOptions]):
     T =
-  var opts: culonglong
-  if options.len == 0:
-    opts = 0.culonglong
-  elif options.len == 1:
-    opts = options[0].culonglong
-  else:
-    opts = options[0].culonglong
-    for o in options[1..^1]:
+  var opts = 0.culonglong
+  if options.len >= 1:
+    for o in options[0..^1]:
       opts = bitor(opts, o.culonglong)
   T(opts: notcurses_options(flags: opts))
 
