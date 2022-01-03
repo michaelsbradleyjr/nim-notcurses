@@ -8,6 +8,7 @@ export
   NCOPTION_NO_WINCH_SIGHANDLER,
   NCOPTION_PRESERVE_CURSOR,
   NCOPTION_SUPPRESS_BANNERS,
+  NCTYPES,
   ncinput,
   ncpile_rasterize,
   ncpile_render,

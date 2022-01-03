@@ -8,3 +8,10 @@ const
   NCOPTION_NO_ALTERNATE_SCREEN = 0x0000000000000040.culonglong
   NCOPTION_NO_FONT_CHANGES     = 0x0000000000000080.culonglong
   NCOPTION_DRAIN_INPUT         = 0x0000000000000100.culonglong
+
+type
+  NCTYPES {.pure.} = enum
+    NCTYPE_UNKNOWN = 0.cint,
+    NCTYPE_PRESS   = 1.cint,
+    NCTYPE_REPEAT  = 2.cint,
+    NCTYPE_RELEASE = 3.cint

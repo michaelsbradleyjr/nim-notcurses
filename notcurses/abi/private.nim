@@ -15,8 +15,11 @@ include ./private/constants
 type
   ncinput {.bycopy, header: notcurses_header,
       importc: "struct ncinput".} = object
-    evtype*: cint
+    alt*, ctrl*, shift*: bool
+    evtype*: NCTYPES
     id*: uint32
+    utf8*: array[5, cchar]
+    x*, xpx*, y*, ypx*: cint
 
   ncplane {.header: notcurses_header, importc: "struct ncplane",
     incompleteStruct.} = object
