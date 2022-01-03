@@ -38,7 +38,12 @@ while true:
 
   let utf8 = ni.toUTF8
   if utf8.isSome:
-    putAndRender "utf8  : " & utf8.get
+    var str = ""
+    if ni.codepoint.uint32 < 128:
+      addEscapedChar(str, ni.codepoint.char)
+    else:
+      str = str & utf8.get
+    putAndRender "utf8  : " & str
   else:
     putAndRender "utf8  : " & $utf8
 
