@@ -5,15 +5,17 @@
 # {.push raises: [Defect].}
 # {.push raises: [].}
 
-import std/[atomics, bitops, exitprocs]
+import std/[atomics, bitops, exitprocs, options]
 
-import ./vendor/stew/results
+import ./vendor/stew/[byteutils, results]
 
 include ./private/constants
 
 type
   Notcurses = object
     ncPtr: ptr notcurses
+
+  NotcursesCodepoint = distinct uint32
 
   NotcursesDefect = object of Defect
 
@@ -42,6 +44,15 @@ var
   ncObject {.threadvar.}: Notcurses
   ncPtr: Atomic[ptr notcurses]
   ncStopped: Atomic[bool]
+
+proc `$`(cp: NotcursesCodepoint): string =
+  $cp.uint32
+
+proc `$`(ni: NotcursesInput): string =
+  $ni.ni
+
+proc codepoint(ni: NotcursesInput): NotcursesCodepoint =
+  ni.ni.id.NotcursesCodepoint
 
 proc event(ni: NotcursesInput): NotcursesInputEvents =
   ni.ni.evtype.NotcursesInputEvents
@@ -74,10 +85,22 @@ proc getBlocking(nc: Notcurses): NotcursesInput {.discardable.} =
   nc.getBlocking ni
   ni
 
-proc codepoint(ni: NotcursesInput): uint32 =
-  ni.ni.id
+proc isKey(cp: NotcursesCodepoint): bool =
+  let id = cp.uint32
+  # need to check < this >= that etc. of id
+  false
 
-proc putStr(plane: NotcursesPlane, s: string):
+proc isKey(ni: NotcursesInput): bool =
+  ni.codepoint.isKey
+
+proc isUTF8(cp: NotcursesCodepoint): bool =
+  const highestPoint = 1114111.uint32
+  cp.uint32 <= highestPoint
+
+proc isUTF8(ni: NotcursesInput): bool =
+  ni.codepoint.isUTF8
+
+proc putString(plane: NotcursesPlane, s: string):
     Result[NotcursesSuccess, NotcursesError] {.discardable.} =
   let code = plane.planePtr.ncplane_putstr(s.cstring)
   if code < 0:
@@ -114,3 +137,19 @@ proc stopNotcurses() {.noconv.} =
 
 template addNotcursesExitProc() =
   if not ncExitProcAdded.exchange(true): addExitProc stopNotcurses
+
+proc toKey(ni: NotcursesInput): Option[NotcursesKeys] =
+  if ni.isKey: some(ni.codepoint.NotcursesKeys)
+  else: none[NotcursesKeys]()
+
+proc toUTF8(ni: NotcursesInput): Option[string] =
+  if ni.isUTF8:
+    var bytes: seq[byte]
+    const nullC = '\x00'.cchar
+    bytes.add ni.ni.utf8[0].byte
+    for c in ni.ni.utf8[1..3]:
+      if c != nullC: bytes.add c.byte
+      else: break
+    some(string.fromBytes bytes)
+  else:
+    none[string]()

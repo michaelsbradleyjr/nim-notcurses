@@ -1,4 +1,4 @@
-# https://github.com/status-im/nim-stew/blob/42475fd/stew/results.nim
+# https://github.com/status-im/nim-stew/blob/8a40530/stew/results.nim
 # nim-result is also available stand-alone from https://github.com/arnetheduck/nim-result/
 
 # Copyright (c) 2019 Jacek Sieka

@@ -1,5 +1,7 @@
 export
+  `$`,
   Notcurses,
+  NotcursesCodepoint,
   NotcursesDefect,
   NotcursesDefectMessages,
   NotcursesError,
@@ -9,6 +11,8 @@ export
   NotcursesInput,
   NotcursesInputEvent,
   NotcursesInputEvents,
+  NotcursesKey,
+  NotcursesKeys,
   NotcursesOptions,
   NotcursesPlane,
   addNotcursesExitProc,
@@ -18,17 +22,23 @@ export
   get,
   getBlocking,
   init,
-  putStr,
+  isKey,
+  isUTF8,
+  options,
+  putString,
   render,
   results,
   setScrolling,
   stdPlane,
   stop,
-  stopNotcurses
+  stopNotcurses,
+  toKey,
+  toUTF8
 
 # Friendly aliases, limit to intuitive shortenings:
 type
   Nc* = Notcurses
+  NcCodepoint* = NotcursesCodepoint
   NcDefect* = NotcursesDefect
   NcErr* = NotcursesError
   NcError* = NotcursesError
@@ -39,6 +49,8 @@ type
   NcInput* = NotcursesInput
   NcInputEvent* = NotcursesInputEvent
   NcInputEvents* = NotcursesInputEvent
+  NcKey* = NotcursesKey
+  NcKeys* = NotcursesKeys
   NcOpt* = NotcursesInitOption
   NcOpts* = NotcursesOptions
   NcOption* = NotcursesInitOption
@@ -53,7 +65,7 @@ const
   eventType* = event
   evType* = event
   id* = codepoint
-  putString* = putStr
+  putStr* = putString
   stopNc* = stopNotcurses
 
 template addNcExitProc*() = addNotcursesExitProc()
