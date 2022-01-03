@@ -14,16 +14,36 @@ proc putAndRender(s: string) =
 proc blankLine() =
   putAndRender ""
 
-blankLine()
-
 while true:
-  putAndRender "press any key, q to quit"
+  blankLine()
+  putAndRender   "press any key, q to quit"
   let ni = nc.getBlocking
-  # putAndRender "NI.EVENT: " & $ni.event
-  # putAndRender "NI: " & $ni
-  # if not (ni.event == Release or $ni != "q"): break
 
-  putAndRender $ni.event
-  if not (ni.event == Release or ni.id != 113): break
+  blankLine()
+
+  # get rid of this
+  putAndRender   "isKey  : " & $ni.isKey
+  putAndRender   "isKey  : " & $ni.codepoint.isKey
+  putAndRender   "isUTF8 : " & $ni.isUTF8
+  putAndRender   "isUTF8 : " & $ni.codepoint.isUTF8
+
+  putAndRender   "event : " & $ni.event
+  putAndRender   "point : " & $ni.codepoint
+
+  let key = ni.toKey
+  if key.isSome:
+    putAndRender "key   : " & $key.get
+  else:
+    putAndRender "key   : " & $key
+
+  let utf8 = ni.toUTF8
+  if utf8.isSome:
+    putAndRender "utf8  : " & utf8.get
+  else:
+    putAndRender "utf8  : " & $utf8
+
+  putAndRender   "obj   : " & $ni
+
+  if ni.toUTF8.get("") == "q": break
 
 blankLine()

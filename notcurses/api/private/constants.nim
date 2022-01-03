@@ -32,3 +32,8 @@ type
     Press   = NCTYPE_PRESS.NotcursesInputEvent,
     Repeat  = NCTYPE_REPEAT.NotcursesInputEvent,
     Release = NCTYPE_RELEASE.NotcursesInputEvent
+
+  NotcursesKey = distinct uint32
+
+  NotcursesKeys {.pure.} = enum
+    Foo = 0.uint32.NotcursesKey
