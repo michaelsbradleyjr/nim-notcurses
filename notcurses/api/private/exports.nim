@@ -7,14 +7,16 @@ export
   NotcursesInitOption,
   NotcursesInitOptions,
   NotcursesInput,
+  NotcursesInputEvent,
+  NotcursesInputEvents,
   NotcursesOptions,
   NotcursesPlane,
   addNotcursesExitProc,
-  evType,
+  codepoint,
+  event,
   expect,
   get,
   getBlocking,
-  id,
   init,
   putStr,
   render,
@@ -35,6 +37,8 @@ type
   NcInitOption* = NotcursesInitOption
   NcInitOptions* = NotcursesInitOptions
   NcInput* = NotcursesInput
+  NcInputEvent* = NotcursesInputEvent
+  NcInputEvents* = NotcursesInputEvent
   NcOpt* = NotcursesInitOption
   NcOpts* = NotcursesOptions
   NcOption* = NotcursesInitOption
@@ -46,6 +50,9 @@ type
   ncoption* = NotcursesInitOption
 
 const
+  eventType* = event
+  evType* = event
+  id* = codepoint
   putString* = putStr
   stopNc* = stopNotcurses
 

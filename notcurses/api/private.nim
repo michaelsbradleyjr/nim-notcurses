@@ -43,8 +43,8 @@ var
   ncPtr: Atomic[ptr notcurses]
   ncStopped: Atomic[bool]
 
-proc evType(ni: NotcursesInput): cint =
-  ni.ni.evtype
+proc event(ni: NotcursesInput): NotcursesInputEvents =
+  ni.ni.evtype.NotcursesInputEvents
 
 proc expect(res: Result[NotcursesSuccess, NotcursesError]):
     NotcursesSuccess {.discardable.} =
@@ -74,7 +74,7 @@ proc getBlocking(nc: Notcurses): NotcursesInput {.discardable.} =
   nc.getBlocking ni
   ni
 
-proc id(ni: NotcursesInput): uint32 =
+proc codepoint(ni: NotcursesInput): uint32 =
   ni.ni.id
 
 proc putStr(plane: NotcursesPlane, s: string):
