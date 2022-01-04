@@ -7,39 +7,53 @@ let
 
 addNcExitProc()
 
-proc putAndRender(s: string) =
-  stdn.putStr(s & "\n").expect
-  nc.render.expect
+proc render() = nc.render.expect
 
-proc blankLine() =
-  putAndRender ""
+proc put(s: string = "") =
+  stdn.putStr(s).expect
+  render()
+
+proc put[T](v: Option[T]) =
+  var s: string
+  if v.isSome: s = $v.get
+  else: s = $v
+  put s
+
+proc putLn(s: string = "") =
+  put s & "\n"
+  render()
+
+proc putLn[T](v: Option[T]) =
+  var s: string
+  if v.isSome: s = $v.get
+  else: s = $v
+  putLn s
+
+proc blankLn() = putLn()
 
 while true:
-  blankLine()
-  putAndRender   "press any key, q to quit"
+  blankLn()
+  putLn "press any key, q to quit"
+
   let ni = nc.getBlocking
 
-  blankLine()
-  putAndRender   "event : " & $ni.event
-  putAndRender   "point : " & $ni.codepoint
+  blankLn()
+  putLn "event : " & $ni.event
+  putLn "point : " & $ni.codepoint
 
   let key = ni.toKey
-  if key.isSome:
-    putAndRender "key   : " & $key.get
-  else:
-    putAndRender "key   : " & $key
+
+  put   "key   : "
+  putLn key
 
   let utf8 = ni.toUTF8
-  if utf8.isSome:
-    (stdn.putStr "utf8  : ").expect
-    stdn.putStr(utf8.get).expect
-    stdn.putStr("\n").expect
-    nc.render.expect
-  else:
-    putAndRender "utf8  : " & $utf8
 
-  putAndRender   "obj   : " & $ni
+  put   "utf8  : "
+  put   utf8
+  putLn()
 
-  if ni.toUTF8.get("") == "q": break
+  putLn "input : " & $ni
 
-blankLine()
+  if utf8.get("") == "q": break
+
+blankLn()
