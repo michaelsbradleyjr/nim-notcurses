@@ -21,16 +21,16 @@ jobs:
             os: macos,
             shell: bash --noprofile --norc -eo pipefail
           }
-          - {
-            icon: 🐧,
-            os: ubuntu,
-            shell: bash --noprofile --norc -eo pipefail
-          }
-          - {
-            icon: 🏁,
-            os: windows,
-            shell: msys2
-          }
+          # - {
+          #   icon: 🐧,
+          #   os: ubuntu,
+          #   shell: bash --noprofile --norc -eo pipefail
+          # }
+          # - {
+          #   icon: 🏁,
+          #   os: windows,
+          #   shell: msys2
+          # }
 
     name: ${{ matrix.platform.icon }} ${{ matrix.platform.os }} - Nim v${{ matrix.nim_version }}
 
@@ -57,6 +57,7 @@ jobs:
       - name: Install tools and libraries via Homebrew (macOS)
         if: matrix.platform.os == 'macos'
         run: |
+          brew update
           brew install \
             coreutils \
             ffmpeg \
@@ -64,7 +65,8 @@ jobs:
             gawk \
             libdeflate \
             libunistring \
-            ncurses
+            ncurses \
+            notcurses
 
       - name: Install tools and libraries via MSYS2 (Windows)
         if: matrix.platform.os == 'windows'
@@ -153,14 +155,14 @@ jobs:
           TERM: xterm-256color
         run: |
           source "${HOME}/.bash_env"
-          nim c examples/hello_direct.nim
-          examples/hello_direct
+          nim c examples/poc/cli2.nim
+          examples/poc/cli2
 
       - name: Build... something, for now (Windows)
         if: matrix.platform.os == 'windows'
         run: |
           source "${HOME}/.bash_env"
-          nim c examples/hello_direct.nim
+          nim c examples/poc/cli2.nim
 
       # - name: Build and run helgrind tasks (Linux)
       #   if: matrix.platform.os == 'ubuntu'
