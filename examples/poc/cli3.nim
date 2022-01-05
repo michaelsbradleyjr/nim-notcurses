@@ -5,6 +5,6 @@ let
   opts = [DrainInput, NoClearBitmaps, PreserveCursor]
   nc = Nc.init NcOpts.init opts
 
-addNcExitProc()
+Nc.addExitProc
 
 nc.render.expect
