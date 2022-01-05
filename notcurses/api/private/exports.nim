@@ -16,6 +16,7 @@ export
   NotcursesOptions,
   NotcursesPlane,
   addExitProc,
+  byteutils,
   codepoint,
   event,
   expect,

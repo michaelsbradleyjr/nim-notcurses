@@ -103,7 +103,7 @@ proc isUTF8(ni: NotcursesInput): bool =
 proc putString(plane: NotcursesPlane, s: string):
     Result[NotcursesSuccess, NotcursesError] {.discardable.} =
   let code = plane.planePtr.ncplane_putstr(s.cstring)
-  if code < 0:
+  if code <= 0:
     err NotcursesError(code: code, msg: $PutStr)
   else:
     ok NotcursesSuccess(code: code)
