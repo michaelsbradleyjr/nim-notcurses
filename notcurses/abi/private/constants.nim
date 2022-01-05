@@ -4,8 +4,11 @@ proc preterunicode(w: uint32): uint32 = w + PRETERUNICODEBASE
 
 const
   NCKEY_TAB          = 9.uint32
+
   NCKEY_ESC          = 27.uint32
+
   NCKEY_SPACE        = 32.uint32
+
   NCKEY_INVALID      = preterunicode 0.uint32
   NCKEY_RESIZE       = preterunicode 1.uint32
   NCKEY_UP           = preterunicode 2.uint32
@@ -145,13 +148,13 @@ const
   NCKEY_BUTTON10     = preterunicode 210.uint32
   NCKEY_BUTTON11     = preterunicode 211.uint32
 
-  NCKEY_SCROLL_UP    = NCKEY_BUTTON4
-  NCKEY_SCROLL_DOWN  = NCKEY_BUTTON5
-  NCKEY_RETURN       = NCKEY_ENTER
-
   NCKEY_SIGNAL       = preterunicode 400.uint32
 
   NCKEY_EOF          = preterunicode 500.uint32
+
+  NCKEY_RETURN       = NCKEY_ENTER
+  NCKEY_SCROLL_UP    = NCKEY_BUTTON4
+  NCKEY_SCROLL_DOWN  = NCKEY_BUTTON5
 
 const
   NCOPTION_INHIBIT_SETLOCALE   = 0x0000000000000001.culonglong

@@ -63,6 +63,9 @@ type
   ncoption* = NotcursesInitOption
 
 const
+  Return* = NotcursesKeys.Enter
+  ScrollUp* = NotcursesKeys.Button4
+  ScrollDown* = NotcursesKeys.Button5
   eventType* = event
   evType* = event
   id* = codepoint

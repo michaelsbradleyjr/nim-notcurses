@@ -86,9 +86,16 @@ proc getBlocking(nc: Notcurses): NotcursesInput {.discardable.} =
   ni
 
 proc isKey(cp: NotcursesCodepoint): bool =
-  let id = cp.uint32
-  # need to check < this >= that etc. of id
-  false
+  let key = cp.uint32
+  (key == Tab.uint32) or
+  (key == Esc.uint32) or
+  (key == Space.uint32) or
+  (key >= Invalid.uint32 and key <= F60.uint32) or
+  (key >= Enter.uint32 and key <= Separator.uint32) or
+  (key >= CapsLock.uint32 and key <= L5Shift.uint32) or
+  (key >= Motion.uint32 and key <= Button11.uint32) or
+  (key == Signal.uint32) or
+  (key == EOF.uint32)
 
 proc isKey(ni: NotcursesInput): bool =
   ni.codepoint.isKey
