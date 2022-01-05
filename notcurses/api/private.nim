@@ -55,7 +55,7 @@ proc codepoint(ni: NotcursesInput): NotcursesCodepoint =
   ni.ni.id.NotcursesCodepoint
 
 proc event(ni: NotcursesInput): NotcursesInputEvents =
-  ni.ni.evtype.NotcursesInputEvents
+  cast[NotcursesInputEvents](ni.ni.evtype)
 
 proc expect(res: Result[NotcursesSuccess, NotcursesError]):
     NotcursesSuccess {.discardable.} =
@@ -146,7 +146,7 @@ template addExitProc(T: type Notcurses) =
   if not ncExitProcAdded.exchange(true): addExitProc stopNotcurses
 
 proc toKey(ni: NotcursesInput): Option[NotcursesKeys] =
-  if ni.isKey: some(ni.codepoint.NotcursesKeys)
+  if ni.isKey: some(cast[NotcursesKeys](ni.codepoint))
   else: none[NotcursesKeys]()
 
 proc toUTF8(ni: NotcursesInput): Option[string] =
