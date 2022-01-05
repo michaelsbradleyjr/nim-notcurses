@@ -7,6 +7,9 @@ let
 
 Nc.addExitProc
 
+# https://codepoints.net/U+FFFD?lang=en
+const replacementChar = string.fromBytes ['\xEF'.byte, '\xBF'.byte, '\xBD'.byte]
+
 proc render() = nc.render.expect
 
 proc put(s: string = "") =
@@ -36,21 +39,23 @@ while true:
   putLn "press any key, q to quit"
 
   let ni = nc.getBlocking
-
   blankLn()
   putLn "event : " & $ni.event
   putLn "point : " & $ni.codepoint
 
   let key = ni.toKey
-
   put   "key   : "
   putLn key
 
   let utf8 = ni.toUTF8
-
   put   "utf8  : "
-  put   utf8
-  putLn()
+
+  if utf8.isSome:
+    let res = stdn.putStr utf8.get & "\n"
+    render()
+    if res.isErr: putLn replacementChar
+  else:
+    putLn $utf8
 
   putLn "input : " & $ni
 
