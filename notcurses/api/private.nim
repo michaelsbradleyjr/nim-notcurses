@@ -135,7 +135,7 @@ proc stop(nc: Notcurses): Result[void, NotcursesError] =
 proc stopNotcurses() {.noconv.} =
   Notcurses.get.stop.expect
 
-template addNotcursesExitProc() =
+template addExitProc(T: type Notcurses) =
   if not ncExitProcAdded.exchange(true): addExitProc stopNotcurses
 
 proc toKey(ni: NotcursesInput): Option[NotcursesKeys] =

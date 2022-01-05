@@ -5,7 +5,7 @@ let
   nc = Nc.init
   stdn = nc.stdPlane
 
-addNcExitProc()
+Nc.addExitProc
 
 proc render() = nc.render.expect
 

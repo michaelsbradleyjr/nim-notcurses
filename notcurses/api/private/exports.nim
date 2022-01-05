@@ -15,7 +15,7 @@ export
   NotcursesKeys,
   NotcursesOptions,
   NotcursesPlane,
-  addNotcursesExitProc,
+  addExitProc,
   codepoint,
   event,
   expect,
@@ -67,5 +67,3 @@ const
   id* = codepoint
   putStr* = putString
   stopNc* = stopNotcurses
-
-template addNcExitProc*() = addNotcursesExitProc()
