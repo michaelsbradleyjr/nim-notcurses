@@ -60,7 +60,6 @@ type
   NcSuc* = NotcursesSuccess
   NcSucc* = NotcursesSuccess
   NcSuccess* = NotcursesSuccess
-  ncoption* = NotcursesInitOption
 
 const
   Return* = NotcursesKeys.Enter
