@@ -3,13 +3,13 @@ when defined(macosx):
 else:
   {.passL: "-l:libnotcurses.so.3 -l:libnotcurses-core.so.3".}
 
-const NotcursesImportPrefix = "notcurses_"
-
-const NotcursesLib =
-  when defined(macosx):
-    "libnotcurses.3.dylib"
-  else:
-    "libnotcurses.so.3"
+const
+  notcurses_init_import_prefix = "notcurses_"
+  notcurses_lib =
+    when defined(macosx):
+      "libnotcurses.3.dylib"
+    else:
+      "libnotcurses.so.3"
 
 include ./abi/private/constants
 include ./abi/private
