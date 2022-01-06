@@ -27,11 +27,11 @@ type
   NotcursesPlane = object
     planePtr: ptr ncplane
 
-  # only use Result[NotcursesSuccess, NotcursesError] in return type if success
-  # code other than 0 is possible, otherwise use Result[void, NotcursesError];
-  # might need an object hierarchy with NotcursesSuccess as the base, i.e. in
-  # order to specialize if there's something other than a cint code used in
-  # successful returns
+  # use Result[NotcursesSuccess, NotcursesError] in return type if success can
+  # be indicated by more than one value (e.g. something other than "only 0" or
+  # "only 1"), otherwise use Result[void, NotcursesError]; might need an object
+  # hierarchy with NotcursesSuccess as the base, i.e. in order to specialize if
+  # there's something other than a cint value used in successful returns
   NotcursesSuccess = object
     code*: cint
 
