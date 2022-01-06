@@ -16,7 +16,7 @@ Same as Notcurses' [requirements](https://github.com/dankamongmen/notcurses#requ
 
 If the headers and compiled libraries are not in locations well known to your system's compiler and linker, you may need to use `--passC` and/or `--passL` with `nim c`.
 
-:crystal_ball: In the future it will be possible to pass `-d:downloadNotcurses` to `nim c` and have the matching version of Notcurses downloaded and compiled on the fly, and then statically linked to the compiled Nim program.
+:crystal_ball: In the future it will be possible to pass `-d:downloadNotcurses` to `nim c` and have the matching version of Notcurses downloaded and compiled on the fly, and then statically linked to your compiled Nim program.
 
 ## Usage
 
@@ -32,7 +32,7 @@ Or import its minimal core:
 import notcurses/core
 ```
 
-CLI mode:
+#### CLI mode
 
 ```nim
 import notcurses/cli
@@ -42,9 +42,10 @@ Or import its minimal core:
 
 ```nim
 import notcurses/core/cli
+# or: import notcurses/cli/core
 ```
 
-Direct mode:
+#### Direct mode
 
 ```nim
 import notcurses/direct
@@ -54,6 +55,7 @@ Or import its minimal core:
 
 ```nim
 import notcurses/core/direct
+# or: import notcurses/direct/core
 ```
 
 :coffin: Direct mode is deprecated in Notcurses v3, it's recommended to use CLI mode instead.
@@ -66,10 +68,32 @@ See the modules in [examples/poc](https://github.com/michaelsbradleyjr/nim-notcu
 $ nim c examples/poc/cli1.nim && examples/poc/cli1
 ```
 
-Can be compiled and run in one step with the `-r` option, but running as a child process may interfere with input/output.
+Can be compiled and run with the `-r` option instead, but running as a child process may interfere with input/output.
 
 ```
 $ nim c -r examples/poc/cli1.nim
+```
+
+### ABI
+
+If you don't fancy the Nim API provided by this package, you can import its lower-level wrapper for Notcurses' C ABI and work with that directly, or use it to build an API to your liking.
+
+```nim
+import notcurses/abi
+```
+```nim
+import notcurses/abi/core
+# or: import notcurses/core/abi
+```
+```nim
+import notcurses/abi/direct
+# or: import notcurses/direct/abi
+```
+```nim
+import notcurses/abi/core/direct
+# or: import notcurses/abi/direct/core
+# or: import notcurses/core/abi/direct
+# or: ...
 ```
 
 ## Versioning
@@ -78,11 +102,9 @@ This package follows the [version number](https://github.com/dankamongmen/notcur
 * currently [`v3.TBD`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/TBD) (upstream: [`v3.TBD`](https://github.com/dankamongmen/notcurses/releases/tag/TBD))
 * beginning with [`v2.3.13`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/v2.3.13) (upstream: [`v2.3.13`](https://github.com/dankamongmen/notcurses/releases/tag/v2.3.13)).
 
-:bulb: It's recommended to only use version `>= v3.TBD` of *this package*. Earlier versions were unproven and too raw.
+:bulb: It's recommended to only use version `>= v3.TBD` of *this package*. Earlier versions were too raw and unproven.
 
 Starting with [`v3.TBD`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/TBD) the implementation was overhauled, with Notcurses' examples and demo ported to the Nim API and tested to compile and run correctly on various platforms.
-
-:construction: Since this Nim package is still experimental and not widely used, it may be possible to backport the work for `v3.TBD` to support older Notcurses `v2.x` and `v3.x`, and then rewrite the history of `master` and tags for this repo. *Stay tuned!*
 
 ## License
 
