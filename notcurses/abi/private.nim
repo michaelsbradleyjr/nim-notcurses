@@ -4,14 +4,6 @@ const
   notcurses_init_name = notcurses_import_prefix & "init"
   notcurses_lib: string = NotcursesLib
 
-# encode the NC_TYPE values as const cint in ./private/constants but build an
-# enum with the same named 'evtype', but maybe not export it? in the api
-# modules will also need corresponding enum using the same constants but named
-# 'NcType' and should be distinct cint ... but will it work out?... or maybe
-# here can just use cint here in the abi and have proper enum in the api
-
-include ./private/constants
-
 type
   ncinput {.bycopy, header: notcurses_header,
       importc: "struct ncinput".} = object
