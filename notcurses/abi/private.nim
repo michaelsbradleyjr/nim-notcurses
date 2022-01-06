@@ -1,5 +1,5 @@
 const
-  notcurses_header: string = NotcursesHeader
+  notcurses_header = "notcurses/notcurses.h"
   notcurses_import_prefix: string = NotcursesImportPrefix
   notcurses_init_name = notcurses_import_prefix & "init"
   notcurses_lib: string = NotcursesLib

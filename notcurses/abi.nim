@@ -3,8 +3,6 @@ when defined(macosx):
 else:
   {.passL: "-l:libnotcurses.so.3 -l:libnotcurses-core.so.3".}
 
-include ./abi/common
-
 const NotcursesImportPrefix = "notcurses_"
 
 const NotcursesLib =
