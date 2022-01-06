@@ -11,5 +11,6 @@ const NotcursesLib =
   else:
     "libnotcurses-core.so.3"
 
+include ./private/constants
 include ./private
 include ./private/exports
