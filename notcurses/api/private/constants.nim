@@ -28,10 +28,10 @@ type
   NotcursesInputEvent = distinct cint
 
   NotcursesInputEvents {.pure.} = enum
-    Unknown = NCTYPE_UNKNOWN.NotcursesInputEvent,
-    Press   = NCTYPE_PRESS.NotcursesInputEvent,
-    Repeat  = NCTYPE_REPEAT.NotcursesInputEvent,
-    Release = NCTYPE_RELEASE.NotcursesInputEvent
+    Unknown = NCTYPES.NCTYPE_UNKNOWN.NotcursesInputEvent,
+    Press   = NCTYPES.NCTYPE_PRESS.NotcursesInputEvent,
+    Repeat  = NCTYPES.NCTYPE_REPEAT.NotcursesInputEvent,
+    Release = NCTYPES.NCTYPE_RELEASE.NotcursesInputEvent
 
   NotcursesKey = distinct uint32
 

@@ -1,9 +1,9 @@
 proc init(T: type NotcursesOptions, options: varargs[NotcursesInitOptions]):
     T =
   var opts = 0.culonglong
-  opts = bitor(opts, NoAlternateScreen.culonglong)
-  opts = bitor(opts, NoClearBitmaps.culonglong)
-  opts = bitor(opts, PreserveCursor.culonglong)
+  opts = bitor(opts, NotcursesInitOptions.NoAlternateScreen.culonglong)
+  opts = bitor(opts, NotcursesInitOptions.NoClearBitmaps.culonglong)
+  opts = bitor(opts, NotcursesInitOptions.PreserveCursor.culonglong)
   if options.len >= 1:
     for o in options[0..^1]:
       opts = bitor(opts, o.culonglong)
