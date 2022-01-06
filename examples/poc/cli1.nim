@@ -48,7 +48,7 @@ while true:
   putLn key
 
   let utf8 = ni.toUTF8
-  put   "utf8  : "
+  put "utf8  : "
 
   if utf8.isSome:
     let res = stdn.putStr utf8.get & "\n"
