@@ -21,11 +21,11 @@ jobs:
             os: macos,
             shell: bash --noprofile --norc -eo pipefail
           }
-          # - {
-          #   icon: 🐧,
-          #   os: ubuntu,
-          #   shell: bash --noprofile --norc -eo pipefail
-          # }
+          - {
+            icon: 🐧,
+            os: ubuntu,
+            shell: bash --noprofile --norc -eo pipefail
+          }
           # - {
           #   icon: 🏁,
           #   os: windows,
@@ -82,6 +82,22 @@ jobs:
             mingw-w64-ucrt-x86_64-libdeflate
             mingw-w64-ucrt-x86_64-libunistring
             mingw-w64-ucrt-x86_64-toolchain
+
+      - name: Compile and install Notcurses from source (Linux)
+        if: matrix.platform.os == 'ubuntu'
+        run: |
+          rm -rf "${HOME}/repos/notcurses"
+          mkdir -p "${HOME}/repos"
+          cd "${HOME}/repos"
+          git clone https://github.com/dankamongmen/notcurses.git
+          cd notcurses
+          git checkout tags/v3.0.3
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DUSE_DOCTEST=off -DUSE_PANDOC=off
+          make -j2
+          sudo make install
+          sudo ldconfig
 
       - name: Checkout sources from GitHub
         uses: actions/checkout@v2
