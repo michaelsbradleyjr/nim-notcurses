@@ -9,8 +9,6 @@ import std/[atomics, bitops, exitprocs, options]
 
 import ./vendor/stew/[byteutils, results]
 
-include ./private/constants
-
 type
   Notcurses = object
     ncPtr: ptr notcurses
