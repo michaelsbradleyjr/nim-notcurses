@@ -6,4 +6,6 @@ license       = "Apache License 2.0 or MIT"
 
 # prefer #head of nimterop until the following commit is in a tagged version:
 # https://github.com/nimterop/nimterop/commit/4be3518
-# requires "nimterop#head"
+
+requires "nim >= 1.2.0"
+         # "nimterop#head"
