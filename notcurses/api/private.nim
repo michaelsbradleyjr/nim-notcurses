@@ -1,9 +1,7 @@
-# should implement top-level policy re: {.push raises: [...].} but it's not
-# working as expected, maybe because of changes in Nim v1.6 or aspects I have
-# yet to understand properly; need to investigate further.
-
-# {.push raises: [Defect].}
-# {.push raises: [].}
+when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
+  {.push raises:[].}
+else:
+  {.push raises: [Defect].}
 
 import std/[atomics, bitops, exitprocs, options]
 
