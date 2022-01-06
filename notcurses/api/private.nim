@@ -3,7 +3,7 @@ when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
 else:
   {.push raises: [Defect].}
 
-import std/[atomics, bitops, exitprocs, options]
+import std/[atomics, bitops, options]
 
 import ./vendor/stew/[byteutils, results]
 
@@ -83,15 +83,19 @@ proc getBlocking(nc: Notcurses): NotcursesInput {.discardable.} =
 
 proc isKey(cp: NotcursesCodepoint): bool =
   let key = cp.uint32
-  (key == Tab.uint32) or
-  (key == Esc.uint32) or
-  (key == Space.uint32) or
-  (key >= Invalid.uint32 and key <= F60.uint32) or
-  (key >= Enter.uint32 and key <= Separator.uint32) or
-  (key >= CapsLock.uint32 and key <= L5Shift.uint32) or
-  (key >= Motion.uint32 and key <= Button11.uint32) or
-  (key == Signal.uint32) or
-  (key == EOF.uint32)
+  (key == NotcursesKeys.Tab.uint32) or
+  (key == NotcursesKeys.Esc.uint32) or
+  (key == NotcursesKeys.Space.uint32) or
+  (key >= NotcursesKeys.Invalid.uint32 and
+   key <= NotcursesKeys.F60.uint32) or
+  (key >= NotcursesKeys.Enter.uint32 and
+   key <= NotcursesKeys.Separator.uint32) or
+  (key >= NotcursesKeys.CapsLock.uint32 and
+   key <= NotcursesKeys.L5Shift.uint32) or
+  (key >= NotcursesKeys.Motion.uint32 and
+   key <= NotcursesKeys.Button11.uint32) or
+  (key == NotcursesKeys.Signal.uint32) or
+  (key == NotcursesKeys.EOF.uint32)
 
 proc isKey(ni: NotcursesInput): bool =
   ni.codepoint.isKey
@@ -138,8 +142,15 @@ proc stop(nc: Notcurses): Result[void, NotcursesError] =
 proc stopNotcurses() {.noconv.} =
   Notcurses.get.stop.expect
 
-template addExitProc(T: type Notcurses) =
-  if not ncExitProcAdded.exchange(true): addExitProc stopNotcurses
+when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
+  import std/exitprocs
+
+  template addExitProc(T: type Notcurses) =
+    if not ncExitProcAdded.exchange(true): addExitProc stopNotcurses
+
+else:
+  template addExitProc(T: type Notcurses) =
+    if not ncExitProcAdded.exchange(true): addQuitProc stopNotcurses
 
 proc toKey(ni: NotcursesInput): Option[NotcursesKeys] =
   if ni.isKey: some(cast[NotcursesKeys](ni.codepoint))
