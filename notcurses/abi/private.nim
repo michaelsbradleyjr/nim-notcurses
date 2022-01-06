@@ -1,8 +1,6 @@
 const
   notcurses_header = "notcurses/notcurses.h"
-  notcurses_import_prefix: string = NotcursesImportPrefix
-  notcurses_init_name = notcurses_import_prefix & "init"
-  notcurses_lib: string = NotcursesLib
+  notcurses_init_name = notcurses_init_import_prefix & "init"
 
 type
   ncinput {.bycopy, header: notcurses_header,
