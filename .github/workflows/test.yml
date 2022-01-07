@@ -26,11 +26,11 @@ jobs:
             os: ubuntu,
             shell: bash --noprofile --norc -eo pipefail
           }
-          # - {
-          #   icon: 🏁,
-          #   os: windows,
-          #   shell: msys2
-          # }
+          - {
+            icon: 🏁,
+            os: windows,
+            shell: msys2
+          }
 
     name: ${{ matrix.platform.icon }} ${{ matrix.platform.os }} - Nim v${{ matrix.nim_version }}
 
@@ -83,8 +83,8 @@ jobs:
             mingw-w64-ucrt-x86_64-libunistring
             mingw-w64-ucrt-x86_64-toolchain
 
-      - name: Compile and install Notcurses from source (Linux)
-        if: matrix.platform.os == 'ubuntu'
+      - name: Compile and install Notcurses from source (Linux, Windows)
+        if: matrix.platform.os != 'macos'
         run: |
           rm -rf "${HOME}/repos/notcurses"
           mkdir -p "${HOME}/repos"
@@ -94,10 +94,19 @@ jobs:
           git checkout tags/v3.0.3
           mkdir build
           cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DUSE_DOCTEST=off -DUSE_PANDOC=off
-          make -j2
-          sudo make install
-          sudo ldconfig
+          if [[ ${{ matrix.platform.os }} != windows ]]; then
+            cmake .. -DCMAKE_BUILD_TYPE=Release -DUSE_DOCTEST=off -DUSE_PANDOC=off
+            make -j2
+            sudo make install
+            sudo ldconfig
+          else
+            cmake .. -G"MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release -DUSE_DOCTEST=off -DUSE_PANDOC=off
+            make
+            cp -R ../include/notcurses /ucrt64/include
+            cp -R ../include/ncpp /ucrt64/include
+            cp *.dll /ucrt64/bin
+            cp *.dll.a /ucrt64/lib
+          fi
 
       - name: Checkout sources from GitHub
         uses: actions/checkout@v2
@@ -179,9 +188,3 @@ jobs:
         run: |
           source "${HOME}/.bash_env"
           nim c examples/poc/cli2.nim
-
-      # - name: Build and run helgrind tasks (Linux)
-      #   if: matrix.platform.os == 'ubuntu'
-      #   run: |
-      #     source "${HOME}/.bash_env"
-      #     nimble ...
