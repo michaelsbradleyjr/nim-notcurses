@@ -3,6 +3,7 @@
 !*.*
 *.dll
 *.dylib
+*.exe
 *.so
 .DS_Store
 .idea
