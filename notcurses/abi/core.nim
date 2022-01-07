@@ -1,5 +1,7 @@
 when defined(macosx):
   {.passL: "-lnotcurses-core.3".}
+elif defined(windows):
+  {.passL: "-lnotcurses-core".}
 else:
   {.passL: "-l:libnotcurses-core.so.3".}
 
@@ -8,6 +10,8 @@ const
   notcurses_lib =
     when defined(macosx):
       "libnotcurses-core.3.dylib"
+    elif defined(windows):
+      "libnotcurses-core.dll"
     else:
       "libnotcurses-core.so.3"
 
