@@ -1,6 +1,22 @@
+type NotcursesDefect = object of Defect
+
 const
   notcurses_header = "notcurses/notcurses.h"
   notcurses_init_name = notcurses_init_import_prefix & "init"
+
+proc notcurses_version_components(major, minor, patch, tweak: ptr cint)
+  {.cdecl, dynlib: notcurses_lib, importc.}
+
+var notcurses_major, notcurses_minor, notcurses_patch, notcurses_tweak: cint
+
+notcurses_version_components(addr notcurses_major, addr notcurses_minor,
+  addr notcurses_patch, addr notcurses_tweak)
+
+if nim_notcurses_version.major != notcurses_major:
+  raise (ref NotcursesDefect)(msg:
+    "nim-notcurses major version " & $nim_notcurses_version.major & " " &
+    "is not compatible with Notcurses library major version " &
+    $notcurses_major)
 
 type
   ncinput {.bycopy, header: notcurses_header,
@@ -46,4 +62,7 @@ proc notcurses_stdplane(nc: ptr notcurses): ptr ncplane
   {.cdecl, dynlib: notcurses_lib, importc.}
 
 proc notcurses_stop(nc: ptr notcurses): cint
+  {.cdecl, dynlib: notcurses_lib, importc.}
+
+proc notcurses_version(): cstring
   {.cdecl, dynlib: notcurses_lib, importc.}

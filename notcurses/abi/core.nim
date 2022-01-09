@@ -15,6 +15,7 @@ const
     else:
       "libnotcurses-core.so.3"
 
+include ./private/common
 include ./private/constants
 include ./private
 include ./private/exports

@@ -166,4 +166,6 @@ export
   notcurses_render,
   notcurses_stdplane,
   notcurses_stop,
+  notcurses_version,
+  notcurses_version_components,
   preterunicode
