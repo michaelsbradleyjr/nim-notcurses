@@ -16,7 +16,7 @@ type
   NotcursesDefect = object of Defect
 
   NotcursesError = object of CatchableError
-    code*: cint
+    code*: int
 
   NotcursesInput = object
     ni: ncinput
@@ -33,7 +33,23 @@ type
   # hierarchy with NotcursesSuccess as the base, i.e. in order to specialize if
   # there's something other than a cint value used in successful returns
   NotcursesSuccess = object
-    code*: cint
+    code*: int
+
+  NotcursesVersion = tuple[major, minor, patch, tweak: int]
+
+const
+  NimNotcursesMajor = nim_notcurses_version.major.int
+  NimNotcursesMinor = nim_notcurses_version.minor.int
+  NimNotcursesPatch = nim_notcurses_version.patch.int
+
+var nmajor, nminor, npatch, ntweak: cint
+notcurses_version_components(addr nmajor, addr nminor, addr npatch, addr ntweak)
+
+let
+  NotcursesMajor = nmajor.int
+  NotcursesMinor = nminor.int
+  NotcursesPatch = npatch.int
+  NotcursesTweak = ntweak.int
 
 var
   ncExitProcAdded: Atomic[bool]
@@ -107,18 +123,26 @@ proc isUTF8(cp: NotcursesCodepoint): bool =
 proc isUTF8(ni: NotcursesInput): bool =
   ni.codepoint.isUTF8
 
+proc libVersion(T: type Notcurses): NotcursesVersion =
+  var major, minor, patch, tweak: cint
+  notcurses_version_components(addr major, addr minor, addr patch, addr tweak)
+  (major: major.int, minor: minor.int, patch: patch.int, tweak: tweak.int)
+
+proc libVersionString(T: type Notcurses): string =
+  $notcurses_version()
+
 proc putString(plane: NotcursesPlane, s: string):
     Result[NotcursesSuccess, NotcursesError] {.discardable.} =
   let code = plane.planePtr.ncplane_putstr(s.cstring)
-  if code <= 0:
-    err NotcursesError(code: code, msg: $PutStr)
+  if code <= 0.cint:
+    err NotcursesError(code: code.int, msg: $PutStr)
   else:
-    ok NotcursesSuccess(code: code)
+    ok NotcursesSuccess(code: code.int)
 
 proc render(nc: Notcurses): Result[void, NotcursesError] =
   let code = nc.ncPtr.notcurses_render
-  if code < 0:
-    err NotcursesError(code: code, msg: $Render)
+  if code < 0.cint:
+    err NotcursesError(code: code.int, msg: $Render)
   else:
     ok()
 
@@ -132,8 +156,8 @@ proc stdPlane(nc: Notcurses): NotcursesPlane =
 proc stop(nc: Notcurses): Result[void, NotcursesError] =
   if ncStopped.load: raise (ref NotcursesDefect)(msg: $AlreadyStopped)
   let code = nc.ncPtr.notcurses_stop
-  if code < 0:
-    err NotcursesError(code: code, msg: $Stop)
+  if code < 0.cint:
+    err NotcursesError(code: code.int, msg: $Stop)
   elif ncStopped.exchange(true):
     raise (ref NotcursesDefect)(msg: $AlreadyStopped)
   else:

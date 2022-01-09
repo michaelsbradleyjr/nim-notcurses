@@ -1,3 +1,4 @@
+include ./notcurses/abi/private/common
 import ./notcurses/abi
 
 include ./notcurses/api/private/constants

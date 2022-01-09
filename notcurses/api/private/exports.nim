@@ -1,5 +1,8 @@
 export
   `$`,
+  NimNotcursesMajor,
+  NimNotcursesMinor,
+  NimNotcursesPatch,
   Notcurses,
   NotcursesCodepoint,
   NotcursesDefect,
@@ -13,8 +16,12 @@ export
   NotcursesInputEvents,
   NotcursesKey,
   NotcursesKeys,
+  NotcursesMajor,
+  NotcursesMinor,
   NotcursesOptions,
+  NotcursesPatch,
   NotcursesPlane,
+  NotcursesTweak,
   addExitProc,
   byteutils,
   codepoint,
@@ -25,6 +32,8 @@ export
   init,
   isKey,
   isUTF8,
+  libVersion,
+  libVersionString,
   options,
   putString,
   render,
@@ -62,6 +71,9 @@ type
   NcSuccess* = NotcursesSuccess
 
 const
+  NNcMajor* = NimNotcursesMajor
+  NNcMinor* = NimNotcursesMinor
+  NNcPatch* = NimNotcursesPatch
   Return* = NotcursesKeys.Enter
   ScrollUp* = NotcursesKeys.Button4
   ScrollDown* = NotcursesKeys.Button5
@@ -70,3 +82,9 @@ const
   id* = codepoint
   putStr* = putString
   stopNc* = stopNotcurses
+
+let
+  NcMajor* = NotcursesMajor
+  NcMinor* = NotcursesMinor
+  NcPatch* = NotcursesPatch
+  NcTweak* = NotcursesTweak

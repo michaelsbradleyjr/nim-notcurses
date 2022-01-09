@@ -15,6 +15,7 @@ const
     else:
       "libnotcurses.so.3"
 
+include ./abi/private/common
 include ./abi/private/constants
 include ./abi/private
 include ./abi/private/exports

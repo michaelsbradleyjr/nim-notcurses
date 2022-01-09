@@ -51,8 +51,7 @@ jobs:
             libavformat-dev \
             libdeflate-dev \
             libswscale-dev \
-            libunistring-dev \
-            valgrind
+            libunistring-dev
 
       - name: Install tools and libraries via Homebrew (macOS)
         if: matrix.platform.os == 'macos'
@@ -62,11 +61,9 @@ jobs:
             coreutils \
             ffmpeg \
             findutils \
-            gawk \
             libdeflate \
             libunistring \
-            ncurses \
-            notcurses
+            ncurses
 
       - name: Install tools and libraries via MSYS2 (Windows)
         if: matrix.platform.os == 'windows'
@@ -76,29 +73,35 @@ jobs:
           install: >
             base-devel
             git
-            unzip
             mingw-w64-ucrt-x86_64-cmake
             mingw-w64-ucrt-x86_64-ffmpeg
             mingw-w64-ucrt-x86_64-libdeflate
             mingw-w64-ucrt-x86_64-libunistring
             mingw-w64-ucrt-x86_64-toolchain
 
-      - name: Compile and install Notcurses from source (Linux, Windows)
-        if: matrix.platform.os != 'macos'
+      - name: Checkout sources from GitHub
+        uses: actions/checkout@v2
+
+      - name: Compile and install Notcurses from source
         run: |
+          NOTCURSES_VERSION=$(cat VERSION)
           rm -rf "${HOME}/repos/notcurses"
           mkdir -p "${HOME}/repos"
           cd "${HOME}/repos"
           git clone https://github.com/dankamongmen/notcurses.git
           cd notcurses
-          git checkout tags/v3.0.3
+          git checkout tags/v${NOTCURSES_VERSION}
           mkdir build
           cd build
           if [[ ${{ matrix.platform.os }} != windows ]]; then
             cmake .. -DCMAKE_BUILD_TYPE=Release -DUSE_DOCTEST=off -DUSE_PANDOC=off
             make -j2
-            sudo make install
-            sudo ldconfig
+            if [[ ${{ matrix.platform.os }} = macos ]]; then
+              make install
+            else
+              sudo make install
+              sudo ldconfig
+            fi
           else
             cmake .. -G"MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release -DUSE_DOCTEST=off -DUSE_PANDOC=off
             make
@@ -107,9 +110,6 @@ jobs:
             cp *.dll /ucrt64/bin
             cp *.dll.a /ucrt64/lib
           fi
-
-      - name: Checkout sources from GitHub
-        uses: actions/checkout@v2
 
       - name: Calculate cache member paths
         id: calc-paths
