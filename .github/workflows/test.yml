@@ -45,6 +45,7 @@ jobs:
         if: matrix.platform.os == 'ubuntu'
         run: |
           sudo apt update
+          sudo apt upgrade -y
           sudo apt install -y \
             ffmpeg \
             libavcodec-dev \
@@ -57,6 +58,7 @@ jobs:
         if: matrix.platform.os == 'macos'
         run: |
           brew update
+          brew upgrade
           brew install \
             coreutils \
             ffmpeg \
@@ -70,6 +72,7 @@ jobs:
         uses: msys2/setup-msys2@v2
         with:
           msystem: UCRT64
+          update: true
           install: >
             base-devel
             git
