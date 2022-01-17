@@ -44,7 +44,6 @@ export
   setScrolling,
   stdPlane,
   stop,
-  stopNotcurses,
   toKey,
   toUTF8
 
@@ -87,7 +86,6 @@ const
   evType* = event
   id* = codepoint
   putStr* = putString
-  stopNc* = stopNotcurses
 
 let
   LibNcMajor* = LibNotcursesMajor
