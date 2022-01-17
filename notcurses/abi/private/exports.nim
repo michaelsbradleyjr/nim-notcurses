@@ -154,6 +154,7 @@ export
   NCTYPE,
   PRETERUNICODEBASE,
   ncinput,
+  ncloglevel_e,
   ncpile_rasterize,
   ncpile_render,
   ncplane,
