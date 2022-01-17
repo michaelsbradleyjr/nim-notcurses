@@ -168,8 +168,8 @@ const
   NCOPTION_DRAIN_INPUT         = 0x0000000000000100.culonglong
 
 type
-  NCTYPES {.pure.} = enum
-    NCTYPE_UNKNOWN = 0.cint,
-    NCTYPE_PRESS   = 1.cint,
-    NCTYPE_REPEAT  = 2.cint,
+  NCTYPE {.pure.} = enum
+    NCTYPE_UNKNOWN = 0.cint
+    NCTYPE_PRESS   = 1.cint
+    NCTYPE_REPEAT  = 2.cint
     NCTYPE_RELEASE = 3.cint
