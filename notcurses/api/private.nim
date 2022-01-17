@@ -27,7 +27,7 @@ type
     opts: notcurses_options
 
   NotcursesPlane = object
-    planePtr: ptr ncplane
+    npPtr: ptr ncplane
 
   # use Result[NotcursesSuccess, NotcursesError] in return type if success can
   # be indicated by more than one value (e.g. something other than "only 0" or
@@ -64,8 +64,8 @@ var
   ncPtr: Atomic[ptr notcurses]
   ncStopped: Atomic[bool]
 
-proc `$`(cp: NotcursesCodepoint): string =
-  $cp.uint32
+proc `$`(ncp: NotcursesCodepoint): string =
+  $ncp.uint32
 
 proc `$`(ni: NotcursesInput): string =
   $ni.ni
@@ -104,8 +104,8 @@ proc getBlocking(nc: Notcurses): NotcursesInput {.discardable.} =
   nc.getBlocking ni
   ni
 
-proc isKey(cp: NotcursesCodepoint): bool =
-  let key = cp.uint32
+proc isKey(ncp: NotcursesCodepoint): bool =
+  let key = ncp.uint32
   (key == NotcursesKeys.Tab.uint32) or
   (key == NotcursesKeys.Esc.uint32) or
   (key == NotcursesKeys.Space.uint32) or
@@ -123,9 +123,9 @@ proc isKey(cp: NotcursesCodepoint): bool =
 proc isKey(ni: NotcursesInput): bool =
   ni.codepoint.isKey
 
-proc isUTF8(cp: NotcursesCodepoint): bool =
+proc isUTF8(ncp: NotcursesCodepoint): bool =
   const highestPoint = 1114111.uint32
-  cp.uint32 <= highestPoint
+  ncp.uint32 <= highestPoint
 
 proc isUTF8(ni: NotcursesInput): bool =
   ni.codepoint.isUTF8
@@ -138,9 +138,9 @@ proc libVersion(T: type Notcurses): LibNotcursesVersion =
 proc libVersionString(T: type Notcurses): string =
   $notcurses_version()
 
-proc putString(plane: NotcursesPlane, s: string):
+proc putString(np: NotcursesPlane, s: string):
     Result[NotcursesSuccess, NotcursesError] {.discardable.} =
-  let code = plane.planePtr.ncplane_putstr(s.cstring)
+  let code = np.npPtr.ncplane_putstr(s.cstring)
   if code <= 0.cint:
     err NotcursesError(code: code.int, msg: $PutStr)
   else:
@@ -153,12 +153,12 @@ proc render(nc: Notcurses): Result[void, NotcursesError] =
   else:
     ok()
 
-proc setScrolling(plane: NotcursesPlane, enable: bool): bool {.discardable.} =
-  plane.planePtr.ncplane_set_scrolling enable.cuint
+proc setScrolling(np: NotcursesPlane, enable: bool): bool {.discardable.} =
+  np.npPtr.ncplane_set_scrolling enable.cuint
 
 proc stdPlane(nc: Notcurses): NotcursesPlane =
-  let planePtr = nc.ncPtr.notcurses_stdplane
-  NotcursesPlane(planePtr: planePtr)
+  let npPtr = nc.ncPtr.notcurses_stdplane
+  NotcursesPlane(npPtr: npPtr)
 
 proc stop(nc: Notcurses): Result[void, NotcursesError] =
   if ncStopped.load: raise (ref NotcursesDefect)(msg: $AlreadyStopped)
