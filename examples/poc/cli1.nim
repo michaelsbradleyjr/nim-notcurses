@@ -9,7 +9,7 @@ let
 Nc.addExitProc
 
 # https://codepoints.net/U+FFFD?lang=en
-const replacementChar = string.fromBytes ['\xEF'.byte, '\xBF'.byte, '\xBD'.byte]
+const replacementChar = string.fromBytes hexToByteArray("0xEFBFBD", 3)
 
 proc render() = nc.render.expect
 
