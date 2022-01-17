@@ -13,7 +13,9 @@ export
   NotcursesDefect,
   NotcursesDefectMessages,
   NotcursesError,
+  NotcursesError0,
   NotcursesErrorMessages,
+  NotcursesErrorN,
   NotcursesInitOption,
   NotcursesInitOptions,
   NotcursesInput,
@@ -25,6 +27,9 @@ export
   NotcursesLogLevels,
   NotcursesOptions,
   NotcursesPlane,
+  NotcursesSuccess,
+  NotcursesSuccess0,
+  NotcursesSuccessP,
   addExitProc,
   byteutils,
   codepoint,
@@ -54,7 +59,11 @@ type
   NcCodepoint* = NotcursesCodepoint
   NcDefect* = NotcursesDefect
   NcErr* = NotcursesError
+  NcErr0* = NotcursesError0
+  NcErrN* = NotcursesErrorN
   NcError* = NotcursesError
+  NcError0* = NotcursesError0
+  NcErrorN* = NotcursesErrorN
   NcInitOpt* = NotcursesInitOption
   NcInitOpts* = NotcursesInitOptions
   NcInitOption* = NotcursesInitOption
@@ -72,8 +81,14 @@ type
   NcOptions* = NotcursesOptions
   NcPlane* = NotcursesPlane
   NcSuc* = NotcursesSuccess
+  NcSuc0* = NotcursesSuccess0
+  NcSucP* = NotcursesSuccessP
   NcSucc* = NotcursesSuccess
+  NcSucc0* = NotcursesSuccess0
+  NcSuccP* = NotcursesSuccessP
   NcSuccess* = NotcursesSuccess
+  NcSuccess0* = NotcursesSuccess0
+  NcSuccessP* = NotcursesSuccessP
 
 const
   NNcMajor* = NimNotcursesMajor

@@ -18,7 +18,12 @@ type
   NotcursesDefect = object of Defect
 
   NotcursesError = object of CatchableError
-    code*: int
+
+  NotcursesError0 = object of NotcursesError
+    code*: range[low(cint).int..0]
+
+  NotcursesErrorN = object of NotcursesError
+    code*: range[low(cint).int..(-1)]
 
   NotcursesInput = object
     ni: ncinput
@@ -29,14 +34,13 @@ type
   NotcursesPlane = object
     npPtr: ptr ncplane
 
-  # use Result[NotcursesSuccess, NotcursesError] in return type if success can
-  # be indicated by more than one value (e.g. something other than "only 0" or
-  # "only 1"), otherwise use Result[void, NotcursesError]; might need an object
-  # hierarchy with NotcursesSuccess as the base, i.e. in order to specialize if
-  # there's something other than a cint value used in successful returns
-  NotcursesSuccess = object
-    code*: int
+  NotcursesSuccess = object of RootObj
 
+  NotcursesSuccess0 = object of NotcursesSuccess
+    code*: range[0..high(cint).int]
+
+  NotcursesSuccessP = object of NotcursesSuccess
+    code*: range[1..high(cint).int]
 
 const
   NimNotcursesMajor = nim_notcurses_version.major.int
@@ -79,11 +83,11 @@ proc codepoint(ni: NotcursesInput): NotcursesCodepoint =
 proc event(ni: NotcursesInput): NotcursesInputEvents =
   cast[NotcursesInputEvents](ni.ni.evtype)
 
-proc expect(res: Result[NotcursesSuccess, NotcursesError]):
-    NotcursesSuccess {.discardable.} =
+proc expect[T: NotcursesSuccess, E: NotcursesError](res: Result[T, E]):
+    T {.discardable.} =
   expect(res, $FailureNotExpected)
 
-proc expect(res: Result[void, NotcursesError]) =
+proc expect[E: NotcursesError](res: Result[void, E]) =
   expect(res, $FailureNotExpected)
 
 proc get(T: type Notcurses): T =
@@ -142,17 +146,17 @@ proc libVersionString(T: type Notcurses): string =
   $notcurses_version()
 
 proc putString(np: NotcursesPlane, s: string):
-    Result[NotcursesSuccess, NotcursesError] {.discardable.} =
+    Result[NotcursesSuccessP, NotcursesError0] {.discardable.} =
   let code = np.npPtr.ncplane_putstr(s.cstring)
   if code <= 0.cint:
-    err NotcursesError(code: code.int, msg: $PutStr)
+    err NotcursesError0(code: code.int, msg: $PutStr)
   else:
-    ok NotcursesSuccess(code: code.int)
+    ok NotcursesSuccessP(code: code.int)
 
-proc render(nc: Notcurses): Result[void, NotcursesError] =
+proc render(nc: Notcurses): Result[void, NotcursesErrorN] =
   let code = nc.ncPtr.notcurses_render
   if code < 0.cint:
-    err NotcursesError(code: code.int, msg: $Render)
+    err NotcursesErrorN(code: code.int, msg: $Render)
   else:
     ok()
 
@@ -163,11 +167,11 @@ proc stdPlane(nc: Notcurses): NotcursesPlane =
   let npPtr = nc.ncPtr.notcurses_stdplane
   NotcursesPlane(npPtr: npPtr)
 
-proc stop(nc: Notcurses): Result[void, NotcursesError] =
+proc stop(nc: Notcurses): Result[void, NotcursesErrorN] =
   if ncStopped.load: raise (ref NotcursesDefect)(msg: $AlreadyStopped)
   let code = nc.ncPtr.notcurses_stop
   if code < 0.cint:
-    err NotcursesError(code: code.int, msg: $Stop)
+    err NotcursesErrorN(code: code.int, msg: $Stop)
   elif ncStopped.exchange(true):
     raise (ref NotcursesDefect)(msg: $AlreadyStopped)
   else:
