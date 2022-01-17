@@ -70,6 +70,9 @@ proc `$`(ncp: NotcursesCodepoint): string =
 proc `$`(ni: NotcursesInput): string =
   $ni.ni
 
+proc `$`(opts: NotcursesOptions): string =
+  $opts.opts
+
 proc codepoint(ni: NotcursesInput): NotcursesCodepoint =
   ni.ni.id.NotcursesCodepoint
 
