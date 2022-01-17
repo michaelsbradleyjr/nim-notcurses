@@ -8,6 +8,8 @@ import std/[atomics, bitops, options]
 import ./vendor/stew/[byteutils, results]
 
 type
+  LibNotcursesVersion = tuple[major, minor, patch, tweak: int]
+
   Notcurses = object
     ncPtr: ptr notcurses
 
@@ -35,21 +37,26 @@ type
   NotcursesSuccess = object
     code*: int
 
-  NotcursesVersion = tuple[major, minor, patch, tweak: int]
 
 const
   NimNotcursesMajor = nim_notcurses_version.major.int
   NimNotcursesMinor = nim_notcurses_version.minor.int
   NimNotcursesPatch = nim_notcurses_version.patch.int
 
-var nmajor, nminor, npatch, ntweak: cint
-notcurses_version_components(addr nmajor, addr nminor, addr npatch, addr ntweak)
+var
+  lib_notcurses_major: cint
+  lib_notcurses_minor: cint
+  lib_notcurses_patch: cint
+  lib_notcurses_tweak: cint
+
+notcurses_version_components(addr lib_notcurses_major, addr lib_notcurses_minor,
+  addr lib_notcurses_patch, addr lib_notcurses_tweak)
 
 let
-  NotcursesMajor = nmajor.int
-  NotcursesMinor = nminor.int
-  NotcursesPatch = npatch.int
-  NotcursesTweak = ntweak.int
+  LibNotcursesMajor = lib_notcurses_major.int
+  LibNotcursesMinor = lib_notcurses_minor.int
+  LibNotcursesPatch = lib_notcurses_patch.int
+  LibNotcursesTweak = lib_notcurses_tweak.int
 
 var
   ncExitProcAdded: Atomic[bool]
@@ -123,7 +130,7 @@ proc isUTF8(cp: NotcursesCodepoint): bool =
 proc isUTF8(ni: NotcursesInput): bool =
   ni.codepoint.isUTF8
 
-proc libVersion(T: type Notcurses): NotcursesVersion =
+proc libVersion(T: type Notcurses): LibNotcursesVersion =
   var major, minor, patch, tweak: cint
   notcurses_version_components(addr major, addr minor, addr patch, addr tweak)
   (major: major.int, minor: minor.int, patch: patch.int, tweak: tweak.int)
