@@ -21,6 +21,8 @@ export
   NotcursesInputEvents,
   NotcursesKey,
   NotcursesKeys,
+  NotcursesLogLevel,
+  NotcursesLogLevels,
   NotcursesOptions,
   NotcursesPlane,
   addExitProc,
@@ -63,6 +65,8 @@ type
   NcInputEvents* = NotcursesInputEvent
   NcKey* = NotcursesKey
   NcKeys* = NotcursesKeys
+  NcLogLevel* = NotcursesLogLevel
+  NcLogLevels* = NotcursesLogLevels
   NcOpt* = NotcursesInitOption
   NcOpts* = NotcursesOptions
   NcOption* = NotcursesInitOption

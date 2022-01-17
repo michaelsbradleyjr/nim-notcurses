@@ -184,3 +184,16 @@ type
     Signal      = NCKEY_SIGNAL.NotcursesKey
 
     EOF         = NCKEY_EOF.NotcursesKey
+
+  NotcursesLogLevel = distinct cint
+
+  NotcursesLogLevels {.pure.} = enum
+    Silent = NCLOGLEVEL_SILENT.NotcursesLogLevel
+    Panic = NCLOGLEVEL_PANIC.NotcursesLogLevel
+    Fatal = NCLOGLEVEL_FATAL.NotcursesLogLevel
+    Error = NCLOGLEVEL_ERROR.NotcursesLogLevel
+    Warning = NCLOGLEVEL_WARNING.NotcursesLogLevel
+    Info = NCLOGLEVEL_INFO.NotcursesLogLevel
+    Verbose = NCLOGLEVEL_VERBOSE.NotcursesLogLevel
+    Debug = NCLOGLEVEL_DEBUG.NotcursesLogLevel
+    Trace = NCLOGLEVEL_TRACE.NotcursesLogLevel
