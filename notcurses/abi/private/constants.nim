@@ -173,3 +173,14 @@ type
     NCTYPE_PRESS   = 1.cint
     NCTYPE_REPEAT  = 2.cint
     NCTYPE_RELEASE = 3.cint
+
+  ncloglevel_e {.pure.} = enum
+    NCLOGLEVEL_SILENT = -1.cint
+    NCLOGLEVEL_PANIC = 0.cint
+    NCLOGLEVEL_FATAL = 1.cint
+    NCLOGLEVEL_ERROR = 2.cint
+    NCLOGLEVEL_WARNING = 3.cint
+    NCLOGLEVEL_INFO = 4.cint
+    NCLOGLEVEL_VERBOSE = 5.cint
+    NCLOGLEVEL_DEBUG = 6.cint
+    NCLOGLEVEL_TRACE = 7.cint
