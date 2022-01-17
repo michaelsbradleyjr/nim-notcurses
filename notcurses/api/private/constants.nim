@@ -188,12 +188,12 @@ type
   NotcursesLogLevel = distinct cint
 
   NotcursesLogLevels {.pure.} = enum
-    Silent = NCLOGLEVEL_SILENT.NotcursesLogLevel
-    Panic = NCLOGLEVEL_PANIC.NotcursesLogLevel
-    Fatal = NCLOGLEVEL_FATAL.NotcursesLogLevel
-    Error = NCLOGLEVEL_ERROR.NotcursesLogLevel
-    Warning = NCLOGLEVEL_WARNING.NotcursesLogLevel
-    Info = NCLOGLEVEL_INFO.NotcursesLogLevel
-    Verbose = NCLOGLEVEL_VERBOSE.NotcursesLogLevel
-    Debug = NCLOGLEVEL_DEBUG.NotcursesLogLevel
-    Trace = NCLOGLEVEL_TRACE.NotcursesLogLevel
+    Silent = ncloglevel_e.NCLOGLEVEL_SILENT.NotcursesLogLevel
+    Panic = ncloglevel_e.NCLOGLEVEL_PANIC.NotcursesLogLevel
+    Fatal = ncloglevel_e.NCLOGLEVEL_FATAL.NotcursesLogLevel
+    Error = ncloglevel_e.NCLOGLEVEL_ERROR.NotcursesLogLevel
+    Warning = ncloglevel_e.NCLOGLEVEL_WARNING.NotcursesLogLevel
+    Info = ncloglevel_e.NCLOGLEVEL_INFO.NotcursesLogLevel
+    Verbose = ncloglevel_e.NCLOGLEVEL_VERBOSE.NotcursesLogLevel
+    Debug = ncloglevel_e.NCLOGLEVEL_DEBUG.NotcursesLogLevel
+    Trace = ncloglevel_e.NCLOGLEVEL_TRACE.NotcursesLogLevel
