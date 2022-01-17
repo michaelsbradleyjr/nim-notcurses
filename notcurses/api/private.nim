@@ -99,14 +99,13 @@ proc get(T: type Notcurses): T =
       ncObject = T(ncPtr: ncP)
   ncObject
 
-proc getBlocking(nc: Notcurses, ni: var NotcursesInput): uint32
-    {.discardable.} =
-  nc.ncPtr.notcurses_get_blocking(unsafeAddr ni.ni)
+proc getBlocking(nc: Notcurses, ni: var NotcursesInput) =
+  discard nc.ncPtr.notcurses_get_blocking(unsafeAddr ni.ni)
 
 proc init(T: type NotcursesInput): T =
   T(ni: ncinput())
 
-proc getBlocking(nc: Notcurses): NotcursesInput {.discardable.} =
+proc getBlocking(nc: Notcurses): NotcursesInput =
   var ni = NotcursesInput.init
   nc.getBlocking ni
   ni
