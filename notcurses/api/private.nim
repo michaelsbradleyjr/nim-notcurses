@@ -99,6 +99,10 @@ proc get(T: type Notcurses): T =
       ncObject = T(ncPtr: ncP)
   ncObject
 
+# when implementing api for notcurses_get, etc. (i.e. the abi calls that return
+# 0.uint32 on timeout), use Option none for timeout and Option some
+# NotcursesCodepoint otherwise
+
 proc getBlocking(nc: Notcurses, ni: var NotcursesInput) =
   discard nc.ncPtr.notcurses_get_blocking(unsafeAddr ni.ni)
 
