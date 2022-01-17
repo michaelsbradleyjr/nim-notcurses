@@ -6,21 +6,28 @@ const
 
 {.pragma: nc, cdecl, dynlib: notcurses_lib, importc.}
 
-var notcurses_major, notcurses_minor, notcurses_patch, notcurses_tweak: cint
 {.pragma: nc_bycopy, bycopy, header: nc_header.}
 
-notcurses_version_components(addr notcurses_major, addr notcurses_minor,
-  addr notcurses_patch, addr notcurses_tweak)
 {.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
 
-if nim_notcurses_version.major != notcurses_major:
 {.pragma: nc_init, cdecl, dynlib: notcurses_init_lib, importc: nc_init_name.}
 
 proc notcurses_version_components(major, minor, patch, tweak: ptr cint) {.nc.}
+
+var
+  lib_notcurses_major: cint
+  lib_notcurses_minor: cint
+  lib_notcurses_patch: cint
+  lib_notcurses_tweak: cint
+
+notcurses_version_components(addr lib_notcurses_major, addr lib_notcurses_minor,
+  addr lib_notcurses_patch, addr lib_notcurses_tweak)
+
+if nim_notcurses_version.major != lib_notcurses_major:
   raise (ref NotcursesDefect)(msg:
     "nim-notcurses major version " & $nim_notcurses_version.major & " " &
     "is not compatible with Notcurses library major version " &
-    $notcurses_major)
+    $lib_notcurses_major)
 
 type
   ncinput {.nc_bycopy, importc: "struct ncinput".} = object

@@ -1,5 +1,10 @@
 export
   `$`,
+  LibNotcursesMajor,
+  LibNotcursesMinor,
+  LibNotcursesPatch,
+  LibNotcursesTweak,
+  LibNotcursesVersion,
   NimNotcursesMajor,
   NimNotcursesMinor,
   NimNotcursesPatch,
@@ -16,12 +21,8 @@ export
   NotcursesInputEvents,
   NotcursesKey,
   NotcursesKeys,
-  NotcursesMajor,
-  NotcursesMinor,
   NotcursesOptions,
-  NotcursesPatch,
   NotcursesPlane,
-  NotcursesTweak,
   addExitProc,
   byteutils,
   codepoint,
@@ -47,6 +48,7 @@ export
 
 # Friendly aliases, limit to intuitive shortenings:
 type
+  LibNcVersion* = LibNotcursesVersion
   Nc* = Notcurses
   NcCodepoint* = NotcursesCodepoint
   NcDefect* = NotcursesDefect
@@ -84,7 +86,7 @@ const
   stopNc* = stopNotcurses
 
 let
-  NcMajor* = NotcursesMajor
-  NcMinor* = NotcursesMinor
-  NcPatch* = NotcursesPatch
-  NcTweak* = NotcursesTweak
+  LibNcMajor* = LibNotcursesMajor
+  LibNcMinor* = LibNotcursesMinor
+  LibNcPatch* = LibNotcursesPatch
+  LibNcTweak* = LibNotcursesTweak
