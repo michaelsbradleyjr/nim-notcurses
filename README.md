@@ -2,7 +2,8 @@
 
 [![License: Apache](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Stability: experimental](https://img.shields.io/badge/Stability-experimental-orange.svg)](https://github.com/michaelsbradleyjr/nim-notcurses#nim-notcurses)
+[![ABI: stable](https://img.shields.io/badge/ABI-stable-green.svg?color=2dbd42)](https://github.com/michaelsbradleyjr/nim-notcurses#stability)
+[![API: experimental](https://img.shields.io/badge/API-experimental-orange.svg)](https://github.com/michaelsbradleyjr/nim-notcurses#stability)
 [![Tests (GitHub Actions)](https://github.com/michaelsbradleyjr/nim-notcurses/workflows/Tests/badge.svg?branch=version_3_revamp)](https://github.com/michaelsbradleyjr/nim-notcurses/actions?query=workflow%3ATests+branch%3Aversion_3_revamp)
 
 Nim wrapper for [Notcurses](https://github.com/dankamongmen/notcurses#readme): blingful TUIs and character graphics.
@@ -106,6 +107,12 @@ This package follows the [version number](https://github.com/dankamongmen/notcur
 :bulb: It's recommended to only use version `>= v3.TBD` of *this package*. Earlier versions were too raw and unproven.
 
 Starting with [`v3.TBD`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/TBD) the implementation was overhauled, with Notcurses' examples and demo ported to the Nim API and tested to compile and run correctly on various platforms.
+
+## Stability
+
+Notcurses' C ABI is stable per major version, and this package's lower-level wrapper for it is likewise stable.
+
+The Nim API provided by this package is currently marked as experimental. Until it is marked as stable, it may be subject to breaking changes across patch and minor versions.
 
 ## License
 
