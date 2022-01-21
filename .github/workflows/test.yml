@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache_nonce: [ 1 ]
+        cache_nonce: [ 4 ]
         nim_version: [ 1.2.16, 1.4.8, 1.6.2 ]
         platform:
           - {
@@ -150,6 +150,9 @@ jobs:
           CHOOSENIM_CHOOSE_VERSION=${{ matrix.nim_version }} ./init.sh -y
           if [[ ${{ matrix.platform.os }} = windows ]]; then
             mv "$(cygpath "${USERPROFILE}")/.nimble" "${HOME}/"
+            # intention is to rely only on libs provided by the OS and MSYS2 env
+            rm -rf "${HOME}/.nimble/bin/"*.dll
+            rm -rf "${HOME}/.nimble/bin/"*.pem
           fi
           echo 'export NIMBLE_DIR="${HOME}/.nimble"' >> "${HOME}/.bash_env"
           echo 'export PATH="${NIMBLE_DIR}/bin:${PATH}"' >> "${HOME}/.bash_env"
@@ -190,4 +193,7 @@ jobs:
         if: matrix.platform.os == 'windows'
         run: |
           source "${HOME}/.bash_env"
+          echo "ARE THE DLLS GONE? how about when tooling is cached?"
+          ls -l "${NIMBLE_DIR}/bin/"*
+          echo "ARE THE DLLS GONE? how about when tooling is cached?"
           nim c examples/poc/cli2.nim
