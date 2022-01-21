@@ -63,7 +63,7 @@ In time, this repo will likely provide guidance specific to programming with the
 ## Versioning
 
 This library follows the [version number](https://github.com/dankamongmen/notcurses/releases) of Notcurses:
-* currently [`v3.0.4`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/v3.0.4) (upstream: [`v3.0.4`](https://github.com/dankamongmen/notcurses/releases/tag/v3.0.4))
+* currently [`v3.0.5`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/v3.0.5) (upstream: [`v3.0.5`](https://github.com/dankamongmen/notcurses/releases/tag/v3.0.5))
 * beginning with [`v2.3.13`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/v2.3.13) (upstream: [`v2.3.13`](https://github.com/dankamongmen/notcurses/releases/tag/v2.3.13)).
 
 ## License
