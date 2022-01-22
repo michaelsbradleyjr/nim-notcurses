@@ -179,7 +179,6 @@ const
   NCOPTION_NO_FONT_CHANGES     = 0x0000000000000080.culonglong
   NCOPTION_DRAIN_INPUT         = 0x0000000000000100.culonglong
   NCOPTION_SCROLLING           = 0x0000000000000200.culonglong
-
   NCOPTION_CLI_MODE            =
     when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
       bitor(NCOPTION_NO_ALTERNATE_SCREEN, NCOPTION_NO_CLEAR_BITMAPS,
