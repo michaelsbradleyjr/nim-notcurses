@@ -1,4 +1,4 @@
-type NotcursesDefect = object of Defect
+type AbiDefect = object of Defect
 
 const
   nc_header = "notcurses/notcurses.h"
@@ -24,8 +24,8 @@ notcurses_version_components(addr lib_notcurses_major, addr lib_notcurses_minor,
   addr lib_notcurses_patch, addr lib_notcurses_tweak)
 
 if nim_notcurses_version.major != lib_notcurses_major:
-  raise (ref NotcursesDefect)(msg:
-    "nim-notcurses major version " & $nim_notcurses_version.major & " " &
+  raise (ref AbiDefect)(msg: "nim-notcurses major version " &
+    $nim_notcurses_version.major & " " &
     "is not compatible with Notcurses library major version " &
     $lib_notcurses_major)
 
