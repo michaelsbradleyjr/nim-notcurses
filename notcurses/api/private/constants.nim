@@ -24,6 +24,8 @@ type
     NoAlternateScreen = NCOPTION_NO_ALTERNATE_SCREEN.NotcursesInitOption
     NoFontChanges     = NCOPTION_NO_FONT_CHANGES.NotcursesInitOption
     DrainInput        = NCOPTION_DRAIN_INPUT.NotcursesInitOption
+    Scrolling         = NCOPTION_SCROLLING.NotcursesInitOption
+    CliMode           = NCOPTION_CLI_MODE.NotcursesInitOption
 
   NotcursesInputEvent = distinct cint
 
