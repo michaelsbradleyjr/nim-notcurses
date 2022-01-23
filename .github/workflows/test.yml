@@ -10,6 +10,8 @@ on: [pull_request, push]
 
 jobs:
   tests:
+    env:
+      NPROC: 2
     strategy:
       fail-fast: false
       matrix:
@@ -17,25 +19,25 @@ jobs:
         nim_version: [ 1.2.16, 1.4.8, 1.6.2 ]
         platform:
           - {
-            icon: 🍎,
-            os: macos,
-            shell: bash --noprofile --norc -eo pipefail
-          }
-          - {
             icon: 🐧,
+            label: Linux,
             os: ubuntu,
             shell: bash --noprofile --norc -eo pipefail
           }
           - {
+            icon: 🍎,
+            label: macOS,
+            os: macos,
+            shell: bash --noprofile --norc -eo pipefail
+          }
+          - {
             icon: 🏁,
+            label: Windows,
             os: windows,
             shell: msys2
           }
-
-    name: ${{ matrix.platform.icon }} ${{ matrix.platform.os }} - Nim v${{ matrix.nim_version }}
-
+    name: ${{ matrix.platform.icon }} ${{ matrix.platform.label }} - Nim v${{ matrix.nim_version }}
     runs-on: ${{ matrix.platform.os }}-latest
-
     defaults:
       run:
         shell: ${{ matrix.platform.shell }} {0}
@@ -98,7 +100,7 @@ jobs:
           cd build
           if [[ ${{ matrix.platform.os }} != windows ]]; then
             cmake .. -DCMAKE_BUILD_TYPE=Release -DUSE_DOCTEST=off -DUSE_PANDOC=off
-            make -j2
+            make -j${NPROC}
             if [[ ${{ matrix.platform.os }} = macos ]]; then
               make install
             else
@@ -179,21 +181,17 @@ jobs:
       #     source "${HOME}/.bash_env"
       #     nimble test
 
-      - name: Build and run... something, for now (Linux, macOS)
+      - name: Build and run examples/poc/cli1 (Linux, macOS)
         if: matrix.platform.os != 'windows'
         env:
           COLORTERM: truecolor
           TERM: xterm-256color
         run: |
           source "${HOME}/.bash_env"
-          nim c examples/poc/cli2.nim
-          examples/poc/cli2
+          nim c -r examples/poc/cli1.nim
 
-      - name: Build... something, for now (Windows)
+      - name: Build examples/poc/cli1 (Windows)
         if: matrix.platform.os == 'windows'
         run: |
           source "${HOME}/.bash_env"
-          echo "ARE THE DLLS GONE? how about when tooling is cached?"
-          ls -l "${NIMBLE_DIR}/bin/"*
-          echo "ARE THE DLLS GONE? how about when tooling is cached?"
-          nim c examples/poc/cli2.nim
+          nim c examples/poc/cli1.nim

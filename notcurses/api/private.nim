@@ -8,39 +8,39 @@ import std/[atomics, bitops, options]
 import ./vendor/stew/[byteutils, results]
 
 type
-  LibNotcursesVersion = tuple[major, minor, patch, tweak: int]
+  ApiDefect = object of Defect
 
-  Notcurses = object
-    ncPtr: ptr notcurses
+  ApiError = object of CatchableError
 
-  NotcursesCodepoint = distinct uint32
-
-  NotcursesDefect = object of Defect
-
-  NotcursesError = object of CatchableError
-
-  NotcursesError0 = object of NotcursesError
+  ApiError0 = object of ApiError
     code*: range[low(cint).int..0]
 
-  NotcursesErrorN = object of NotcursesError
+  ApiErrorNeg = object of ApiError
     code*: range[low(cint).int..(-1)]
 
-  NotcursesInput = object
-    ni: ncinput
+  ApiSuccess = object of RootObj
 
-  NotcursesOptions = object
-    opts: notcurses_options
-
-  NotcursesPlane = object
-    npPtr: ptr ncplane
-
-  NotcursesSuccess = object of RootObj
-
-  NotcursesSuccess0 = object of NotcursesSuccess
+  ApiSuccess0 = object of ApiSuccess
     code*: range[0..high(cint).int]
 
-  NotcursesSuccessP = object of NotcursesSuccess
+  ApiSuccessPos = object of ApiSuccess
     code*: range[1..high(cint).int]
+
+  Codepoint = distinct uint32
+
+  Input = object
+    abiObj: ncinput
+
+  Margins = tuple[top, right, bottom, left: uint32]
+
+  Notcurses = object
+    abiPtr: ptr notcurses
+
+  Options = object
+    abiObj: notcurses_options
+
+  Plane = object
+    abiPtr: ptr ncplane
 
 const
   NimNotcursesMajor = nim_notcurses_version.major.int
@@ -63,176 +63,159 @@ let
   LibNotcursesTweak = lib_notcurses_tweak.int
 
 var
+  ncAbiPtr: Atomic[ptr notcurses]
+  ncApiObject {.threadvar.}: Notcurses
   ncExitProcAdded: Atomic[bool]
-  ncObject {.threadvar.}: Notcurses
-  ncPtr: Atomic[ptr notcurses]
   ncStopped: Atomic[bool]
 
-proc `$`(ncp: NotcursesCodepoint): string =
-  $ncp.uint32
+proc `$`(codepoint: Codepoint): string = $codepoint.uint32
 
-proc `$`(ni: NotcursesInput): string =
-  $ni.ni
+proc `$`(input: Input): string = $input.abiObj
 
-proc `$`(opts: NotcursesOptions): string =
-  $opts.opts
+proc `$`(options: Options): string = $options.abiObj
 
-proc codepoint(ni: NotcursesInput): NotcursesCodepoint =
-  ni.ni.id.NotcursesCodepoint
+proc codepoint(input: Input): Codepoint = input.abiObj.id.Codepoint
 
-proc event(ni: NotcursesInput): NotcursesInputEvents =
-  cast[NotcursesInputEvents](ni.ni.evtype)
+proc event(input: Input): InputEvents = cast[InputEvents](input.abiObj.evtype)
 
-proc expect[T: NotcursesSuccess, E: NotcursesError](res: Result[T, E]):
-    T {.discardable.} =
+proc expect[T: ApiSuccess, E: ApiError](res: Result[T, E]): T {.discardable.} =
   expect(res, $FailureNotExpected)
 
-proc expect[E: NotcursesError](res: Result[void, E]) =
+proc expect[E: ApiError](res: Result[void, E]) =
   expect(res, $FailureNotExpected)
 
 proc get(T: type Notcurses): T =
-  if ncObject.ncPtr.isNil:
-    let ncP = ncPtr.load
-    if ncP.isNil:
-      raise (ref NotcursesDefect)(msg: $NotInitialized)
+  if ncApiObject.abiPtr.isNil:
+    let abiPtr = ncAbiPtr.load
+    if abiPtr.isNil:
+      raise (ref ApiDefect)(msg: $NotInitialized)
     else:
-      ncObject = T(ncPtr: ncP)
-  ncObject
+      ncApiObject = T(abiPtr: abiPtr)
+  ncApiObject
 
 # when implementing api for notcurses_get, etc. (i.e. the abi calls that return
 # 0.uint32 on timeout), use Option none for timeout and Option some
 # NotcursesCodepoint otherwise
 
-proc getBlocking(nc: Notcurses, ni: var NotcursesInput) =
-  discard nc.ncPtr.notcurses_get_blocking(unsafeAddr ni.ni)
+proc getBlocking(notcurses: Notcurses, input: var Input) =
+  discard notcurses.abiPtr.notcurses_get_blocking(unsafeAddr input.abiObj)
 
-proc init(T: type NotcursesOptions, options: varargs[NotcursesInitOptions],
-    term = "", logLevel: NotcursesLogLevels = NotcursesLogLevels.Panic,
-    marginTop: uint32 = 0, marginRight: uint32 = 0, marginBottom: uint32 = 0,
-    marginLeft: uint32 = 0): T =
+proc init(T: type Margins, top, right, bottom, left: int = 0): T =
+  (top: top.uint32, right: right.uint32, bottom: bottom.uint32,
+   left: left.uint32)
+
+proc init(T: type Options, initOptions: varargs[InitOptions], term = "",
+    logLevel: LogLevels = LogLevels.Panic, margins: Margins = Margins.init): T =
   var flags = baseInitOption.culonglong
-  if options.len >= 1:
-    for o in options[0..^1]:
+  if initOptions.len >= 1:
+    for o in initOptions[0..^1]:
       flags = bitor(flags, o.culonglong)
   if term == "":
-    T(opts: notcurses_options(loglevel: cast[ncloglevel_e](logLevel),
-      margin_t: marginTop.cuint, margin_r: marginRight.cuint,
-      margin_b: marginBottom.cuint, margin_l: marginLeft.cuint, flags: flags))
+    T(abiObj: notcurses_options(loglevel: cast[ncloglevel_e](logLevel),
+      margin_t: margins.top.cuint, margin_r: margins.right.cuint,
+      margin_b: margins.bottom.cuint, margin_l: margins.left.cuint,
+      flags: flags))
   else:
-    T(opts: notcurses_options(termtype: term.cstring,
-      loglevel: cast[ncloglevel_e](logLevel), margin_t: marginTop.cuint,
-      margin_r: marginRight.cuint, margin_b: marginBottom.cuint,
-      margin_l: marginLeft.cuint, flags: flags))
+    T(abiObj: notcurses_options(termtype: term.cstring,
+      loglevel: cast[ncloglevel_e](logLevel), margin_t: margins.top.cuint,
+      margin_r: margins.right.cuint, margin_b: margins.bottom.cuint,
+      margin_l: margins.left.cuint, flags: flags))
 
-proc init(T: type Notcurses, opts: NotcursesOptions = NotcursesOptions.init,
+proc init(T: type Notcurses, options: Options = Options.init,
     file: File = stdout): T =
-  if not ncObject.ncPtr.isNil or not ncPtr.load.isNil:
-    raise (ref NotcursesDefect)(msg: $AlreadyInitialized)
+  if not ncApiObject.abiPtr.isNil or not ncAbiPtr.load.isNil:
+    raise (ref ApiDefect)(msg: $AlreadyInitialized)
   else:
-    let ncP = notcurses_init(unsafeAddr opts.opts, file)
-    if ncP.isNil: raise (ref NotcursesDefect)(msg: $FailedToInitialize)
-    ncObject = T(ncPtr: ncP)
-    if not ncPtr.exchange(ncObject.ncPtr).isNil:
-      raise (ref NotcursesDefect)(msg: $AlreadyInitialized)
-    ncObject
+    let abiPtr = notcurses_init(unsafeAddr options.abiObj, file)
+    if abiPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
+    ncApiObject = T(abiPtr: abiPtr)
+    if not ncAbiPtr.exchange(ncApiObject.abiPtr).isNil:
+      raise (ref ApiDefect)(msg: $AlreadyInitialized)
+    ncApiObject
 
-proc init(T: type NotcursesInput): T =
-  T(ni: ncinput())
+proc init(T: type Input): T = T(abiObj: ncinput())
 
-proc getBlocking(nc: Notcurses): NotcursesInput =
-  var ni = NotcursesInput.init
-  nc.getBlocking ni
-  ni
+proc getBlocking(notcurses: Notcurses): Input =
+  var input = Input.init
+  notcurses.getBlocking input
+  input
 
-proc isKey(ncp: NotcursesCodepoint): bool =
-  let key = ncp.uint32
-  (key == NotcursesKeys.Tab.uint32) or
-  (key == NotcursesKeys.Esc.uint32) or
-  (key == NotcursesKeys.Space.uint32) or
-  (key >= NotcursesKeys.Invalid.uint32 and
-   key <= NotcursesKeys.F60.uint32) or
-  (key >= NotcursesKeys.Enter.uint32 and
-   key <= NotcursesKeys.Separator.uint32) or
-  (key >= NotcursesKeys.CapsLock.uint32 and
-   key <= NotcursesKeys.L5Shift.uint32) or
-  (key >= NotcursesKeys.Motion.uint32 and
-   key <= NotcursesKeys.Button11.uint32) or
-  (key == NotcursesKeys.Signal.uint32) or
-  (key == NotcursesKeys.EOF.uint32)
+proc isKey(codepoint: Codepoint): bool =
+  let key = codepoint.uint32
+  (key == Keys.Tab.uint32) or
+  (key == Keys.Esc.uint32) or
+  (key == Keys.Space.uint32) or
+  (key >= Keys.Invalid.uint32 and
+   key <= Keys.F60.uint32) or
+  (key >= Keys.Enter.uint32 and
+   key <= Keys.Separator.uint32) or
+  (key >= Keys.CapsLock.uint32 and
+   key <= Keys.L5Shift.uint32) or
+  (key >= Keys.Motion.uint32 and
+   key <= Keys.Button11.uint32) or
+  (key == Keys.Signal.uint32) or
+  (key == Keys.EOF.uint32)
 
-proc isKey(ni: NotcursesInput): bool =
-  ni.codepoint.isKey
+proc isKey(input: Input): bool = input.codepoint.isKey
 
-proc isUTF8(ncp: NotcursesCodepoint): bool =
-  const highestPoint = 1114111.uint32
-  ncp.uint32 <= highestPoint
+proc isUTF8(codepoint: Codepoint): bool =
+  const highestCodepoint = 1114111.uint32
+  codepoint.uint32 <= highestcodePoint
 
-proc isUTF8(ni: NotcursesInput): bool =
-  ni.codepoint.isUTF8
+proc isUTF8(input: Input): bool = input.codepoint.isUTF8
 
-proc libVersion(T: type Notcurses): LibNotcursesVersion =
-  var major, minor, patch, tweak: cint
-  notcurses_version_components(addr major, addr minor, addr patch, addr tweak)
-  (major: major.int, minor: minor.int, patch: patch.int, tweak: tweak.int)
-
-proc libVersionString(T: type Notcurses): string =
-  $notcurses_version()
-
-proc putString(np: NotcursesPlane, s: string):
-    Result[NotcursesSuccessP, NotcursesError0] {.discardable.} =
-  let code = np.npPtr.ncplane_putstr(s.cstring)
+proc putStr(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0]
+    {.discardable.} =
+  let code = plane.abiPtr.ncplane_putstr(s.cstring)
   if code <= 0.cint:
-    err NotcursesError0(code: code.int, msg: $PutStr)
+    err ApiError0(code: code.int, msg: $PutStr)
   else:
-    ok NotcursesSuccessP(code: code.int)
+    ok ApiSuccessPos(code: code.int)
 
-proc render(nc: Notcurses): Result[void, NotcursesErrorN] =
-  let code = nc.ncPtr.notcurses_render
+proc render(notcurses: Notcurses): Result[void, ApiErrorNeg] =
+  let code = notcurses.abiPtr.notcurses_render
   if code < 0.cint:
-    err NotcursesErrorN(code: code.int, msg: $Render)
+    err ApiErrorNeg(code: code.int, msg: $Render)
   else:
     ok()
 
-proc setScrolling(np: NotcursesPlane, enable: bool): bool {.discardable.} =
-  np.npPtr.ncplane_set_scrolling enable.cuint
+proc setScrolling(plane: Plane, enable: bool): bool {.discardable.} =
+  plane.abiPtr.ncplane_set_scrolling enable.cuint
 
-proc stdPlane(nc: Notcurses): NotcursesPlane =
-  let npPtr = nc.ncPtr.notcurses_stdplane
-  NotcursesPlane(npPtr: npPtr)
+proc stdPlane(notcurses: Notcurses): Plane =
+  let abiPtr = notcurses.abiPtr.notcurses_stdplane
+  Plane(abiPtr: abiPtr)
 
-proc stop(nc: Notcurses): Result[void, NotcursesErrorN] =
-  if ncStopped.load: raise (ref NotcursesDefect)(msg: $AlreadyStopped)
-  let code = nc.ncPtr.notcurses_stop
+proc stop(notcurses: Notcurses): Result[void, ApiErrorNeg] =
+  if ncStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
+  let code = notcurses.abiPtr.notcurses_stop
   if code < 0.cint:
-    err NotcursesErrorN(code: code.int, msg: $Stop)
+    err ApiErrorNeg(code: code.int, msg: $Stop)
   elif ncStopped.exchange(true):
-    raise (ref NotcursesDefect)(msg: $AlreadyStopped)
+    raise (ref ApiDefect)(msg: $AlreadyStopped)
   else:
     ok()
 
-proc stopNotcurses() {.noconv.} =
-  Notcurses.get.stop.expect
+proc stopNotcurses() {.noconv.} = Notcurses.get.stop.expect
 
 when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
   import std/exitprocs
-
   template addExitProc(T: type Notcurses) =
     if not ncExitProcAdded.exchange(true): addExitProc stopNotcurses
-
 else:
   template addExitProc(T: type Notcurses) =
     if not ncExitProcAdded.exchange(true): addQuitProc stopNotcurses
 
-proc toKey(ni: NotcursesInput): Option[NotcursesKeys] =
-  if ni.isKey: some(cast[NotcursesKeys](ni.codepoint))
-  else: none[NotcursesKeys]()
+proc toKey(input: Input): Option[Keys] =
+  if input.isKey: some(cast[Keys](input.codepoint))
+  else: none[Keys]()
 
-proc toUTF8(ni: NotcursesInput): Option[string] =
-  if ni.isUTF8:
-    var bytes: seq[byte]
+proc toUTF8(input: Input): Option[string] =
+  if input.isUTF8:
     const nullC = '\x00'.cchar
-    bytes.add ni.ni.utf8[0].byte
-    for c in ni.ni.utf8[1..3]:
+    var bytes: seq[byte]
+    bytes.add input.abiObj.utf8[0].byte
+    for c in input.abiObj.utf8[1..3]:
       if c != nullC: bytes.add c.byte
       else: break
     some(string.fromBytes bytes)

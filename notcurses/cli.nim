@@ -1,9 +1,9 @@
-include ./abi/private/common
-import ./abi
+import  ./abi
 
+include ./abi/private/common
 include ./api/private/constants
 
-const baseInitOption = NotcursesInitOptions.CliMode
+const baseInitOption = InitOptions.CliMode
 
 include ./api/private
 include ./api/private/exports

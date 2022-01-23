@@ -1,5 +1,5 @@
 const
-  notcurses_init_lib =
+  nc_init_lib =
     when defined(macosx):
       "libnotcurses-core.3.dylib"
     elif defined(windows):
@@ -7,9 +7,9 @@ const
     else:
       "libnotcurses-core.so.3"
 
-  notcurses_init_prefix = "notcurses_core_"
+  nc_init_prefix = "notcurses_core_"
 
-  notcurses_lib =
+  nc_lib =
     when defined(macosx):
       "libnotcurses-ffi.3.dylib"
     elif defined(windows):
