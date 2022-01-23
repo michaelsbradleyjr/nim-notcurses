@@ -3,7 +3,7 @@ import notcurses
 
 let
   opts = [DrainInput, NoClearBitmaps, PreserveCursor]
-  nc = Nc.init NcOpts.init opts
+  nc = Nc.init NcOptions.init opts
 
 Nc.addExitProc
 

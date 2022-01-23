@@ -1,16 +1,20 @@
 import std/bitops
 
+# L31 - notcurses/nckeys.h
 const PRETERUNICODEBASE = 1115000.uint32
 
+# L32 - notcurses/nckeys.h
 proc preterunicode(w: uint32): uint32 = w + PRETERUNICODEBASE
 
 const
+  # L195 - notcurses/nckeys.h
   NCKEY_TAB          = 9.uint32
 
   NCKEY_ESC          = 27.uint32
 
   NCKEY_SPACE        = 32.uint32
 
+  # L35 - notcurses/nckeys.h
   NCKEY_INVALID      = preterunicode 0.uint32
   NCKEY_RESIZE       = preterunicode 1.uint32
   NCKEY_UP           = preterunicode 2.uint32
@@ -86,6 +90,7 @@ const
   NCKEY_F59          = preterunicode 79.uint32
   NCKEY_F60          = preterunicode 80.uint32
 
+  # L110 - notcurses/nckeys.h
   NCKEY_ENTER        = preterunicode 121.uint32
   NCKEY_CLS          = preterunicode 122.uint32
   NCKEY_DLEFT        = preterunicode 123.uint32
@@ -103,12 +108,15 @@ const
   NCKEY_REFRESH      = preterunicode 135.uint32
   NCKEY_SEPARATOR    = preterunicode 136.uint32
 
+  # L127 - notcurses/nckeys.h
   NCKEY_CAPS_LOCK    = preterunicode 150.uint32
   NCKEY_SCROLL_LOCK  = preterunicode 151.uint32
   NCKEY_NUM_LOCK     = preterunicode 152.uint32
   NCKEY_PRINT_SCREEN = preterunicode 153.uint32
   NCKEY_PAUSE        = preterunicode 154.uint32
   NCKEY_MENU         = preterunicode 155.uint32
+
+  # L134 - notcurses/nckeys.h
   NCKEY_MEDIA_PLAY   = preterunicode 158.uint32
   NCKEY_MEDIA_PAUSE  = preterunicode 159.uint32
   NCKEY_MEDIA_PPAUSE = preterunicode 160.uint32
@@ -137,6 +145,7 @@ const
   NCKEY_L3SHIFT      = preterunicode 183.uint32
   NCKEY_L5SHIFT      = preterunicode 184.uint32
 
+  # L165 - notcurses/nckeys.h
   NCKEY_MOTION       = preterunicode 200.uint32
   NCKEY_BUTTON1      = preterunicode 201.uint32
   NCKEY_BUTTON2      = preterunicode 202.uint32
@@ -150,25 +159,42 @@ const
   NCKEY_BUTTON10     = preterunicode 210.uint32
   NCKEY_BUTTON11     = preterunicode 211.uint32
 
+  # L179 - notcurses/nckeys.h
   NCKEY_SIGNAL       = preterunicode 400.uint32
 
+  # L183 - notcurses/nckeys.h
   NCKEY_EOF          = preterunicode 500.uint32
 
-  NCKEY_RETURN       = NCKEY_ENTER
+  # L192 - notcurses/nckeys.h
   NCKEY_SCROLL_UP    = NCKEY_BUTTON4
   NCKEY_SCROLL_DOWN  = NCKEY_BUTTON5
+  NCKEY_RETURN       = NCKEY_ENTER
 
-const
-  NCKEY_MOD_SHIFT    = 1.cint
-  NCKEY_MOD_ALT      = 2.cint
-  NCKEY_MOD_CTRL     = 4.cint
-  NCKEY_MOD_SUPER    = 8.cint
-  NCKEY_MOD_HYPER    = 16.cint
-  NCKEY_MOD_META     = 32.cint
-  NCKEY_MOD_CAPSLOCK = 64.cint
+  # L219 - notcurses/nckeys.h
+  NCKEY_MOD_SHIFT    =   1.cint
+  NCKEY_MOD_ALT      =   2.cint
+  NCKEY_MOD_CTRL     =   4.cint
+  NCKEY_MOD_SUPER    =   8.cint
+  NCKEY_MOD_HYPER    =  16.cint
+  NCKEY_MOD_META     =  32.cint
+  NCKEY_MOD_CAPSLOCK =  64.cint
   NCKEY_MOD_NUMLOCK  = 128.cint
 
+type
+  # L907 - notcurses/notcurses.h
+  ncloglevel_e {.pure.} = enum
+    NCLOGLEVEL_SILENT  = -1.cint
+    NCLOGLEVEL_PANIC   =  0.cint
+    NCLOGLEVEL_FATAL   =  1.cint
+    NCLOGLEVEL_ERROR   =  2.cint
+    NCLOGLEVEL_WARNING =  3.cint
+    NCLOGLEVEL_INFO    =  4.cint
+    NCLOGLEVEL_VERBOSE =  5.cint
+    NCLOGLEVEL_DEBUG   =  6.cint
+    NCLOGLEVEL_TRACE   =  7.cint
+
 const
+  # L929 - notcurses/notcurses.h
   NCOPTION_INHIBIT_SETLOCALE   = 0x0000000000000001.culonglong
   NCOPTION_NO_CLEAR_BITMAPS    = 0x0000000000000002.culonglong
   NCOPTION_NO_WINCH_SIGHANDLER = 0x0000000000000004.culonglong
@@ -189,19 +215,9 @@ const
         NCOPTION_SCROLLING)
 
 type
-  NCTYPE {.pure.} = enum
+  # L1133 - notcurses/notcurses.h
+  ncintype_e {.pure.} = enum
     NCTYPE_UNKNOWN = 0.cint
     NCTYPE_PRESS   = 1.cint
     NCTYPE_REPEAT  = 2.cint
     NCTYPE_RELEASE = 3.cint
-
-  ncloglevel_e {.pure.} = enum
-    NCLOGLEVEL_SILENT = -1.cint
-    NCLOGLEVEL_PANIC = 0.cint
-    NCLOGLEVEL_FATAL = 1.cint
-    NCLOGLEVEL_ERROR = 2.cint
-    NCLOGLEVEL_WARNING = 3.cint
-    NCLOGLEVEL_INFO = 4.cint
-    NCLOGLEVEL_VERBOSE = 5.cint
-    NCLOGLEVEL_DEBUG = 6.cint
-    NCLOGLEVEL_TRACE = 7.cint
