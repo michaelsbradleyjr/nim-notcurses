@@ -5,11 +5,8 @@ const
   nc_init_name = nc_init_prefix & "init"
 
 {.pragma: nc, cdecl, dynlib: nc_lib, importc.}
-
 {.pragma: nc_bycopy, bycopy, header: nc_header.}
-
 {.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
-
 {.pragma: nc_init, cdecl, dynlib: nc_init_lib, importc: nc_init_name.}
 
 # L187 notcurses/nckeys.h
@@ -17,13 +14,13 @@ proc nckey_synthesized_p(w: uint32): bool =
   w >= PRETERUNICODEBASE and w <= NCKEY_EOF
 
 # L201 notcurses/nckeys.h
-proc nckey_pua_p(w: uint32): bool = w >= 0xe000 and w <= 0xf8ff
+proc nckey_pua_p     (w: uint32): bool = w >= 0x0000e000 and w <= 0x0000f8ff
 
 # L207 notcurses/nckeys.h
-proc nckey_supppuaa_p(w: uint32): bool = w >= 0xf0000 and w <= 0xffffd
+proc nckey_supppuaa_p(w: uint32): bool = w >= 0x000f0000 and w <= 0x000ffffd
 
 # L213 notcurses/nckeys.h
-proc nckey_supppuab_p(w: uint32): bool = w >= 0x100000 and w <= 0x10fffd
+proc nckey_supppuab_p(w: uint32): bool = w >= 0x00100000 and w <= 0x0010fffd
 
 # L39 - notcurses/notcurses.h
 proc notcurses_version(): cstring {.nc.}
@@ -33,39 +30,23 @@ proc notcurses_version_components(major, minor, patch, tweak: ptr cint) {.nc.}
 
 type
   # L44 - notcurses/notcurses.h
-  notcurses {.nc_incomplete, importc: "struct notcurses".} = object
-
-  ncplane {.nc_incomplete, importc: "struct ncplane".} = object
-
-  ncvisual {.nc_incomplete, importc: "struct ncvisual".} = object
-
-  ncuplot {.nc_incomplete, importc: "struct ncuplot".} = object
-
-  ncdplot {.nc_incomplete, importc: "struct ncdplot".} = object
-
-  ncprogbar {.nc_incomplete, importc: "struct ncprogbar".} = object
-
-  ncfdplane {.nc_incomplete, importc: "struct ncfdplane".} = object
-
-  ncsubproc {.nc_incomplete, importc: "struct ncsubproc".} = object
-
-  ncselector {.nc_incomplete, importc: "struct ncselector".} = object
-
+  notcurses       {.nc_incomplete, importc: "struct notcurses"      .} = object
+  ncplane         {.nc_incomplete, importc: "struct ncplane"        .} = object
+  ncvisual        {.nc_incomplete, importc: "struct ncvisual"       .} = object
+  ncuplot         {.nc_incomplete, importc: "struct ncuplot"        .} = object
+  ncdplot         {.nc_incomplete, importc: "struct ncdplot"        .} = object
+  ncprogbar       {.nc_incomplete, importc: "struct ncprogbar"      .} = object
+  ncfdplane       {.nc_incomplete, importc: "struct ncfdplane"      .} = object
+  ncsubproc       {.nc_incomplete, importc: "struct ncsubproc"      .} = object
+  ncselector      {.nc_incomplete, importc: "struct ncselector"     .} = object
   ncmultiselector {.nc_incomplete, importc: "struct ncmultiselector".} = object
-
-  ncreader {.nc_incomplete, importc: "struct ncreader".} = object
-
-  ncfadectx {.nc_incomplete, importc: "struct ncfadectx".} = object
-
-  nctablet {.nc_incomplete, importc: "struct nctablet".} = object
-
-  ncreel {.nc_incomplete, importc: "struct ncreel".} = object
-
-  nctab {.nc_incomplete, importc: "struct nctab".} = object
-
-  nctabbed {.nc_incomplete, importc: "struct nctabbed".} = object
-
-  ncdirect {.nc_incomplete, importc: "struct ncdirect".} = object
+  ncreader        {.nc_incomplete, importc: "struct ncreader"       .} = object
+  ncfadectx       {.nc_incomplete, importc: "struct ncfadectx"      .} = object
+  nctablet        {.nc_incomplete, importc: "struct nctablet"       .} = object
+  ncreel          {.nc_incomplete, importc: "struct ncreel"         .} = object
+  nctab           {.nc_incomplete, importc: "struct nctab"          .} = object
+  nctabbed        {.nc_incomplete, importc: "struct nctabbed"       .} = object
+  ncdirect        {.nc_incomplete, importc: "struct ncdirect"       .} = object
 
   # L982 - notcurses/notcurses.h
   notcurses_options {.nc_bycopy, importc: "struct notcurses_options".} = object
@@ -75,7 +56,7 @@ type
     margin_r*: cuint
     margin_b*: cuint
     margin_l*: cuint
-    flags*: culonglong
+    flags*   : culonglong
 
 # L1026, L1030 - notcurses/notcurses.h
 proc notcurses_init(opts: ptr notcurses_options, fp: File): ptr notcurses
@@ -99,17 +80,17 @@ proc notcurses_render(nc: ptr notcurses): cint {.nc.}
 type
   # L1144 - notcurses/notcurses.h
   ncinput {.nc_bycopy, importc: "struct ncinput".} = object
-    id*: uint32
-    y*: cint
-    x*: cint
-    utf8*: array[5, cchar]
-    alt*: bool
-    shift*: bool
-    ctrl*: bool
-    evtype*: ncintype_e
+    id*       : uint32
+    y*        : cint
+    x*        : cint
+    utf8*     : array[5, cchar]
+    alt*      : bool
+    shift*    : bool
+    ctrl*     : bool
+    evtype*   : ncintype_e
     modifiers*: cuint
-    ypx*: cint
-    xpx*: cint
+    ypx*      : cint
+    xpx*      : cint
 
 # L1261 - notcurses/notcurses.h
 proc notcurses_get_blocking(n: ptr notcurses, ni: ptr ncinput): uint32 {.nc.}

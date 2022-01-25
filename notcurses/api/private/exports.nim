@@ -55,11 +55,11 @@ export
 
 # Aliases
 type
-  Nc* = Notcurses
+  Nc*          = Notcurses
   NcCodepoint* = Codepoint
-  NcInput* = Input
-  NcKeys* = Keys
+  NcInput*     = Input
+  NcKeys*      = Keys
   NcLogLevels* = LogLevels
-  NcMargins* = Margins
-  NcOptions* = Options
-  NcPlane* = Plane
+  NcMargins*   = Margins
+  NcOptions*   = Options
+  NcPlane*     = Plane
