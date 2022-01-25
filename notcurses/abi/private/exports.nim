@@ -166,6 +166,10 @@ export
   ncloglevel_e,
   ncintype_e,
 
+  nckey_synthesized_p,
+  nckey_pua_p,
+  nckey_supppuaa_p,
+  nckey_supppuab_p,
   notcurses_version,
   notcurses_version_components,
   notcurses,

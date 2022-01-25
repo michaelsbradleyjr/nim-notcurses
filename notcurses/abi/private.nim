@@ -12,6 +12,19 @@ const
 
 {.pragma: nc_init, cdecl, dynlib: nc_init_lib, importc: nc_init_name.}
 
+# L187 notcurses/nckeys.h
+proc nckey_synthesized_p(w: uint32): bool =
+  w >= PRETERUNICODEBASE and w <= NCKEY_EOF
+
+# L201 notcurses/nckeys.h
+proc nckey_pua_p(w: uint32): bool = w >= 0xe000 and w <= 0xf8ff
+
+# L207 notcurses/nckeys.h
+proc nckey_supppuaa_p(w: uint32): bool = w >= 0xf0000 and w <= 0xffffd
+
+# L213 notcurses/nckeys.h
+proc nckey_supppuab_p(w: uint32): bool = w >= 0x100000 and w <= 0x10fffd
+
 # L39 - notcurses/notcurses.h
 proc notcurses_version(): cstring {.nc.}
 
