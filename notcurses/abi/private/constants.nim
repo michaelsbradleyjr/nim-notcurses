@@ -180,6 +180,16 @@ const
   NCKEY_MOD_CAPSLOCK =  64.cint
   NCKEY_MOD_NUMLOCK  = 128.cint
 
+const
+  # L742 - notcurses/notcurses.h
+  NCSTYLE_MASK      = 0x0000ffff.cuint
+  NCSTYLE_ITALIC    = 0x00000010.cuint
+  NCSTYLE_UNDERLINE = 0x00000008.cuint
+  NCSTYLE_UNDERCURL = 0x00000004.cuint
+  NCSTYLE_BOLD      = 0x00000002.cuint
+  NCSTYLE_STRUCK    = 0x00000001.cuint
+  NCSTYLE_NONE      = 0.cuint
+
 type
   # L907 - notcurses/notcurses.h
   ncloglevel_e {.pure.} = enum

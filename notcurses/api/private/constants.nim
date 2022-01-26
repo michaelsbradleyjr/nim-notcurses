@@ -8,6 +8,7 @@ type
 
   ErrorMessages {.pure.} = enum
     PutStr = "ncplane_putstr failed!"
+    PutWc  = "ncplane_putwc failed!"
     Render = "notcurses_render failed!"
     Stop   = "notcurses_stop failed!"
 
@@ -208,3 +209,14 @@ type
     Verbose = ncloglevel_e.NCLOGLEVEL_VERBOSE.LogLevel
     Debug   = ncloglevel_e.NCLOGLEVEL_DEBUG.LogLevel
     Trace   = ncloglevel_e.NCLOGLEVEL_TRACE.LogLevel
+
+  Style = distinct cuint
+
+  Styles {.pure.} = enum
+    None      = NCSTYLE_NONE.Style
+    Struck    = NCSTYLE_STRUCK.Style
+    Bold      = NCSTYLE_BOLD.Style
+    Undercurl = NCSTYLE_UNDERCURL.Style
+    Underline = NCSTYLE_UNDERLINE.Style
+    Italic    = NCSTYLE_ITALIC.Style
+    Mask      = NCSTYLE_MASK.Style

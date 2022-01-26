@@ -12,6 +12,8 @@ export
   KeyModifiers,
   LogLevel,
   LogLevels,
+  Style,
+  Styles,
 
   options,
   byteutils,
@@ -38,6 +40,7 @@ export
   LibNotcursesTweak,
   `$`,
   codepoint,
+  dimYX,
   event,
   expect,
   get,
@@ -46,8 +49,11 @@ export
   isKey,
   isUTF8,
   putStr,
+  putWc,
   render,
   setScrolling,
+  setStyles,
+  stdDimYX,
   stdPlane,
   addExitProc,
   toKey,
@@ -63,3 +69,4 @@ type
   NcMargins*   = Margins
   NcOptions*   = Options
   NcPlane*     = Plane
+  NcStyles*    = Styles
