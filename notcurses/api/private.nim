@@ -76,6 +76,9 @@ func `$`(options: Options): string = $options.abiObj
 
 func codepoint(input: Input): Codepoint = input.abiObj.id.Codepoint
 
+proc dimYX(plane: Plane, y, x: var cuint) =
+  plane.abiPtr.ncplane_dim_yx(addr y, addr x)
+
 func event(input: Input): InputEvents = cast[InputEvents](input.abiObj.evtype)
 
 proc expect[T: ApiSuccess, E: ApiError](res: Result[T, E]): T {.discardable.} =
@@ -168,11 +171,19 @@ func isUTF8(input: Input): bool = input.codepoint.isUTF8
 
 proc putStr(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0]
     {.discardable.} =
-  let code = plane.abiPtr.ncplane_putstr(s.cstring)
+  let code = plane.abiPtr.ncplane_putstr s.cstring
   if code <= 0.cint:
     err ApiError0(code: code.int, msg: $PutStr)
   else:
     ok ApiSuccessPos(code: code.int)
+
+proc putWc(plane: Plane, wchar: uint32): Result[ApiSuccess0, ApiErrorNeg]
+    {.discardable.} =
+  let code = plane.abiPtr.ncplane_putwc wchar
+  if code < 0.cint:
+    err ApiErrorNeg(code: code.int, msg: $PutWc)
+  else:
+    ok ApiSuccess0(code: code.int)
 
 proc render(notcurses: Notcurses): Result[void, ApiErrorNeg] =
   let code = notcurses.abiPtr.notcurses_render
@@ -183,6 +194,17 @@ proc render(notcurses: Notcurses): Result[void, ApiErrorNeg] =
 
 proc setScrolling(plane: Plane, enable: bool): bool {.discardable.} =
   plane.abiPtr.ncplane_set_scrolling enable.cuint
+
+proc setStyles(plane: Plane, styles: varargs[Styles]) =
+  var stylebits = 0.cuint
+  if styles.len >= 1:
+    for s in styles[0..^1]:
+      stylebits = bitor(stylebits, s.cuint)
+  plane.abiPtr.ncplane_set_styles stylebits
+
+proc stdDimYX(notcurses: Notcurses, y, x: var cuint): Plane =
+  let abiPtr = notcurses.abiPtr.notcurses_stddim_yx(addr y, addr x)
+  Plane(abiPtr: abiPtr)
 
 proc stdPlane(notcurses: Notcurses): Plane =
   let abiPtr = notcurses.abiPtr.notcurses_stdplane

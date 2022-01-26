@@ -95,11 +95,23 @@ type
 # L1261 - notcurses/notcurses.h
 proc notcurses_get_blocking(n: ptr notcurses, ni: ptr ncinput): uint32 {.nc.}
 
+# L1315 - notcurses/notcurses.h
+proc ncplane_dim_yx(n: ptr ncplane, y, x: ptr cuint) {.nc.}
+
+# L1326 - notcurses/notcurses.h
+proc notcurses_stddim_yx(nc: ptr notcurses, y, x: ptr cuint): ptr ncplane {.nc.}
+
 # L1501 - notcurses/notcurses.h
 proc ncplane_set_scrolling(n: ptr ncplane, scrollp: cuint): bool {.nc.}
 
 # L2225 - notcurses/notcurses.h
 proc ncplane_putstr(n: ptr ncplane, gclustarr: cstring): cint {.nc.}
+
+# L2371 - notcurses/notcurses.h
+proc ncplane_putwc(n: ptr ncplane, w: uint32): cint {.nc.}
+
+# L2850 - notcurses/notcurses.h
+proc ncplane_set_styles(n: ptr ncplane, stylebits: cuint) {.nc.}
 
 var
   lib_notcurses_major: cint

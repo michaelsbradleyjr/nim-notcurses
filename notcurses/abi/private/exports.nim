@@ -152,6 +152,14 @@ export
   NCKEY_MOD_META,
   NCKEY_MOD_CAPSLOCK,
   NCKEY_MOD_NUMLOCK,
+  NCSTYLE_MASK,
+  NCSTYLE_ITALIC,
+  NCSTYLE_UNDERLINE,
+  NCSTYLE_UNDERCURL,
+  NCSTYLE_BOLD,
+  NCSTYLE_STRUCK,
+  NCSTYLE_NONE,
+  ncloglevel_e,
   NCOPTION_INHIBIT_SETLOCALE,
   NCOPTION_NO_CLEAR_BITMAPS,
   NCOPTION_NO_WINCH_SIGHANDLER,
@@ -163,7 +171,6 @@ export
   NCOPTION_DRAIN_INPUT,
   NCOPTION_SCROLLING,
   NCOPTION_CLI_MODE,
-  ncloglevel_e,
   ncintype_e,
 
   nckey_synthesized_p,
@@ -198,5 +205,9 @@ export
   notcurses_render,
   ncinput,
   notcurses_get_blocking,
+  ncplane_dim_yx,
+  notcurses_stddim_yx,
   ncplane_set_scrolling,
-  ncplane_putstr
+  ncplane_putstr,
+  ncplane_putwc,
+  ncplane_set_styles
