@@ -68,15 +68,15 @@ var
   ncExitProcAdded: Atomic[bool]
   ncStopped: Atomic[bool]
 
-proc `$`(codepoint: Codepoint): string = $codepoint.uint32
+func `$`(codepoint: Codepoint): string = $codepoint.uint32
 
-proc `$`(input: Input): string = $input.abiObj
+func `$`(input: Input): string = $input.abiObj
 
-proc `$`(options: Options): string = $options.abiObj
+func `$`(options: Options): string = $options.abiObj
 
-proc codepoint(input: Input): Codepoint = input.abiObj.id.Codepoint
+func codepoint(input: Input): Codepoint = input.abiObj.id.Codepoint
 
-proc event(input: Input): InputEvents = cast[InputEvents](input.abiObj.evtype)
+func event(input: Input): InputEvents = cast[InputEvents](input.abiObj.evtype)
 
 proc expect[T: ApiSuccess, E: ApiError](res: Result[T, E]): T {.discardable.} =
   expect(res, $FailureNotExpected)
@@ -100,11 +100,11 @@ proc get(T: type Notcurses): T =
 proc getBlocking(notcurses: Notcurses, input: var Input) =
   discard notcurses.abiPtr.notcurses_get_blocking(unsafeAddr input.abiObj)
 
-proc init(T: type Margins, top, right, bottom, left: int = 0): T =
+func init(T: type Margins, top, right, bottom, left: int = 0): T =
   (top: top.uint32, right: right.uint32, bottom: bottom.uint32,
    left: left.uint32)
 
-proc init(T: type Options, initOptions: varargs[InitOptions], term = "",
+func init(T: type Options, initOptions: varargs[InitOptions], term = "",
     logLevel: LogLevels = LogLevels.Panic, margins: Margins = Margins.init): T =
   var flags = baseInitOption.culonglong
   if initOptions.len >= 1:
@@ -133,14 +133,14 @@ proc init(T: type Notcurses, options: Options = Options.init,
       raise (ref ApiDefect)(msg: $AlreadyInitialized)
     ncApiObject
 
-proc init(T: type Input): T = T(abiObj: ncinput())
+func init(T: type Input): T = T(abiObj: ncinput())
 
 proc getBlocking(notcurses: Notcurses): Input =
   var input = Input.init
   notcurses.getBlocking input
   input
 
-proc isKey(codepoint: Codepoint): bool =
+func isKey(codepoint: Codepoint): bool =
   let key = codepoint.uint32
   (key == Keys.Tab.uint32) or
   (key == Keys.Esc.uint32) or
@@ -158,13 +158,13 @@ proc isKey(codepoint: Codepoint): bool =
   (key == Keys.Signal.uint32) or
   (key == Keys.EOF.uint32)
 
-proc isKey(input: Input): bool = input.codepoint.isKey
+func isKey(input: Input): bool = input.codepoint.isKey
 
-proc isUTF8(codepoint: Codepoint): bool =
+func isUTF8(codepoint: Codepoint): bool =
   const highestCodepoint = 1114111.uint32
   codepoint.uint32 <= highestcodePoint
 
-proc isUTF8(input: Input): bool = input.codepoint.isUTF8
+func isUTF8(input: Input): bool = input.codepoint.isUTF8
 
 proc putStr(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0]
     {.discardable.} =
@@ -208,11 +208,11 @@ else:
   template addExitProc(T: type Notcurses) =
     if not ncExitProcAdded.exchange(true): addQuitProc stopNotcurses
 
-proc toKey(input: Input): Option[Keys] =
+func toKey(input: Input): Option[Keys] =
   if input.isKey: some(cast[Keys](input.codepoint))
   else: none[Keys]()
 
-proc toUTF8(input: Input): Option[string] =
+func toUTF8(input: Input): Option[string] =
   if input.isUTF8:
     const nullC = '\x00'.cchar
     var bytes: seq[byte]

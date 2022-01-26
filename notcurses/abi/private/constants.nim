@@ -4,7 +4,7 @@ import std/bitops
 const PRETERUNICODEBASE = 1115000.uint32
 
 # L32 - notcurses/nckeys.h
-proc preterunicode(w: uint32): uint32 = w + PRETERUNICODEBASE
+func preterunicode(w: uint32): uint32 = w + PRETERUNICODEBASE
 
 const
   # L195 - notcurses/nckeys.h
