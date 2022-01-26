@@ -17,7 +17,4 @@ cOverride:
 
 cIncludeDir(directPath.parentDir.parentDir)
 
-when not isDefined(directStatic):
-  cImport(directPath, recurse = true, dynlib = "directLPath")
-else:
-  cImport(directPath, recurse = true)
+cImport(directPath, recurse = true)

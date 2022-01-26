@@ -1,6 +1,6 @@
 include ./includes/imports
 
-const notcursesAltNames {.strdefine.} = "libnotcurses"
+const notcursesAltNames {.strdefine.} = "libnotcurses.3"
 
 include ./includes/defines_notcurses_direct
 include ./includes/generator_top

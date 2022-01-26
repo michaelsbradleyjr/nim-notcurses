@@ -7,7 +7,4 @@ cOverride:
 
 cIncludeDir(notcursesPath.parentDir.parentDir)
 
-when not isDefined(notcursesStatic):
-  cImport(notcursesPath, recurse = true, dynlib = "notcursesLPath")
-else:
-  cImport(notcursesPath, recurse = true)
+cImport(notcursesPath, recurse = true)

@@ -44,16 +44,17 @@ import notcurses/core/direct
 
 ### Compiling
 
-Make sure to pass the desired options to nimterop and the compiler:
+Make sure to pass the desired options to nimterop and the compiler, e.g on macOS:
 
 ```
 $ mkdir -p build
 $ nim c \
-  -d:danger -d:strip --hints:off --opt:size --outdir:build \
-  --passC:-flto --passL:-flto \
-  examples/hello_direct.nim
+  -d:release \
+  --passL:"-rpath ${PWD}/build -L${PWD}/build -lnotcurses-core.3" \
+  --outdir:build \
+  examples/hello_cli.nim
 
-$ build/hello_direct
+$ build/hello_cli
 ```
 
 There are additional options that can be set; see [nimterop's README](https://github.com/nimterop/nimterop#readme) and the `{.strdefine.}` constants in e.g. [`notcurses.nim`](https://github.com/michaelsbradleyjr/nim-notcurses/blob/master/notcurses.nim) and [`notcurses/includes/generator_top.nim`](https://github.com/michaelsbradleyjr/nim-notcurses/blob/master/notcurses/includes/generator_top.nim).
