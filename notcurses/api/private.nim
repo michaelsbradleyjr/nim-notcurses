@@ -188,7 +188,7 @@ proc putStr(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0]
   else:
     ok ApiSuccessPos(code: code.int)
 
-proc putWc(plane: Plane, wchar: uint32): Result[ApiSuccess0, ApiErrorNeg]
+proc putWc(plane: Plane, wchar: wchar_t): Result[ApiSuccess0, ApiErrorNeg]
     {.discardable.} =
   let code = plane.abiPtr.ncplane_putwc wchar
   if code < 0.cint:
