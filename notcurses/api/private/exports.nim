@@ -26,6 +26,7 @@ export
   ApiSuccess0,
   ApiSuccessPos,
   Codepoint,
+  Dimensions,
   Input,
   Margins,
   Notcurses,

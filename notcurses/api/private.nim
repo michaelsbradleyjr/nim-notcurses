@@ -28,6 +28,9 @@ type
 
   Codepoint = distinct uint32
 
+  # maybe PlaneDimensions if need to disambiguate re: other dimensions types
+  Dimensions = tuple[y, x: int]
+
   Input = object
     abiObj: ncinput
 
@@ -76,8 +79,16 @@ func `$`(options: Options): string = $options.abiObj
 
 func codepoint(input: Input): Codepoint = input.abiObj.id.Codepoint
 
+# if writing to y, x is one-shot, i.e. no updates over time (maybe upon
+# resize?) then can use `var int` for the parameters, and in the body have
+# cuint vars, then write to the argument vars (with conversion) after abi call
 proc dimYX(plane: Plane, y, x: var cuint) =
   plane.abiPtr.ncplane_dim_yx(addr y, addr x)
+
+proc dimYX(plane: Plane): Dimensions =
+  var y, x: cuint
+  plane.dimYX(y, x)
+  (y: y.int, x: x.int)
 
 func event(input: Input): InputEvents = cast[InputEvents](input.abiObj.evtype)
 
@@ -202,6 +213,9 @@ proc setStyles(plane: Plane, styles: varargs[Styles]) =
       stylebits = bitor(stylebits, s.cuint)
   plane.abiPtr.ncplane_set_styles stylebits
 
+# if writing to y, x is one-shot, i.e. no updates over time (maybe upon
+# resize?) then can use `var int` for the parameters, and in the body have
+# cuint vars, then write to the argument vars (with conversion) after abi call
 proc stdDimYX(notcurses: Notcurses, y, x: var cuint): Plane =
   let abiPtr = notcurses.abiPtr.notcurses_stddim_yx(addr y, addr x)
   Plane(abiPtr: abiPtr)
