@@ -173,6 +173,7 @@ export
   NCOPTION_CLI_MODE,
   ncintype_e,
 
+  wchar_t,
   nckey_synthesized_p,
   nckey_pua_p,
   nckey_supppuaa_p,

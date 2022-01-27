@@ -1,4 +1,7 @@
-type AbiDefect = object of Defect
+type
+  AbiDefect = object of Defect
+
+  wchar_t {.importc.} = object
 
 const
   nc_header = "notcurses/notcurses.h"
@@ -108,11 +111,7 @@ proc ncplane_set_scrolling(n: ptr ncplane, scrollp: cuint): bool {.nc.}
 proc ncplane_putstr(n: ptr ncplane, gclustarr: cstring): cint {.nc.}
 
 # L2371 - notcurses/notcurses.h
-# in the header param `w` is `wchar_t` but is eventually passed to another
-# inline func as `uint32_t`; specifying `w: uint32` here works
-# (e.g. examples/poc/cjkscroll.nim works as expected) but maybe there is a
-# better way?
-proc ncplane_putwc(n: ptr ncplane, w: uint32): cint {.nc.}
+proc ncplane_putwc(n: ptr ncplane, w: wchar_t): cint {.nc.}
 
 # L2850 - notcurses/notcurses.h
 proc ncplane_set_styles(n: ptr ncplane, stylebits: cuint) {.nc.}

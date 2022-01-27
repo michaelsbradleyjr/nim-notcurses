@@ -13,7 +13,10 @@ var dimY, dimX: cuint
 
 let n = nc.stdDimYX(dimY, dimX)
 
-const start = 0x4e00.uint32
+const
+  start = 0x4e00.uint32
+  stop  = 0x9fa5.uint32
+
 var wc = start
 
 n.putStr("\n").expect
@@ -26,7 +29,7 @@ nc.render.expect
 
 while true:
   sleep 1
-  n.putWc(wc).expect
+  n.putWc(cast[wchar_t](wc)).expect
   inc wc
-  if wc == 0x9fa5.uint32: wc = start
+  if wc == stop: wc = start
   nc.render.expect
