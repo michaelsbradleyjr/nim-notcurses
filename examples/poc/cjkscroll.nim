@@ -1,9 +1,12 @@
 import std/os
 import notcurses/[cli, locale]
 
+# locale can be set manually but it's generally not necessary because Notcurses
+# attempts to do it automatically; this is just an example of using setlocale
 setlocale(LC_ALL, "")
 
 let
+  # when locale was set manually the InhibitSetLocale option should be used
   opts = [DrainInput, InhibitSetLocale]
   nc = Nc.init NcOptions.init opts
 
