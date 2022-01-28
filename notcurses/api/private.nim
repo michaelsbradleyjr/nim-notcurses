@@ -188,9 +188,14 @@ proc putStr(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0]
   else:
     ok ApiSuccessPos(code: code.int)
 
-proc putWc(plane: Plane, wchar: wchar_t): Result[ApiSuccess0, ApiErrorNeg]
+proc putWc(plane: Plane, wchar: Utf16Char): Result[ApiSuccess0, ApiErrorNeg]
     {.discardable.} =
-  let code = plane.abiPtr.ncplane_putwc wchar
+  # wchar_t is implementation dependent but Notcurses seems to assume 32-bits
+  # (maybe for good reason); the following conversion+cast works on Linux and
+  # macOS, but nim-notcurses' api/abi for ncplane_putwc needs additional
+  # consideration; it's possible to use sizeof to check the size (in bytes) of
+  # wchar_t, not sure if that's helpful in this context
+  let code = plane.abiPtr.ncplane_putwc cast[wchar_t](wchar.uint32)
   if code < 0.cint:
     err ApiErrorNeg(code: code.int, msg: $PutWc)
   else:
