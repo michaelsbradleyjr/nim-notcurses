@@ -15,7 +15,6 @@ export
   Style,
   Styles,
 
-  wchar_t,
   options,
   byteutils,
   results,

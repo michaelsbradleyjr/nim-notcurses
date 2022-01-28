@@ -17,22 +17,23 @@ var dimY, dimX: cuint
 let n = nc.stdDimYX(dimY, dimX)
 
 const
-  start = 0x4e00.uint32
-  stop  = 0x9fa5.uint32
+  first = 0x4e00
+  last  = 0x9fa5
 
-var wc = start
+var wc = first
 
 n.putStr("\n").expect
 nc.render.expect
 n.setStyles(Bold)
 n.putStr("This program is *not* indicative of real scrolling speed.").expect
+nc.render.expect
 n.setStyles(None)
 n.putStr("\n\n").expect
 nc.render.expect
 
 while true:
   sleep 1
-  n.putWc(cast[wchar_t](wc)).expect
+  n.putWc(wc.Utf16Char).expect
   inc wc
-  if wc == stop: wc = start
+  if wc == last: wc = first
   nc.render.expect
