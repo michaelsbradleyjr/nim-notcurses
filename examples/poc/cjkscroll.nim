@@ -33,7 +33,7 @@ nc.render.expect
 
 while true:
   sleep 1
-  n.putWc(wc.Utf16Char).expect
+  n.putWc(cast[wchar_t](wc)).expect
   inc wc
   if wc == last: wc = first
   nc.render.expect
