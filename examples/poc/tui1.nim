@@ -1,9 +1,7 @@
 import notcurses
 # or: import notcurses/core
 
-let
-  opts = [DrainInput, NoClearBitmaps, PreserveCursor]
-  nc = Nc.init NcOptions.init opts
+let nc = Nc.init NcOptions.init DrainInput
 
 Nc.addExitProc
 
