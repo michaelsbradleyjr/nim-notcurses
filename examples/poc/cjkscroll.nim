@@ -8,7 +8,7 @@ setLocale(LC_ALL, "").expect
 let
   # if locale was set manually then the InhibitSetLocale option can be used
   # when initializing Notcurses
-  opts = [DrainInput, InhibitSetLocale]
+  opts = [DrainInput, InhibitSetLocale, NoQuitSighandlers]
   nc = Nc.init NcOptions.init opts
   stdn = nc.stdPlane
 
