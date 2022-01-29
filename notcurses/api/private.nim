@@ -180,16 +180,14 @@ func isUTF8(codepoint: Codepoint): bool =
 
 func isUTF8(input: Input): bool = input.codepoint.isUTF8
 
-proc putStr(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0]
-    {.discardable.} =
+proc putStr(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0] =
   let code = plane.abiPtr.ncplane_putstr s.cstring
   if code <= 0.cint:
     err ApiError0(code: code.int, msg: $PutStr)
   else:
     ok ApiSuccessPos(code: code.int)
 
-proc putWc(plane: Plane, wchar: wchar_t): Result[ApiSuccess0, ApiErrorNeg]
-    {.discardable.} =
+proc putWc(plane: Plane, wchar: wchar_t): Result[ApiSuccess0, ApiErrorNeg] =
   # wchar_t is implementation dependent but Notcurses seems to assume 32 bits
   # (maybe for good reason); nim-notcurses' api/abi for ncplane_putwc needs
   # additional consideration; it's possible to use sizeof to check the size (in
