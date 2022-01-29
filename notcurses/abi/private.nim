@@ -107,6 +107,9 @@ proc notcurses_stddim_yx(nc: ptr notcurses, y, x: ptr cuint): ptr ncplane {.nc.}
 # L1501 - notcurses/notcurses.h
 proc ncplane_set_scrolling(n: ptr ncplane, scrollp: cuint): bool {.nc.}
 
+# L1504 - notcurses/notcurses.h
+proc ncplane_scrolling_p(n: ptr ncplane): bool {.nc.}
+
 # L2225 - notcurses/notcurses.h
 proc ncplane_putstr(n: ptr ncplane, gclustarr: cstring): cint {.nc.}
 

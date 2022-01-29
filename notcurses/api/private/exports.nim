@@ -47,6 +47,7 @@ export
   expect,
   get,
   getBlocking,
+  getScrolling,
   init,
   isKey,
   isUTF8,

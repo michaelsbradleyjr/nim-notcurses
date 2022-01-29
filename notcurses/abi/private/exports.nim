@@ -209,6 +209,7 @@ export
   ncplane_dim_yx,
   notcurses_stddim_yx,
   ncplane_set_scrolling,
+  ncplane_scrolling_p,
   ncplane_putstr,
   ncplane_putwc,
   ncplane_set_styles
