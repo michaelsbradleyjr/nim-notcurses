@@ -92,7 +92,8 @@ proc dimYX(plane: Plane): Dimensions =
 
 func event(input: Input): InputEvents = cast[InputEvents](input.abiObj.evtype)
 
-proc expect[T: ApiSuccess, E: ApiError](res: Result[T, E]): T {.discardable.} =
+proc expect[T: ApiSuccess | bool, E: ApiError](res: Result[T, E]): T
+    {.discardable.} =
   expect(res, $FailureNotExpected)
 
 proc expect[E: ApiError](res: Result[void, E]) =
@@ -113,6 +114,8 @@ proc get(T: type Notcurses): T =
 
 proc getBlocking(notcurses: Notcurses, input: var Input) =
   discard notcurses.abiPtr.notcurses_get_blocking(unsafeAddr input.abiObj)
+
+func getScrolling(plane: Plane): bool = plane.abiPtr.ncplane_scrolling_p
 
 func init(T: type Margins, top, right, bottom, left: int = 0): T =
   (top: top.uint32, right: right.uint32, bottom: bottom.uint32,
@@ -205,8 +208,14 @@ proc render(notcurses: Notcurses): Result[void, ApiErrorNeg] =
   else:
     ok()
 
-proc setScrolling(plane: Plane, enable: bool): bool {.discardable.} =
-  plane.abiPtr.ncplane_set_scrolling enable.cuint
+proc setScrolling(plane: Plane, enable: bool): Result[bool, ApiError] =
+  let
+    wasEnabled = plane.abiPtr.ncplane_set_scrolling enable.cuint
+    isEnabled = plane.getScrolling
+  if isEnabled != enable:
+    err ApiError(msg: $SetScroll)
+  else:
+    ok wasEnabled
 
 proc setStyles(plane: Plane, styles: varargs[Styles]) =
   var stylebits = 0.cuint

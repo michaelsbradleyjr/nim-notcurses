@@ -7,10 +7,11 @@ type
     NotInitialized     = "Notcurses is not initialized!"
 
   ErrorMessages {.pure.} = enum
-    PutStr = "ncplane_putstr failed!"
-    PutWc  = "ncplane_putwc failed!"
-    Render = "notcurses_render failed!"
-    Stop   = "notcurses_stop failed!"
+    PutStr    = "ncplane_putstr failed!"
+    PutWc     = "ncplane_putwc failed!"
+    Render    = "notcurses_render failed!"
+    SetScroll = "ncplane_set_scrolling failed!"
+    Stop      = "notcurses_stop failed!"
 
   InitOption = distinct culonglong
 
