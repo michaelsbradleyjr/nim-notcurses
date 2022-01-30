@@ -1,3 +1,5 @@
+import std/macros
+
 type
   AbiDefect = object of Defect
 
@@ -51,6 +53,24 @@ type
   nctabbed        {.nc_incomplete, importc: "struct nctabbed"       .} = object
   ncdirect        {.nc_incomplete, importc: "struct ncdirect"       .} = object
 
+# L127 - notcurses/notcurses.h
+macro NCCHANNEL_INITIALIZER(r, g, b: cint): culonglong =
+  quote do:
+    let
+      rr  = `r`.culonglong
+      gg  = `g`.culonglong
+      bb  = `b`.culonglong
+    (rr shl 16) + (gg shl 8) + bb + NC_BGDEFAULT_MASK
+
+# L131 - notcurses/notcurses.h
+macro NCCHANNELS_INITIALIZER(fr, fg, fb, br, bg, bb: cint): culonglong =
+  quote do:
+    let
+      chan1 = NCCHANNEL_INITIALIZER(`fr`, `fg`, `fb`)
+      chan2 = NCCHANNEL_INITIALIZER(`br`, `bg`, `bb`)
+    (chan1 shl 32) + chan2
+
+type
   # L982 - notcurses/notcurses.h
   notcurses_options {.nc_bycopy, importc: "struct notcurses_options".} = object
     termtype*: cstring
@@ -115,6 +135,14 @@ proc ncplane_putstr(n: ptr ncplane, gclustarr: cstring): cint {.nc.}
 
 # L2371 - notcurses/notcurses.h
 proc ncplane_putwc(n: ptr ncplane, w: wchar_t): cint {.nc.}
+
+# L2618 - notcurses/notcurses.h
+proc ncplane_gradient(n: ptr ncplane, y, x: cint, ylen, xlen: cuint,
+  egc: cstring, styles: uint16, ul, ur, ll, lr: uint64): cint {.nc.}
+
+# L2627 - notcurses/notcurses.h
+proc ncplane_gradient2x1(n: ptr ncplane, y, x: cint, ylen, xlen: cuint, ul, ur,
+  ll, lr: uint32): cint {.nc.}
 
 # L2850 - notcurses/notcurses.h
 proc ncplane_set_styles(n: ptr ncplane, stylebits: cuint) {.nc.}

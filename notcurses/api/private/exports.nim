@@ -26,6 +26,7 @@ export
   ApiSuccess,
   ApiSuccess0,
   ApiSuccessPos,
+  Channel,
   Codepoint,
   Dimensions,
   Input,
@@ -47,8 +48,10 @@ export
   expect,
   get,
   getBlocking,
-  getScrolling,
   init,
+  getScrolling,
+  gradient,
+  gradient2x1,
   isKey,
   isUTF8,
   putStr,
@@ -65,6 +68,7 @@ export
 # Aliases
 type
   Nc*          = Notcurses
+  NcChannel*   = Channel
   NcCodepoint* = Codepoint
   NcInput*     = Input
   NcKeys*      = Keys
