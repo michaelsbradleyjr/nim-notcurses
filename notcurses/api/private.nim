@@ -26,6 +26,8 @@ type
   ApiSuccessPos = object of ApiSuccess
     code*: range[1..high(cint).int]
 
+  Channel = distinct uint64
+
   Codepoint = distinct uint32
 
   # maybe PlaneDimensions if need to disambiguate re: other dimensions types
@@ -115,7 +117,12 @@ proc get(T: type Notcurses): T =
 proc getBlocking(notcurses: Notcurses, input: var Input) =
   discard notcurses.abiPtr.notcurses_get_blocking(unsafeAddr input.abiObj)
 
-func getScrolling(plane: Plane): bool = plane.abiPtr.ncplane_scrolling_p
+func init(T: type Channel, r, g, b: int): T =
+  NCCHANNEL_INITIALIZER(r.cint, g.cint, b.cint).uint64.Channel
+
+func init(T: type Channel, fr, fg, fb, br, bg, bb: int): T =
+  NCCHANNELS_INITIALIZER(fr.cint, fg.cint, fb.cint, br.cint, bg.cint,
+    bb.cint).uint64.Channel
 
 func init(T: type Margins, top, right, bottom, left: int = 0): T =
   (top: top.uint32, right: right.uint32, bottom: bottom.uint32,
@@ -156,6 +163,32 @@ proc getBlocking(notcurses: Notcurses): Input =
   var input = Input.init
   notcurses.getBlocking input
   input
+
+func getScrolling(plane: Plane): bool = plane.abiPtr.ncplane_scrolling_p
+
+proc gradient(plane: Plane, y, x: int, ylen, xlen: uint, ul, ur, ll,
+    lr: Channel, egc: string = "", styles: varargs[Styles]):
+    Result[ApiSuccess0, ApiErrorNeg] =
+  var stylebits = 0.cuint
+  if styles.len >= 1:
+    for s in styles[0..^1]:
+      stylebits = bitor(stylebits, s.cuint)
+  let code = plane.abiPtr.ncplane_gradient(y.cint, x.cint, ylen.cuint,
+    xlen.cuint, egc.cstring, stylebits.uint16, ul.uint64, ur.uint64, ll.uint64,
+    lr.uint64)
+  if code < 0.cint:
+    err ApiErrorNeg(code: code.int, msg: $Grad)
+  else:
+    ok ApiSuccess0(code: code.int)
+
+proc gradient2x1(plane: Plane, y, x: int, ylen, xlen: uint, ul, ur, ll,
+    lr: Channel): Result[ApiSuccess0, ApiErrorNeg] =
+  let code = plane.abiPtr.ncplane_gradient2x1(y.cint, x.cint, ylen.cuint,
+    xlen.cuint, ul.uint32, ur.uint32, ll.uint32, lr.uint32)
+  if code < 0.cint:
+    err ApiErrorNeg(code: code.int, msg: $Grad2x1)
+  else:
+    ok ApiSuccess0(code: code.int)
 
 func isKey(codepoint: Codepoint): bool =
   let key = codepoint.uint32

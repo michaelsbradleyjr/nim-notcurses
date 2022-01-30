@@ -7,6 +7,8 @@ type
     NotInitialized     = "Notcurses is not initialized!"
 
   ErrorMessages {.pure.} = enum
+    Grad      = "ncplane_gradient failed!"
+    Grad2x1   = "ncplane_gradient2x1 failed!"
     PutStr    = "ncplane_putstr failed!"
     PutWc     = "ncplane_putwc failed!"
     Render    = "notcurses_render failed!"

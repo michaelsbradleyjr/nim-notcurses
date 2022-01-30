@@ -181,6 +181,9 @@ const
   NCKEY_MOD_NUMLOCK  = 128.cint
 
 const
+  # L117 - notcurses/notcurses.h
+  NC_BGDEFAULT_MASK = 0x0000000040000000.culonglong
+
   # L742 - notcurses/notcurses.h
   NCSTYLE_MASK      = 0x0000ffff.cuint
   NCSTYLE_ITALIC    = 0x00000010.cuint

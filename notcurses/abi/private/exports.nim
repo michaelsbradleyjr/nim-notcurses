@@ -152,6 +152,7 @@ export
   NCKEY_MOD_META,
   NCKEY_MOD_CAPSLOCK,
   NCKEY_MOD_NUMLOCK,
+  NC_BGDEFAULT_MASK,
   NCSTYLE_MASK,
   NCSTYLE_ITALIC,
   NCSTYLE_UNDERLINE,
@@ -197,6 +198,8 @@ export
   nctab,
   nctabbed,
   ncdirect,
+  NCCHANNEL_INITIALIZER,
+  NCCHANNELS_INITIALIZER,
   notcurses_options,
   notcurses_init,
   notcurses_stop,
@@ -212,4 +215,6 @@ export
   ncplane_scrolling_p,
   ncplane_putstr,
   ncplane_putwc,
+  ncplane_gradient,
+  ncplane_gradient2x1,
   ncplane_set_styles
