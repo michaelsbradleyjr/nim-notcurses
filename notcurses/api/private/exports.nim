@@ -61,6 +61,7 @@ export
   setStyles,
   stdDimYX,
   stdPlane,
+  stop,
   addExitProc,
   toKey,
   toUTF8
