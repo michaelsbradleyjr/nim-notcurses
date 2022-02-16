@@ -39,13 +39,15 @@ type
   Margins = tuple[top, right, bottom, left: uint32]
 
   Notcurses = object
-    abiPtr: ptr notcurses
+    # make this private again
+    abiPtr*: ptr notcurses
 
   Options = object
     abiObj: notcurses_options
 
   Plane = object
-    abiPtr: ptr ncplane
+    # make this private again
+    abiPtr*: ptr ncplane
 
 const
   NimNotcursesMajor = nim_notcurses_version.major.int

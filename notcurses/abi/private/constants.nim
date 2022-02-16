@@ -180,7 +180,34 @@ const
   NCKEY_MOD_CAPSLOCK =  64.cint
   NCKEY_MOD_NUMLOCK  = 128.cint
 
+type
+  # L76 - notcurses/notcurses.h
+  ncblitter_e {.pure.} = enum
+    NCBLIT_DEFAULT
+    NCBLIT_1x1
+    NCBLIT_2x1
+    NCBLIT_2x2
+    NCBLIT_3x2
+    NCBLIT_BRAILLE
+    NCBLIT_PIXEL
+    NCBLIT_4x1
+    NCBLIT_8x1
+
+  # L101 - notcurses/notcurses.h
+  ncscale_e {.pure.} = enum
+    NCSCALE_NONE
+    NCSCALE_SCALE
+    NCSCALE_STRETCH
+    NCSCALE_NONE_HIRES
+    NCSCALE_SCALE_HIRES
+
 const
+  # L104 - notcurses/notcurses.h
+  NCALPHA_HIGHCONTRAST = 0x30000000.culonglong
+  NCALPHA_TRANSPARENT  = 0x20000000.culonglong
+  NCALPHA_BLEND        = 0x10000000.culonglong
+  NCALPHA_OPAQUE       = 0x00000000.culonglong
+
   # L117 - notcurses/notcurses.h
   NC_BGDEFAULT_MASK = 0x0000000040000000.culonglong
 
@@ -234,3 +261,11 @@ type
     NCTYPE_PRESS   = 1.cint
     NCTYPE_REPEAT  = 2.cint
     NCTYPE_RELEASE = 3.cint
+
+const
+  # L1331 - notcurses/notcurses.h
+  NCMICE_NO_EVENTS    = 0x0.cuint
+  NCMICE_MOVE_EVENT   = 0x1.cuint
+  NCMICE_BUTTON_EVENT = 0x2.cuint
+  NCMICE_DRAG_EVENT   = 0x4.cuint
+  NCMICE_ALL_EVENTS   = 0x7.cuint
