@@ -70,6 +70,12 @@ macro NCCHANNELS_INITIALIZER(fr, fg, fb, br, bg, bb: cint): culonglong =
       chan2 = NCCHANNEL_INITIALIZER(`br`, `bg`, `bb`)
     (chan1 shl 32) + chan2
 
+# L367 - notcurses/notcurses.h
+proc ncchannels_set_bg_alpha(channels: uint64, alpha: cuint): cint {.nc.}
+
+# L387 - notcurses/notcurses.h
+proc ncchannels_set_fg_alpha(channels: uint64, alpha: cuint): cint {.nc.}
+
 type
   # L982 - notcurses/notcurses.h
   notcurses_options {.nc_bycopy, importc: "struct notcurses_options".} = object
@@ -124,11 +130,20 @@ proc ncplane_dim_yx(n: ptr ncplane, y, x: ptr cuint) {.nc.}
 # L1326 - notcurses/notcurses.h
 proc notcurses_stddim_yx(nc: ptr notcurses, y, x: ptr cuint): ptr ncplane {.nc.}
 
+# L1340 - notcurses/notcurses.h
+proc notcurses_mice_enable(n: ptr notcurses, eventmask: cuint): cint {.nc.}
+
+# L1345 - notcurses/notcurses.h
+proc notcurses_mice_disable(n: ptr notcurses): cint {.nc.}
+
 # L1501 - notcurses/notcurses.h
 proc ncplane_set_scrolling(n: ptr ncplane, scrollp: cuint): bool {.nc.}
 
 # L1504 - notcurses/notcurses.h
 proc ncplane_scrolling_p(n: ptr ncplane): bool {.nc.}
+
+# L1726 - notcurses/notcurses.h
+proc notcurses_canopen_images(nc: ptr notcurses): bool {.nc.}
 
 # L2225 - notcurses/notcurses.h
 proc ncplane_putstr(n: ptr ncplane, gclustarr: cstring): cint {.nc.}
@@ -146,6 +161,47 @@ proc ncplane_gradient2x1(n: ptr ncplane, y, x: cint, ylen, xlen: cuint, ul, ur,
 
 # L2850 - notcurses/notcurses.h
 proc ncplane_set_styles(n: ptr ncplane, stylebits: cuint) {.nc.}
+
+# L3255 - notcurses/notcurses.h
+proc ncvisual_from_file(file: cstring): ptr ncvisual {.nc.}
+
+type
+  # 3322 - notcurses/notcurses.h
+  ncvisual_options {.nc_bycopy, importc: "struct ncvisual_options".} = object
+    n*         : ptr ncplane
+    scaling*   : ncscale_e
+    y*         : cint
+    x*         : cint
+    begy*      : cuint
+    begx*      : cuint
+    leny*      : cuint
+    lenx*      : cuint
+    blitter*   : ncblitter_e
+    flags*     : uint64
+    transcolor*: uint32
+    pxoffy*    : cuint
+    pxoffx*    : cuint
+
+  # 3870 - notcurses/notcurses.h
+  ncmselector_item {.nc_bycopy, importc: "struct ncmselector_item".} = object
+    option*  : cstring
+    desc*    : cstring
+    selected*: bool
+
+  # 3911 - notcurses/notcurses.h
+  ncmultiselector_options
+      {.nc_bycopy, importc: "struct ncmultiselector_options".} = object
+    title*        : cstring
+    secondary*    : cstring
+    footer*       : cstring
+    items*        : ptr UncheckedArray[ncmselector_item]
+    maxdisplay*   : cuint
+    opchannels*   : uint64
+    descchannels* : uint64
+    titlechannels*: uint64
+    footchannels* : uint64
+    boxchannels*  : uint64
+    flags*        : uint64
 
 var
   lib_notcurses_major: cint
