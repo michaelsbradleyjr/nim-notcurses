@@ -21,14 +21,9 @@ const
 
 var wc = first
 
-stdn.putStr("\n").expect
-nc.render.expect
 stdn.setStyles(Bold)
-stdn.putStr("This program is *not* indicative of real scrolling speed.").expect
-nc.render.expect
+stdn.putStr("\nThis program is *not* indicative of real scrolling speed.\n\n").expect
 stdn.setStyles(None)
-stdn.putStr("\n\n").expect
-nc.render.expect
 
 while true:
   sleep 1
