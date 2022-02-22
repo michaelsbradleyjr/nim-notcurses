@@ -1,1 +1,1 @@
-const nim_notcurses_version = (major: 3.cint, minor: 0.cint, patch: 6.cint)
+const nim_notcurses_version = (major: 3.cint, minor: 0.cint, patch: 7.cint)
