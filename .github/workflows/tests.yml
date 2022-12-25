@@ -50,8 +50,8 @@ jobs:
       - name: Install tools and libraries via APT (Linux)
         if: matrix.platform.os == 'ubuntu'
         run: |
-          sudo apt update
-          sudo apt install -y \
+          sudo apt-fast update -qq
+          sudo DEBIAN_FRONTEND='noninteractive' apt-fast install --no-install-recommends -yq \
             ffmpeg \
             libavcodec-dev \
             libavformat-dev \
