@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![ABI: stable](https://img.shields.io/badge/ABI-stable-green.svg?color=2dbd42)](https://github.com/michaelsbradleyjr/nim-notcurses#stability)
 [![API: experimental](https://img.shields.io/badge/API-experimental-orange.svg)](https://github.com/michaelsbradleyjr/nim-notcurses#stability)
-[![Tests (GitHub Actions)](https://github.com/michaelsbradleyjr/nim-notcurses/workflows/Tests/badge.svg?branch=version_3_revamp)](https://github.com/michaelsbradleyjr/nim-notcurses/actions?query=workflow%3ATests+branch%3Aversion_3_revamp)
+[![Tests (GitHub Actions)](https://github.com/michaelsbradleyjr/nim-notcurses/workflows/Tests/badge.svg?branch=version_3_revamp_2)](https://github.com/michaelsbradleyjr/nim-notcurses/actions?query=workflow%3ATests+branch%3Aversion_3_revamp_2)
 
 Nim wrapper for [Notcurses](https://github.com/dankamongmen/notcurses#readme): blingful TUIs and character graphics.
 
@@ -70,7 +70,7 @@ import notcurses/core/direct
 
 ### Examples
 
-See the modules in [examples/poc](https://github.com/michaelsbradleyjr/nim-notcurses/tree/version_3_revamp/examples/poc).
+See the modules in [examples/poc](https://github.com/michaelsbradleyjr/nim-notcurses/tree/version_3_revamp_2/examples/poc).
 
 ```
 $ nim c examples/poc/cli1.nim && examples/poc/cli1
