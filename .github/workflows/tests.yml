@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache_nonce: [ 6 ]
+        cache_nonce: [ 7 ]
         nim_version: [ version-1-2, version-1-6, version-2-0 ]
         platform:
           - {
@@ -86,7 +86,7 @@ jobs:
             mingw-w64-ucrt-x86_64-toolchain
 
       - name: Checkout sources from GitHub
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Compile and install Notcurses from source
         run: |
@@ -132,7 +132,7 @@ jobs:
 
       - name: Restore choosenim and Nim tooling from cache
         id: choosenim-nim-tooling-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ${{ steps.calc-paths.outputs.bash_env }}
