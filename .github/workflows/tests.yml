@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache_nonce: [ 10 ]
+        cache_nonce: [ 11 ]
         nim_version: [ version-1-2, version-1-6, version-2-0 ]
         platform:
           - {
