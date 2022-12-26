@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache_nonce: [ 11 ]
+        cache_nonce: [ 12 ]
         nim_version: [ version-1-2, version-1-6, version-2-0 ]
         platform:
           - {
@@ -167,7 +167,7 @@ jobs:
           if [[ ${{ matrix.platform.os }} = windows ]]; then
             mkdir -p "$(cygpath "${USERPROFILE}")/.nimble/bin"
           fi
-          CHOOSENIM_CHOOSE_VERSION=\#${{ matrix.nim_version }} ./init.sh -y
+          CHOOSENIM_CHOOSE_VERSION=\#${{ matrix.nim_version }} CHOOSENIM_NO_ANALYTICS=1 ./init.sh -y
           if [[ ${{ matrix.platform.os }} = windows ]]; then
             mv "$(cygpath "${USERPROFILE}")/.nimble" "${HOME}/"
             # intention is to rely on what's provided by Windows OS and MSYS2
