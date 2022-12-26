@@ -121,13 +121,13 @@ jobs:
         id: calc-paths
         run: |
           if [[ ${{ matrix.platform.os }} = windows ]]; then
-            echo "::set-output name=bash_env::$(cygpath -m "${HOME}")/.bash_env"
-            echo "::set-output name=choosenim::$(cygpath -m "${USERPROFILE}")/.choosenim"
-            echo "::set-output name=nimble::$(cygpath -m "${HOME}")/.nimble"
+            echo "bash_env=$(cygpath -m "${HOME}")/.bash_env" >> ${GITHUB_OUTPUT}
+            echo "choosenim=$(cygpath -m "${USERPROFILE}")/.choosenim" >> ${GITHUB_OUTPUT}
+            echo "nimble=$(cygpath -m "${HOME}")/.nimble" >> ${GITHUB_OUTPUT}
           else
-            echo "::set-output name=bash_env::${HOME}/.bash_env"
-            echo "::set-output name=choosenim::${HOME}/.choosenim"
-            echo "::set-output name=nimble::${HOME}/.nimble"
+            echo "bash_env=${HOME}/.bash_env" >> ${GITHUB_OUTPUT}
+            echo "choosenim=${HOME}/.choosenim" >> ${GITHUB_OUTPUT}
+            echo "nimble=${HOME}/.nimble" >> ${GITHUB_OUTPUT}
           fi
 
       - name: Restore choosenim and Nim tooling from cache
