@@ -207,7 +207,7 @@ jobs:
       - name: Build and run examples/poc/cli1 (Linux, macOS)
         if: matrix.platform.os != 'windows'
         env:
-          COLORTERM: truecolor
+          COLORTERM: 24bit
           TERM: xterm-256color
         run: |
           source "${HOME}/.bash_env"
