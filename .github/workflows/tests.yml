@@ -162,19 +162,19 @@ jobs:
 
       - name: Install project dependencies
         run: |
-          source "${HOME}/.bash_env"
-          cd "${NIMBLE_DIR}/bin"
           # delete broken symlinks, which can arise because e.g. the cache
           # restored a symlink that points to an executable within
           # ../pkgs/foo-1.2.3/ but the project's .nimble file has been updated
           # to install foo-#head. In the case of a broken symlink, nimble's
           # auto-overwrite fails (only sometimes? only on macOS?)
+          cd "${NIMBLE_DIR}/bin"
           if [[ ${{ matrix.platform.os }} = macos ]]; then
             gfind . -xtype l -delete
           else
             find . -xtype l -delete
           fi
           cd -
+          source "${HOME}/.bash_env"
           nimble --accept install
 
       # - name: Build and run tests
