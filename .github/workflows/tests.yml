@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache_nonce: [ 12 ]
+        cache_nonce: [ 13 ]
         nim_version: [ version-1-2, version-1-6, version-2-0 ]
         platform:
           - {
@@ -131,9 +131,8 @@ jobs:
           rm -rf "${HOME}/repos/notcurses"
           mkdir -p "${HOME}/repos"
           cd "${HOME}/repos"
-          git clone https://github.com/dankamongmen/notcurses.git
+          git clone --depth 1 https://github.com/dankamongmen/notcurses.git --branch v${{ steps.calc-cache-key.outputs.notcurses_version }} --single-branch
           cd notcurses
-          git checkout tags/v${{ steps.calc-cache-key.outputs.notcurses_version }}
           mkdir build
           cd build
           if [[ ${{ matrix.platform.os }} != windows ]]; then
