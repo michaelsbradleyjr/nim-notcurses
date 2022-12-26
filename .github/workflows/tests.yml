@@ -197,7 +197,7 @@ jobs:
           fi
           cd -
           source "${HOME}/.bash_env"
-          nimble --accept install
+          nimble --accept install --depsOnly
 
       # - name: Build and run tests
       #   run: |
