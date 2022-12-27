@@ -24,7 +24,6 @@ jobs:
       fail-fast: false
       matrix:
         cache_nonce: [ 14 ]
-        nim_version: [ version-1-2, version-1-6, version-2-0 ]
         platform:
           - {
             icon: 🐧,
@@ -44,6 +43,7 @@ jobs:
             os: windows,
             shell: msys2
           }
+        nim_version: [ version-1-2, version-1-6, version-2-0 ]
     name: ${{ matrix.platform.icon }} ${{ matrix.platform.label }} - Nim ${{ matrix.nim_version }}
     runs-on: ${{ matrix.platform.os }}-latest
     defaults:
