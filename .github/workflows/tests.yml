@@ -181,7 +181,7 @@ jobs:
 
       # maybe can be reworked (along with caching logic) re: nimble
       # corresponding to Nim v2, with conditional logic for older Nim/nimble
-      - name: Install project dependencies
+      - name: Install project dependencies per nimble
         run: |
           # delete broken symlinks, which can arise because e.g. the cache
           # restored a symlink that points to an executable within
