@@ -203,9 +203,8 @@ jobs:
       #     source "${HOME}/.bash_env"
       #     nimble test
 
-      # - name: Build and run examples/poc/cli1 (Linux, macOS)
-      - name: Build and run examples/poc/cli1
-        # if: matrix.platform.os != 'windows'
+      - name: Build and run examples/poc/cli1 (Linux, macOS)
+        if: matrix.platform.os != 'windows'
         env:
           COLORTERM: 24bit
           TERM: xterm-256color
@@ -213,8 +212,8 @@ jobs:
           source "${HOME}/.bash_env"
           nim c -r examples/poc/cli1.nim
 
-      # - name: Build examples/poc/cli1 (Windows)
-      #   if: matrix.platform.os == 'windows'
-      #   run: |
-      #     source "${HOME}/.bash_env"
-      #     nim c examples/poc/cli1.nim
+      - name: Build examples/poc/cli1 (Windows)
+        if: matrix.platform.os == 'windows'
+        run: |
+          source "${HOME}/.bash_env"
+          nim c examples/poc/cli1.nim
