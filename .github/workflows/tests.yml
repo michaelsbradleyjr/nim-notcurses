@@ -96,7 +96,7 @@ jobs:
         run: |
           export NOTCURSES_VERSION=$(cat VERSION)
           mkdir -p temp && cd temp
-          echo "choosenim_commit=$(git clone --depth 1 https://github.com/dom96/choosenim.git && cd choosenim && git rev-parse HEAD && cd ..)" >> ${GITHUB_OUTPUT}
+          echo "choosenim_version=$(curl -sSfL https://nim-lang.org/choosenim/stable)" >> ${GITHUB_OUTPUT}
           echo "nim_commit=$(git clone --depth 1 https://github.com/nim-lang/Nim.git --branch ${{ matrix.nim_version }} --single-branch && cd Nim && git rev-parse HEAD && cd ..)" >> ${GITHUB_OUTPUT}
           echo "notcurses_version=${NOTCURSES_VERSION}" >> ${GITHUB_OUTPUT}
           echo "notcurses_commit=$(git clone --depth 1 https://github.com/dankamongmen/notcurses.git --branch v${NOTCURSES_VERSION} --single-branch && cd notcurses && git rev-parse HEAD && cd ..)" >> ${GITHUB_OUTPUT}
@@ -122,7 +122,7 @@ jobs:
             ${{ steps.calc-cache-key.outputs.choosenim }}
             ${{ steps.calc-cache-key.outputs.nimble }}/bin
             ${{ steps.calc-cache-key.outputs.notcurses }}
-          key: ${{ matrix.platform.os }}-choosenim_commit:${{ steps.calc-cache-key.outputs.choosenim_commit }}-nim:${{ matrix.nim_version }}-nim_commit:${{ steps.calc-cache-key.outputs.nim_commit }}-notcurses_version:${{ steps.calc-cache-key.outputs.notcurses_version }}-notcurses_commit:${{ steps.calc-cache-key.outputs.notcurses_commit }}-cache_nonce:${{ matrix.cache_nonce }}
+          key: ${{ matrix.platform.os }}-choosenim_version:${{ steps.calc-cache-key.outputs.choosenim_version }}-nim:${{ matrix.nim_version }}-nim_commit:${{ steps.calc-cache-key.outputs.nim_commit }}-notcurses_version:${{ steps.calc-cache-key.outputs.notcurses_version }}-notcurses_commit:${{ steps.calc-cache-key.outputs.notcurses_commit }}-cache_nonce:${{ matrix.cache_nonce }}
 
       - name: Checkout Notcurses sources from GitHub and compile
         if: steps.artifacts-cache.outputs.cache-hit != 'true'
