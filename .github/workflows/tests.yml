@@ -96,7 +96,7 @@ jobs:
         run: |
           export CHOOSENIM_VERSION=$(curl -sSfL https://nim-lang.org/choosenim/stable)
           export NOTCURSES_VERSION=$(cat VERSION)
-          mkdir -p "${HOME}/temp" && cd "${HOME}/temp"
+          tmpdir="$(mktemp -d)" && cd "${tmpdir}"
           echo "choosenim_commit=$(git clone --depth 1 https://github.com/dom96/choosenim.git --branch v${CHOOSENIM_VERSION} --single-branch && cd choosenim && git rev-parse HEAD)" >> ${GITHUB_OUTPUT}
           echo "choosenim_version=${CHOOSENIM_VERSION}" >> ${GITHUB_OUTPUT}
           echo "nim_commit=$(git clone --depth 1 https://github.com/nim-lang/Nim.git --branch ${{ matrix.nim_version }} --single-branch && cd Nim && git rev-parse HEAD)" >> ${GITHUB_OUTPUT}
