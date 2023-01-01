@@ -128,7 +128,6 @@ jobs:
       - name: Checkout Notcurses sources from GitHub and compile
         if: steps.artifacts-cache.outputs.cache-hit != 'true'
         run: |
-          rm -rf "${HOME}/repos/notcurses"
           mkdir -p "${HOME}/repos"
           cd "${HOME}/repos"
           git clone --depth 1 https://github.com/dankamongmen/notcurses.git --branch v${{ steps.calc-cache-key.outputs.notcurses_version }} --single-branch
