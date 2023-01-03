@@ -9,10 +9,16 @@ const
   nc_header = "notcurses/notcurses.h"
   nc_init_name = nc_init_prefix & "init"
 
-{.pragma: nc, cdecl, dynlib: nc_lib, importc.}
-{.pragma: nc_bycopy, bycopy, header: nc_header.}
-{.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
-{.pragma: nc_init, cdecl, dynlib: nc_init_lib, importc: nc_init_name.}
+when NcStatic:
+  {.pragma: nc, cdecl, header: nc_header, importc.}
+  {.pragma: nc_bycopy, bycopy, header: nc_header.}
+  {.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
+  {.pragma: nc_init, cdecl, header: nc_header, importc: nc_init_name.}
+else:
+  {.pragma: nc, cdecl, dynlib: nc_lib, importc.}
+  {.pragma: nc_bycopy, bycopy, header: nc_header.}
+  {.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
+  {.pragma: nc_init, cdecl, dynlib: nc_init_lib, importc: nc_init_name.}
 
 # L187 notcurses/nckeys.h
 func nckey_synthesized_p(w: uint32): bool =
