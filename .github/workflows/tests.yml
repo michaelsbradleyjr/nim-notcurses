@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache_nonce: [ 17 ]
+        cache_nonce: [ 21 ]
         platform:
           - {
             icon: 🐧,
@@ -96,12 +96,25 @@ jobs:
         run: |
           export CHOOSENIM_VERSION=$(curl -sSfL https://nim-lang.org/choosenim/stable)
           export NOTCURSES_VERSION=$(cat VERSION)
-          tmpdir="$(mktemp -d)" && cd "${tmpdir}"
-          echo "choosenim_commit=$(git clone --depth 1 https://github.com/dom96/choosenim.git --branch v${CHOOSENIM_VERSION} --single-branch && cd choosenim && git rev-parse HEAD)" >> ${GITHUB_OUTPUT}
           echo "choosenim_version=${CHOOSENIM_VERSION}" >> ${GITHUB_OUTPUT}
-          echo "nim_commit=$(git clone --depth 1 https://github.com/nim-lang/Nim.git --branch ${{ matrix.nim_version }} --single-branch && cd Nim && git rev-parse HEAD)" >> ${GITHUB_OUTPUT}
-          echo "notcurses_commit=$(git clone --depth 1 https://github.com/dankamongmen/notcurses.git --branch v${NOTCURSES_VERSION} --single-branch && cd notcurses && git rev-parse HEAD)" >> ${GITHUB_OUTPUT}
           echo "notcurses_version=${NOTCURSES_VERSION}" >> ${GITHUB_OUTPUT}
+          tmpdir="$(mktemp -d)" && cd "${tmpdir}"
+          clone1b () {
+            echo "$1_commit=$( \
+              git clone --depth 1 $2 $1 \
+                        --branch $3 \
+                        --single-branch 2>/dev/null && \
+              cd $1 && git rev-parse HEAD)" >> ${GITHUB_OUTPUT}
+          }
+          clone1b choosenim \
+                  https://github.com/dom96/choosenim.git \
+                  v${CHOOSENIM_VERSION}
+          clone1b nim \
+                  https://github.com/nim-lang/Nim.git \
+                  ${{ matrix.nim_version }}
+          clone1b notcurses \
+                  https://github.com/dankamongmen/notcurses.git \
+                  v${NOTCURSES_VERSION}
           if [[ ${{ matrix.platform.os }} = windows ]]; then
             echo "bash_env=$(cygpath -m "${HOME}")/.bash_env" >> ${GITHUB_OUTPUT}
             echo "choosenim=$(cygpath -m "${USERPROFILE}")/.choosenim" >> ${GITHUB_OUTPUT}
@@ -123,22 +136,34 @@ jobs:
             ${{ steps.calc-cache-key.outputs.choosenim }}
             ${{ steps.calc-cache-key.outputs.nimble }}/bin
             ${{ steps.calc-cache-key.outputs.notcurses }}
-          key: ${{ matrix.platform.os }}+choosenim_version:${{ steps.calc-cache-key.outputs.choosenim_version }}+choosenim_commit:${{ steps.calc-cache-key.outputs.choosenim_commit }}+nim:${{ matrix.nim_version }}+nim_commit:${{ steps.calc-cache-key.outputs.nim_commit }}+notcurses_version:${{ steps.calc-cache-key.outputs.notcurses_version }}+notcurses_commit:${{ steps.calc-cache-key.outputs.notcurses_commit }}+cache_nonce:${{ matrix.cache_nonce }}
+          key: "${{ matrix.platform.os }}\
+                +choosenim_version:${{ steps.calc-cache-key.outputs.choosenim_version }}\
+                +choosenim_commit:${{ steps.calc-cache-key.outputs.choosenim_commit }}\
+                +nim:${{ matrix.nim_version }}\
+                +nim_commit:${{ steps.calc-cache-key.outputs.nim_commit }}\
+                +notcurses_version:${{ steps.calc-cache-key.outputs.notcurses_version }}\
+                +notcurses_commit:${{ steps.calc-cache-key.outputs.notcurses_commit }}\
+                +cache_nonce:${{ matrix.cache_nonce }}"
 
       - name: Checkout Notcurses sources from GitHub and compile
         if: steps.artifacts-cache.outputs.cache-hit != 'true'
         run: |
-          mkdir -p "${HOME}/repos"
-          cd "${HOME}/repos"
-          git clone --depth 1 https://github.com/dankamongmen/notcurses.git --branch v${{ steps.calc-cache-key.outputs.notcurses_version }} --single-branch
+          mkdir -p "${HOME}/repos" && cd "${HOME}/repos"
+          git clone --depth 1 https://github.com/dankamongmen/notcurses.git \
+                    --branch v${{ steps.calc-cache-key.outputs.notcurses_version }} \
+                    --single-branch
           cd notcurses
-          mkdir build
-          cd build
+          mkdir build && cd build
           if [[ ${{ matrix.platform.os }} != windows ]]; then
-            cmake .. -DCMAKE_BUILD_TYPE=Release -DUSE_DOCTEST=off -DUSE_PANDOC=off
+            cmake .. -DCMAKE_BUILD_TYPE=Release \
+                     -DUSE_DOCTEST=off \
+                     -DUSE_PANDOC=off
             make -j${NPROC}
           else
-            cmake .. -G"MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release -DUSE_DOCTEST=off -DUSE_PANDOC=off
+            cmake .. -G"MSYS Makefiles" \
+                     -DCMAKE_BUILD_TYPE=Release \
+                     -DUSE_DOCTEST=off \
+                     -DUSE_PANDOC=off
             make
           fi
 
@@ -162,19 +187,20 @@ jobs:
       - name: Install choosenim and Nim
         if: steps.artifacts-cache.outputs.cache-hit != 'true'
         run: |
-          mkdir -p "${HOME}/Downloads"
-          cd "${HOME}/Downloads"
-          curl https://nim-lang.org/choosenim/init.sh -sSf -O
+          mkdir -p "${HOME}/Downloads" && cd "${HOME}/Downloads"
+          curl -sSf -O https://nim-lang.org/choosenim/init.sh
           chmod +x init.sh
           if [[ ${{ matrix.platform.os }} = windows ]]; then
             mkdir -p "$(cygpath "${USERPROFILE}")/.nimble/bin"
           fi
-          CHOOSENIM_CHOOSE_VERSION=\#${{ matrix.nim_version }} CHOOSENIM_NO_ANALYTICS=1 ./init.sh -y
+          CHOOSENIM_CHOOSE_VERSION=\#${{ matrix.nim_version }} \
+          CHOOSENIM_NO_ANALYTICS=1 \
+          ./init.sh -y
           if [[ ${{ matrix.platform.os }} = windows ]]; then
             mv "$(cygpath "${USERPROFILE}")/.nimble" "${HOME}/"
             # intention is to rely on what's provided by Windows OS and MSYS2
-            rm -rf "${HOME}/.nimble/bin/"*.dll
-            rm -rf "${HOME}/.nimble/bin/"*.pem
+            cd "${HOME}/.nimble/bin/"
+            rm -f *.dll *.pem
           fi
           echo 'export NIMBLE_DIR="${HOME}/.nimble"' >> "${HOME}/.bash_env"
           echo 'export PATH="${NIMBLE_DIR}/bin:${PATH}"' >> "${HOME}/.bash_env"
