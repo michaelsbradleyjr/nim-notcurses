@@ -95,7 +95,7 @@ jobs:
         id: cache-key
         run: |
           export CHOOSENIM_VERSION=$(curl -sSfL https://nim-lang.org/choosenim/stable)
-          export NOTCURSES_VERSION=$(cat VERSION)
+          export NOTCURSES_VERSION=$(cat .notcurses_version)
           echo "choosenim_version=${CHOOSENIM_VERSION}" >> ${GITHUB_OUTPUT}
           echo "notcurses_version=${NOTCURSES_VERSION}" >> ${GITHUB_OUTPUT}
           tmpdir="$(mktemp -d)" && cd "${tmpdir}"
