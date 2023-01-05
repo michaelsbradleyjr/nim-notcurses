@@ -92,7 +92,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Calculate cache key components
-        id: calc-cache-key
+        id: cache-key
         run: |
           export CHOOSENIM_VERSION=$(curl -sSfL https://nim-lang.org/choosenim/stable)
           export NOTCURSES_VERSION=$(cat VERSION)
@@ -132,17 +132,17 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            ${{ steps.calc-cache-key.outputs.bash_env }}
-            ${{ steps.calc-cache-key.outputs.choosenim }}
-            ${{ steps.calc-cache-key.outputs.nimble }}/bin
-            ${{ steps.calc-cache-key.outputs.notcurses }}
+            ${{ steps.cache-key.outputs.bash_env }}
+            ${{ steps.cache-key.outputs.choosenim }}
+            ${{ steps.cache-key.outputs.nimble }}/bin
+            ${{ steps.cache-key.outputs.notcurses }}
           key: "${{ matrix.platform.os }}\
-                +choosenim_version:${{ steps.calc-cache-key.outputs.choosenim_version }}\
-                +choosenim_commit:${{ steps.calc-cache-key.outputs.choosenim_commit }}\
+                +choosenim_version:${{ steps.cache-key.outputs.choosenim_version }}\
+                +choosenim_commit:${{ steps.cache-key.outputs.choosenim_commit }}\
                 +nim:${{ matrix.nim_version }}\
-                +nim_commit:${{ steps.calc-cache-key.outputs.nim_commit }}\
-                +notcurses_version:${{ steps.calc-cache-key.outputs.notcurses_version }}\
-                +notcurses_commit:${{ steps.calc-cache-key.outputs.notcurses_commit }}\
+                +nim_commit:${{ steps.cache-key.outputs.nim_commit }}\
+                +notcurses_version:${{ steps.cache-key.outputs.notcurses_version }}\
+                +notcurses_commit:${{ steps.cache-key.outputs.notcurses_commit }}\
                 +cache_nonce:${{ matrix.cache_nonce }}"
 
       - name: Checkout Notcurses sources from GitHub and compile
@@ -150,7 +150,7 @@ jobs:
         run: |
           mkdir -p "${HOME}/repos" && cd "${HOME}/repos"
           git clone --depth 1 https://github.com/dankamongmen/notcurses.git \
-                    --branch v${{ steps.calc-cache-key.outputs.notcurses_version }} \
+                    --branch v${{ steps.cache-key.outputs.notcurses_version }} \
                     --single-branch
           cd notcurses
           mkdir build && cd build
