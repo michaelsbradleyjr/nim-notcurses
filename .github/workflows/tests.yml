@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache_nonce: [ 21 ]
+        cache_marker: [ 24 ]
         platform:
           - {
             icon: 🐧,
@@ -143,7 +143,7 @@ jobs:
                 +nim_commit:${{ steps.cache-key.outputs.nim_commit }}\
                 +notcurses_version:${{ steps.cache-key.outputs.notcurses_version }}\
                 +notcurses_commit:${{ steps.cache-key.outputs.notcurses_commit }}\
-                +cache_nonce:${{ matrix.cache_nonce }}"
+                +cache_marker:${{ matrix.cache_marker }}"
 
       - name: Checkout Notcurses sources from GitHub and compile
         if: steps.artifacts-cache.outputs.cache-hit != 'true'
