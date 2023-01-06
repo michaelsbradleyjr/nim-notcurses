@@ -88,7 +88,7 @@ jobs:
             mingw-w64-ucrt-x86_64-libunistring
             mingw-w64-ucrt-x86_64-toolchain
 
-      - name: Checkout nim-notcurses sources from GitHub
+      - name: Checkout nim-notcurses sources
         uses: actions/checkout@v3
 
       - name: Calculate cache key components
@@ -145,7 +145,7 @@ jobs:
                 +notcurses_commit:${{ steps.cache-key.outputs.notcurses_commit }}\
                 +cache_marker:${{ matrix.cache_marker }}"
 
-      - name: Checkout Notcurses sources from GitHub and compile
+      - name: Checkout Notcurses sources and compile
         if: steps.artifacts-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p "${HOME}/repos" && cd "${HOME}/repos"
@@ -236,10 +236,10 @@ jobs:
           TERM: xterm-256color
         run: |
           source "${HOME}/.bash_env"
-          nim c -r examples/poc/cli1.nim
+          nim c --nimblePath:"${NIMBLE_DIR}/pkgs2" -r examples/poc/cli1.nim
 
       - name: Build examples/poc/cli1 (Windows)
         if: matrix.platform.os == 'windows'
         run: |
           source "${HOME}/.bash_env"
-          nim c examples/poc/cli1.nim
+          nim c --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/cli1.nim
