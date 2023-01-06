@@ -5,7 +5,7 @@ else:
 
 import std/[atomics, bitops, options]
 
-import ./vendor/stew/[byteutils, results]
+import pkg/stew/[byteutils, results]
 
 type
   ApiDefect = object of Defect

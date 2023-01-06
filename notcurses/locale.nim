@@ -2,7 +2,8 @@
 # https://en.cppreference.com/w/c/locale/setlocale
 
 import std/macros
-import ./api/vendor/stew/results
+
+import pkg/stew/results
 
 type
   Category* = distinct cint
