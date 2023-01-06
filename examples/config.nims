@@ -12,7 +12,8 @@ const
 switch("nimcache", cacheSubdir)
 
 --tlsEmulation:off
-when (NimMajor, NimMinor) < (2, 0):
+# when (NimMajor, NimMinor) < (2, 0):
+when (NimMajor, NimMinor, NimPatch) < (1, 9, 1):
   # starting with Nim 2.0 --threads:on is the default
   --threads:on
 
@@ -26,7 +27,8 @@ else:
 # same as defaults for these versions, but convenient for experimentation
 when (NimMajor, NimMinor, NimPatch) < (1, 6, 2):
   --gc:refc
-elif (NimMajor, NimMinor) < (2, 0):
+# elif (NimMajor, NimMinor) < (2, 0):
+elif (NimMajor, NimMinor, NimPatch) < (1, 9, 1):
   --mm:refc
 else:
   --mm:orc
