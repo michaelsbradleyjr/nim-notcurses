@@ -198,9 +198,6 @@ jobs:
           ./init.sh -y
           if [[ ${{ matrix.platform.os }} = windows ]]; then
             mv "$(cygpath "${USERPROFILE}")/.nimble" "${HOME}/"
-            # intention is to rely on what's provided by Windows OS and MSYS2
-            # cd "${HOME}/.nimble/bin/"
-            # rm -f *.dll *.pem
           fi
           echo 'export NIMBLE_DIR="${HOME}/.nimble"' >> "${HOME}/.bash_env"
           echo 'export PATH="${NIMBLE_DIR}/bin:${PATH}"' >> "${HOME}/.bash_env"
