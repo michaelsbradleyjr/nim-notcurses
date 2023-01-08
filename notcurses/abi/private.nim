@@ -3,7 +3,7 @@ import std/macros
 type
   AbiDefect = object of Defect
 
-  wchar_t {.importc.} = object
+  wchar_t* {.importc.} = object
 
 const
   nc_header = "notcurses/notcurses.h"
@@ -21,45 +21,45 @@ else:
   {.pragma: nc_init, cdecl, dynlib: nc_init_lib, importc: nc_init_name.}
 
 # L187 notcurses/nckeys.h
-func nckey_synthesized_p(w: uint32): bool =
+func nckey_synthesized_p*(w: uint32): bool =
   w >= PRETERUNICODEBASE and w <= NCKEY_EOF
 
 # L201 notcurses/nckeys.h
-func nckey_pua_p     (w: uint32): bool = w >= 0x0000e000 and w <= 0x0000f8ff
+func nckey_pua_p*     (w: uint32): bool = w >= 0x0000e000 and w <= 0x0000f8ff
 
 # L207 notcurses/nckeys.h
-func nckey_supppuaa_p(w: uint32): bool = w >= 0x000f0000 and w <= 0x000ffffd
+func nckey_supppuaa_p*(w: uint32): bool = w >= 0x000f0000 and w <= 0x000ffffd
 
 # L213 notcurses/nckeys.h
-func nckey_supppuab_p(w: uint32): bool = w >= 0x00100000 and w <= 0x0010fffd
+func nckey_supppuab_p*(w: uint32): bool = w >= 0x00100000 and w <= 0x0010fffd
 
 # L39 - notcurses/notcurses.h
-proc notcurses_version(): cstring {.nc.}
+proc notcurses_version*(): cstring {.nc.}
 
 # L42 - notcurses/notcurses.h
-proc notcurses_version_components(major, minor, patch, tweak: ptr cint) {.nc.}
+proc notcurses_version_components*(major, minor, patch, tweak: ptr cint) {.nc.}
 
 type
   # L44 - notcurses/notcurses.h
-  notcurses       {.nc_incomplete, importc: "struct notcurses"      .} = object
-  ncplane         {.nc_incomplete, importc: "struct ncplane"        .} = object
-  ncvisual        {.nc_incomplete, importc: "struct ncvisual"       .} = object
-  ncuplot         {.nc_incomplete, importc: "struct ncuplot"        .} = object
-  ncdplot         {.nc_incomplete, importc: "struct ncdplot"        .} = object
-  ncprogbar       {.nc_incomplete, importc: "struct ncprogbar"      .} = object
-  ncfdplane       {.nc_incomplete, importc: "struct ncfdplane"      .} = object
-  ncsubproc       {.nc_incomplete, importc: "struct ncsubproc"      .} = object
-  ncselector      {.nc_incomplete, importc: "struct ncselector"     .} = object
-  ncmultiselector {.nc_incomplete, importc: "struct ncmultiselector".} = object
-  ncreader        {.nc_incomplete, importc: "struct ncreader"       .} = object
-  ncfadectx       {.nc_incomplete, importc: "struct ncfadectx"      .} = object
-  nctablet        {.nc_incomplete, importc: "struct nctablet"       .} = object
-  ncreel          {.nc_incomplete, importc: "struct ncreel"         .} = object
-  nctab           {.nc_incomplete, importc: "struct nctab"          .} = object
-  nctabbed        {.nc_incomplete, importc: "struct nctabbed"       .} = object
+  notcurses*       {.nc_incomplete, importc: "struct notcurses"      .} = object
+  ncplane*         {.nc_incomplete, importc: "struct ncplane"        .} = object
+  ncvisual*        {.nc_incomplete, importc: "struct ncvisual"       .} = object
+  ncuplot*         {.nc_incomplete, importc: "struct ncuplot"        .} = object
+  ncdplot*         {.nc_incomplete, importc: "struct ncdplot"        .} = object
+  ncprogbar*       {.nc_incomplete, importc: "struct ncprogbar"      .} = object
+  ncfdplane*       {.nc_incomplete, importc: "struct ncfdplane"      .} = object
+  ncsubproc*       {.nc_incomplete, importc: "struct ncsubproc"      .} = object
+  ncselector*      {.nc_incomplete, importc: "struct ncselector"     .} = object
+  ncmultiselector* {.nc_incomplete, importc: "struct ncmultiselector".} = object
+  ncreader*        {.nc_incomplete, importc: "struct ncreader"       .} = object
+  ncfadectx*       {.nc_incomplete, importc: "struct ncfadectx"      .} = object
+  nctablet*        {.nc_incomplete, importc: "struct nctablet"       .} = object
+  ncreel*          {.nc_incomplete, importc: "struct ncreel"         .} = object
+  nctab*           {.nc_incomplete, importc: "struct nctab"          .} = object
+  nctabbed*        {.nc_incomplete, importc: "struct nctabbed"       .} = object
 
 # L127 - notcurses/notcurses.h
-macro NCCHANNEL_INITIALIZER(r, g, b: cint): culonglong =
+macro NCCHANNEL_INITIALIZER*(r, g, b: cint): culonglong =
   quote do:
     let
       rr  = `r`.culonglong
@@ -68,7 +68,7 @@ macro NCCHANNEL_INITIALIZER(r, g, b: cint): culonglong =
     (rr shl 16) + (gg shl 8) + bb + NC_BGDEFAULT_MASK
 
 # L131 - notcurses/notcurses.h
-macro NCCHANNELS_INITIALIZER(fr, fg, fb, br, bg, bb: cint): culonglong =
+macro NCCHANNELS_INITIALIZER*(fr, fg, fb, br, bg, bb: cint): culonglong =
   quote do:
     let
       chan1 = NCCHANNEL_INITIALIZER(`fr`, `fg`, `fb`)
@@ -76,14 +76,14 @@ macro NCCHANNELS_INITIALIZER(fr, fg, fb, br, bg, bb: cint): culonglong =
     (chan1 shl 32) + chan2
 
 # L367 - notcurses/notcurses.h
-proc ncchannels_set_bg_alpha(channels: uint64, alpha: cuint): cint {.nc.}
+proc ncchannels_set_bg_alpha*(channels: uint64, alpha: cuint): cint {.nc.}
 
 # L387 - notcurses/notcurses.h
-proc ncchannels_set_fg_alpha(channels: uint64, alpha: cuint): cint {.nc.}
+proc ncchannels_set_fg_alpha*(channels: uint64, alpha: cuint): cint {.nc.}
 
 type
   # L982 - notcurses/notcurses.h
-  notcurses_options {.nc_bycopy, importc: "struct notcurses_options".} = object
+  notcurses_options* {.nc_bycopy, importc: "struct notcurses_options".} = object
     termtype*: cstring
     loglevel*: ncloglevel_e
     margin_t*: cuint
@@ -93,27 +93,27 @@ type
     flags*   : culonglong
 
 # L1026, L1030 - notcurses/notcurses.h
-proc notcurses_init(opts: ptr notcurses_options, fp: File): ptr notcurses
+proc notcurses_init*(opts: ptr notcurses_options, fp: File): ptr notcurses
   {.nc_init.}
 
 # L1033 - notcurses/notcurses.h
-proc notcurses_stop(nc: ptr notcurses): cint {.nc.}
+proc notcurses_stop*(nc: ptr notcurses): cint {.nc.}
 
 # L1050 - notcurses/notcurses.h
-proc notcurses_stdplane(nc: ptr notcurses): ptr ncplane {.nc.}
+proc notcurses_stdplane*(nc: ptr notcurses): ptr ncplane {.nc.}
 
 # L1077 - notcurses/notcurses.h
-proc ncpile_render(n: ptr ncplane): cint {.nc.}
+proc ncpile_render*(n: ptr ncplane): cint {.nc.}
 
 # L1083 - notcurses/notcurses.h
-proc ncpile_rasterize(n: ptr ncplane): cint {.nc.}
+proc ncpile_rasterize*(n: ptr ncplane): cint {.nc.}
 
 # L1088 - notcurses/notcurses.h
-proc notcurses_render(nc: ptr notcurses): cint {.nc.}
+proc notcurses_render*(nc: ptr notcurses): cint {.nc.}
 
 type
   # L1144 - notcurses/notcurses.h
-  ncinput {.nc_bycopy, importc: "struct ncinput".} = object
+  ncinput* {.nc_bycopy, importc: "struct ncinput".} = object
     id*       : uint32
     y*        : cint
     x*        : cint
@@ -127,52 +127,52 @@ type
     xpx*      : cint
 
 # L1261 - notcurses/notcurses.h
-proc notcurses_get_blocking(n: ptr notcurses, ni: ptr ncinput): uint32 {.nc.}
+proc notcurses_get_blocking*(n: ptr notcurses, ni: ptr ncinput): uint32 {.nc.}
 
 # L1315 - notcurses/notcurses.h
-proc ncplane_dim_yx(n: ptr ncplane, y, x: ptr cuint) {.nc.}
+proc ncplane_dim_yx*(n: ptr ncplane, y, x: ptr cuint) {.nc.}
 
 # L1326 - notcurses/notcurses.h
-proc notcurses_stddim_yx(nc: ptr notcurses, y, x: ptr cuint): ptr ncplane {.nc.}
+proc notcurses_stddim_yx*(nc: ptr notcurses, y, x: ptr cuint): ptr ncplane {.nc.}
 
 # L1340 - notcurses/notcurses.h
-proc notcurses_mice_enable(n: ptr notcurses, eventmask: cuint): cint {.nc.}
+proc notcurses_mice_enable*(n: ptr notcurses, eventmask: cuint): cint {.nc.}
 
 # L1345 - notcurses/notcurses.h
-proc notcurses_mice_disable(n: ptr notcurses): cint {.nc.}
+proc notcurses_mice_disable*(n: ptr notcurses): cint {.nc.}
 
 # L1501 - notcurses/notcurses.h
-proc ncplane_set_scrolling(n: ptr ncplane, scrollp: cuint): bool {.nc.}
+proc ncplane_set_scrolling*(n: ptr ncplane, scrollp: cuint): bool {.nc.}
 
 # L1504 - notcurses/notcurses.h
-proc ncplane_scrolling_p(n: ptr ncplane): bool {.nc.}
+proc ncplane_scrolling_p*(n: ptr ncplane): bool {.nc.}
 
 # L1726 - notcurses/notcurses.h
-proc notcurses_canopen_images(nc: ptr notcurses): bool {.nc.}
+proc notcurses_canopen_images*(nc: ptr notcurses): bool {.nc.}
 
 # L2225 - notcurses/notcurses.h
-proc ncplane_putstr(n: ptr ncplane, gclustarr: cstring): cint {.nc.}
+proc ncplane_putstr*(n: ptr ncplane, gclustarr: cstring): cint {.nc.}
 
 # L2371 - notcurses/notcurses.h
-proc ncplane_putwc(n: ptr ncplane, w: wchar_t): cint {.nc.}
+proc ncplane_putwc*(n: ptr ncplane, w: wchar_t): cint {.nc.}
 
 # L2618 - notcurses/notcurses.h
-proc ncplane_gradient(n: ptr ncplane, y, x: cint, ylen, xlen: cuint,
+proc ncplane_gradient*(n: ptr ncplane, y, x: cint, ylen, xlen: cuint,
   egc: cstring, styles: uint16, ul, ur, ll, lr: uint64): cint {.nc.}
 
 # L2627 - notcurses/notcurses.h
-proc ncplane_gradient2x1(n: ptr ncplane, y, x: cint, ylen, xlen: cuint, ul, ur,
+proc ncplane_gradient2x1*(n: ptr ncplane, y, x: cint, ylen, xlen: cuint, ul, ur,
   ll, lr: uint32): cint {.nc.}
 
 # L2850 - notcurses/notcurses.h
-proc ncplane_set_styles(n: ptr ncplane, stylebits: cuint) {.nc.}
+proc ncplane_set_styles*(n: ptr ncplane, stylebits: cuint) {.nc.}
 
 # L3255 - notcurses/notcurses.h
-proc ncvisual_from_file(file: cstring): ptr ncvisual {.nc.}
+proc ncvisual_from_file*(file: cstring): ptr ncvisual {.nc.}
 
 type
   # 3322 - notcurses/notcurses.h
-  ncvisual_options {.nc_bycopy, importc: "struct ncvisual_options".} = object
+  ncvisual_options* {.nc_bycopy, importc: "struct ncvisual_options".} = object
     n*         : ptr ncplane
     scaling*   : ncscale_e
     y*         : cint
@@ -188,13 +188,13 @@ type
     pxoffx*    : cuint
 
   # 3870 - notcurses/notcurses.h
-  ncmselector_item {.nc_bycopy, importc: "struct ncmselector_item".} = object
+  ncmselector_item* {.nc_bycopy, importc: "struct ncmselector_item".} = object
     option*  : cstring
     desc*    : cstring
     selected*: bool
 
   # 3911 - notcurses/notcurses.h
-  ncmultiselector_options
+  ncmultiselector_options*
       {.nc_bycopy, importc: "struct ncmultiselector_options".} = object
     title*        : cstring
     secondary*    : cstring
