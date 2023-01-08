@@ -15,9 +15,9 @@ type
     SetScroll = "ncplane_set_scrolling failed!"
     Stop      = "notcurses_stop failed!"
 
-  InitOption = distinct culonglong
+  InitOption* = distinct culonglong
 
-  InitOptions {.pure.} = enum
+  InitOptions* {.pure.} = enum
     InhibitSetlocale  = NCOPTION_INHIBIT_SETLOCALE.InitOption
     NoClearBitmaps    = NCOPTION_NO_CLEAR_BITMAPS.InitOption
     NoWinchSighandler = NCOPTION_NO_WINCH_SIGHANDLER.InitOption
@@ -30,17 +30,17 @@ type
     Scrolling         = NCOPTION_SCROLLING.InitOption
     CliMode           = NCOPTION_CLI_MODE.InitOption
 
-  InputEvent = distinct cint
+  InputEvent* = distinct cint
 
-  InputEvents {.pure.} = enum
+  InputEvents* {.pure.} = enum
     Unknown = ncintype_e.NCTYPE_UNKNOWN.InputEvent
     Press   = ncintype_e.NCTYPE_PRESS.InputEvent
     Repeat  = ncintype_e.NCTYPE_REPEAT.InputEvent
     Release = ncintype_e.NCTYPE_RELEASE.InputEvent
 
-  Key = distinct uint32
+  Key* = distinct uint32
 
-  Keys {.pure.} = enum
+  Keys* {.pure.} = enum
     Tab         = NCKEY_TAB.Key
     Esc         = NCKEY_ESC.Key
     Space       = NCKEY_SPACE.Key
@@ -183,14 +183,14 @@ type
     EOF         = NCKEY_EOF.Key
 
 const
-  ScrollUp      = Keys.Button4
-  ScrollDown    = Keys.Button5
-  Return        = Keys.Enter
+  ScrollUp*     = Keys.Button4
+  ScrollDown*   = Keys.Button5
+  Return*       = Keys.Enter
 
 type
-  KeyModifier = distinct cint
+  KeyModifier* = distinct cint
 
-  KeyModifiers {.pure.} = enum
+  KeyModifiers* {.pure.} = enum
     Shift    = NCKEY_MOD_SHIFT.KeyModifier
     Alt      = NCKEY_MOD_ALT.KeyModifier
     Ctrl     = NCKEY_MOD_CTRL.KeyModifier
@@ -200,9 +200,9 @@ type
     CapsLock = NCKEY_MOD_CAPSLOCK.KeyModifier
     NumLock  = NCKEY_MOD_NUMLOCK.KeyModifier
 
-  LogLevel = distinct cint
+  LogLevel* = distinct cint
 
-  LogLevels {.pure.} = enum
+  LogLevels* {.pure.} = enum
     Silent  = ncloglevel_e.NCLOGLEVEL_SILENT.LogLevel
     Panic   = ncloglevel_e.NCLOGLEVEL_PANIC.LogLevel
     Fatal   = ncloglevel_e.NCLOGLEVEL_FATAL.LogLevel
@@ -213,9 +213,9 @@ type
     Debug   = ncloglevel_e.NCLOGLEVEL_DEBUG.LogLevel
     Trace   = ncloglevel_e.NCLOGLEVEL_TRACE.LogLevel
 
-  Style = distinct cuint
+  Style* = distinct cuint
 
-  Styles {.pure.} = enum
+  Styles* {.pure.} = enum
     None      = NCSTYLE_NONE.Style
     Struck    = NCSTYLE_STRUCK.Style
     Bold      = NCSTYLE_BOLD.Style

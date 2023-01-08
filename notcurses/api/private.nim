@@ -7,52 +7,54 @@ import std/[atomics, bitops, options]
 
 import pkg/stew/[byteutils, results]
 
+export options, byteutils, results
+
 type
-  ApiDefect = object of Defect
+  ApiDefect* = object of Defect
 
-  ApiError = object of CatchableError
+  ApiError* = object of CatchableError
 
-  ApiError0 = object of ApiError
+  ApiError0* = object of ApiError
     code*: range[low(cint).int..0]
 
-  ApiErrorNeg = object of ApiError
+  ApiErrorNeg* = object of ApiError
     code*: range[low(cint).int..(-1)]
 
-  ApiSuccess = object of RootObj
+  ApiSuccess* = object of RootObj
 
-  ApiSuccess0 = object of ApiSuccess
+  ApiSuccess0* = object of ApiSuccess
     code*: range[0..high(cint).int]
 
-  ApiSuccessPos = object of ApiSuccess
+  ApiSuccessPos* = object of ApiSuccess
     code*: range[1..high(cint).int]
 
-  Channel = distinct uint64
+  Channel* = distinct uint64
 
-  Codepoint = distinct uint32
+  Codepoint* = distinct uint32
 
   # maybe PlaneDimensions if need to disambiguate re: other dimensions types
-  Dimensions = tuple[y, x: int]
+  Dimensions* = tuple[y, x: int]
 
-  Input = object
+  Input* = object
     abiObj: ncinput
 
-  Margins = tuple[top, right, bottom, left: uint32]
+  Margins* = tuple[top, right, bottom, left: uint32]
 
-  Notcurses = object
+  Notcurses* = object
     # make this private again
     abiPtr*: ptr notcurses
 
-  Options = object
+  Options* = object
     abiObj: notcurses_options
 
-  Plane = object
+  Plane* = object
     # make this private again
     abiPtr*: ptr ncplane
 
 const
-  NimNotcursesMajor = nim_notcurses_version.major.int
-  NimNotcursesMinor = nim_notcurses_version.minor.int
-  NimNotcursesPatch = nim_notcurses_version.patch.int
+  NimNotcursesMajor* = nim_notcurses_version.major.int
+  NimNotcursesMinor* = nim_notcurses_version.minor.int
+  NimNotcursesPatch* = nim_notcurses_version.patch.int
 
 var
   lib_notcurses_major: cint
@@ -64,10 +66,10 @@ notcurses_version_components(addr lib_notcurses_major, addr lib_notcurses_minor,
   addr lib_notcurses_patch, addr lib_notcurses_tweak)
 
 let
-  LibNotcursesMajor = lib_notcurses_major.int
-  LibNotcursesMinor = lib_notcurses_minor.int
-  LibNotcursesPatch = lib_notcurses_patch.int
-  LibNotcursesTweak = lib_notcurses_tweak.int
+  LibNotcursesMajor* = lib_notcurses_major.int
+  LibNotcursesMinor* = lib_notcurses_minor.int
+  LibNotcursesPatch* = lib_notcurses_patch.int
+  LibNotcursesTweak* = lib_notcurses_tweak.int
 
 var
   ncAbiPtr: Atomic[ptr notcurses]
@@ -75,35 +77,35 @@ var
   ncExitProcAdded: Atomic[bool]
   ncStopped: Atomic[bool]
 
-func `$`(codepoint: Codepoint): string = $codepoint.uint32
+func `$`*(codepoint: Codepoint): string = $codepoint.uint32
 
-func `$`(input: Input): string = $input.abiObj
+func `$`*(input: Input): string = $input.abiObj
 
-func `$`(options: Options): string = $options.abiObj
+func `$`*(options: Options): string = $options.abiObj
 
-func codepoint(input: Input): Codepoint = input.abiObj.id.Codepoint
+func codepoint*(input: Input): Codepoint = input.abiObj.id.Codepoint
 
 # if writing to y, x is one-shot, i.e. no updates over time (maybe upon
 # resize?) then can use `var int` for the parameters, and in the body have
 # cuint vars, then write to the argument vars (with conversion) after abi call
-proc dimYX(plane: Plane, y, x: var cuint) =
+proc dimYX*(plane: Plane, y, x: var cuint) =
   plane.abiPtr.ncplane_dim_yx(addr y, addr x)
 
-proc dimYX(plane: Plane): Dimensions =
+proc dimYX*(plane: Plane): Dimensions =
   var y, x: cuint
   plane.dimYX(y, x)
   (y: y.int, x: x.int)
 
-func event(input: Input): InputEvents = cast[InputEvents](input.abiObj.evtype)
+func event*(input: Input): InputEvents = cast[InputEvents](input.abiObj.evtype)
 
-proc expect[T: ApiSuccess | bool, E: ApiError](res: Result[T, E]): T
+proc expect*[T: ApiSuccess | bool, E: ApiError](res: Result[T, E]): T
     {.discardable.} =
   expect(res, $FailureNotExpected)
 
-proc expect[E: ApiError](res: Result[void, E]) =
+proc expect*[E: ApiError](res: Result[void, E]) =
   expect(res, $FailureNotExpected)
 
-proc get(T: type Notcurses): T =
+proc get*(T: type Notcurses): T =
   if ncApiObject.abiPtr.isNil:
     let abiPtr = ncAbiPtr.load
     if abiPtr.isNil:
@@ -116,21 +118,21 @@ proc get(T: type Notcurses): T =
 # 0.uint32 on timeout), use Option none for timeout and Option some
 # NotcursesCodepoint otherwise
 
-proc getBlocking(notcurses: Notcurses, input: var Input) =
+proc getBlocking*(notcurses: Notcurses, input: var Input) =
   discard notcurses.abiPtr.notcurses_get_blocking(unsafeAddr input.abiObj)
 
-func init(T: type Channel, r, g, b: int): T =
+func init*(T: type Channel, r, g, b: int): T =
   NCCHANNEL_INITIALIZER(r.cint, g.cint, b.cint).uint64.Channel
 
-func init(T: type Channel, fr, fg, fb, br, bg, bb: int): T =
+func init*(T: type Channel, fr, fg, fb, br, bg, bb: int): T =
   NCCHANNELS_INITIALIZER(fr.cint, fg.cint, fb.cint, br.cint, bg.cint,
     bb.cint).uint64.Channel
 
-func init(T: type Margins, top, right, bottom, left: int = 0): T =
+func init*(T: type Margins, top, right, bottom, left: int = 0): T =
   (top: top.uint32, right: right.uint32, bottom: bottom.uint32,
    left: left.uint32)
 
-func init(T: type Options, initOptions: varargs[InitOptions], term = "",
+func init*(T: type Options, initOptions: varargs[InitOptions], term = "",
     logLevel: LogLevels = LogLevels.Panic, margins: Margins = Margins.init): T =
   var flags = baseInitOption.culonglong
   if initOptions.len >= 1:
@@ -147,7 +149,7 @@ func init(T: type Options, initOptions: varargs[InitOptions], term = "",
       margin_r: margins.right.cuint, margin_b: margins.bottom.cuint,
       margin_l: margins.left.cuint, flags: flags))
 
-proc init(T: type Notcurses, options: Options = Options.init,
+proc init*(T: type Notcurses, options: Options = Options.init,
     file: File = stdout): T =
   if not ncApiObject.abiPtr.isNil or not ncAbiPtr.load.isNil:
     raise (ref ApiDefect)(msg: $AlreadyInitialized)
@@ -159,16 +161,16 @@ proc init(T: type Notcurses, options: Options = Options.init,
       raise (ref ApiDefect)(msg: $AlreadyInitialized)
     ncApiObject
 
-func init(T: type Input): T = T(abiObj: ncinput())
+func init*(T: type Input): T = T(abiObj: ncinput())
 
-proc getBlocking(notcurses: Notcurses): Input =
+proc getBlocking*(notcurses: Notcurses): Input =
   var input = Input.init
   notcurses.getBlocking input
   input
 
-func getScrolling(plane: Plane): bool = plane.abiPtr.ncplane_scrolling_p
+func getScrolling*(plane: Plane): bool = plane.abiPtr.ncplane_scrolling_p
 
-proc gradient(plane: Plane, y, x: int, ylen, xlen: uint, ul, ur, ll,
+proc gradient*(plane: Plane, y, x: int, ylen, xlen: uint, ul, ur, ll,
     lr: Channel, egc: string = "", styles: varargs[Styles]):
     Result[ApiSuccess0, ApiErrorNeg] =
   var stylebits = 0.cuint
@@ -183,7 +185,7 @@ proc gradient(plane: Plane, y, x: int, ylen, xlen: uint, ul, ur, ll,
   else:
     ok ApiSuccess0(code: code.int)
 
-proc gradient2x1(plane: Plane, y, x: int, ylen, xlen: uint, ul, ur, ll,
+proc gradient2x1*(plane: Plane, y, x: int, ylen, xlen: uint, ul, ur, ll,
     lr: Channel): Result[ApiSuccess0, ApiErrorNeg] =
   let code = plane.abiPtr.ncplane_gradient2x1(y.cint, x.cint, ylen.cuint,
     xlen.cuint, ul.uint32, ur.uint32, ll.uint32, lr.uint32)
@@ -192,7 +194,7 @@ proc gradient2x1(plane: Plane, y, x: int, ylen, xlen: uint, ul, ur, ll,
   else:
     ok ApiSuccess0(code: code.int)
 
-func isKey(codepoint: Codepoint): bool =
+func isKey*(codepoint: Codepoint): bool =
   let key = codepoint.uint32
   (key == Keys.Tab.uint32) or
   (key == Keys.Esc.uint32) or
@@ -210,22 +212,22 @@ func isKey(codepoint: Codepoint): bool =
   (key == Keys.Signal.uint32) or
   (key == Keys.EOF.uint32)
 
-func isKey(input: Input): bool = input.codepoint.isKey
+func isKey*(input: Input): bool = input.codepoint.isKey
 
-func isUTF8(codepoint: Codepoint): bool =
+func isUTF8*(codepoint: Codepoint): bool =
   const highestCodepoint = 1114111.uint32
   codepoint.uint32 <= highestcodePoint
 
-func isUTF8(input: Input): bool = input.codepoint.isUTF8
+func isUTF8*(input: Input): bool = input.codepoint.isUTF8
 
-proc putStr(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0] =
+proc putStr*(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0] =
   let code = plane.abiPtr.ncplane_putstr s.cstring
   if code <= 0.cint:
     err ApiError0(code: code.int, msg: $PutStr)
   else:
     ok ApiSuccessPos(code: code.int)
 
-proc putWc(plane: Plane, wchar: wchar_t): Result[ApiSuccess0, ApiErrorNeg] =
+proc putWc*(plane: Plane, wchar: wchar_t): Result[ApiSuccess0, ApiErrorNeg] =
   # wchar_t is implementation dependent but Notcurses seems to assume 32 bits
   # (maybe for good reason); nim-notcurses' api/abi for ncplane_putwc needs
   # additional consideration; it's possible to use sizeof to check the size (in
@@ -236,14 +238,14 @@ proc putWc(plane: Plane, wchar: wchar_t): Result[ApiSuccess0, ApiErrorNeg] =
   else:
     ok ApiSuccess0(code: code.int)
 
-proc render(notcurses: Notcurses): Result[void, ApiErrorNeg] =
+proc render*(notcurses: Notcurses): Result[void, ApiErrorNeg] =
   let code = notcurses.abiPtr.notcurses_render
   if code < 0.cint:
     err ApiErrorNeg(code: code.int, msg: $Render)
   else:
     ok()
 
-proc setScrolling(plane: Plane, enable: bool): Result[bool, ApiError] =
+proc setScrolling*(plane: Plane, enable: bool): Result[bool, ApiError] =
   let
     wasEnabled = plane.abiPtr.ncplane_set_scrolling enable.cuint
     isEnabled = plane.getScrolling
@@ -252,7 +254,7 @@ proc setScrolling(plane: Plane, enable: bool): Result[bool, ApiError] =
   else:
     ok wasEnabled
 
-proc setStyles(plane: Plane, styles: varargs[Styles]) =
+proc setStyles*(plane: Plane, styles: varargs[Styles]) =
   var stylebits = 0.cuint
   if styles.len >= 1:
     for s in styles[0..^1]:
@@ -262,15 +264,15 @@ proc setStyles(plane: Plane, styles: varargs[Styles]) =
 # if writing to y, x is one-shot, i.e. no updates over time (maybe upon
 # resize?) then can use `var int` for the parameters, and in the body have
 # cuint vars, then write to the argument vars (with conversion) after abi call
-proc stdDimYX(notcurses: Notcurses, y, x: var cuint): Plane =
+proc stdDimYX*(notcurses: Notcurses, y, x: var cuint): Plane =
   let abiPtr = notcurses.abiPtr.notcurses_stddim_yx(addr y, addr x)
   Plane(abiPtr: abiPtr)
 
-proc stdPlane(notcurses: Notcurses): Plane =
+proc stdPlane*(notcurses: Notcurses): Plane =
   let abiPtr = notcurses.abiPtr.notcurses_stdplane
   Plane(abiPtr: abiPtr)
 
-proc stop(notcurses: Notcurses): Result[void, ApiErrorNeg] =
+proc stop*(notcurses: Notcurses): Result[void, ApiErrorNeg] =
   if ncStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
   let code = notcurses.abiPtr.notcurses_stop
   if code < 0.cint:
@@ -284,17 +286,17 @@ proc stopNotcurses() {.noconv.} = Notcurses.get.stop.expect
 
 when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
   import std/exitprocs
-  template addExitProc(T: type Notcurses) =
+  template addExitProc*(T: type Notcurses) =
     if not ncExitProcAdded.exchange(true): addExitProc stopNotcurses
 else:
-  template addExitProc(T: type Notcurses) =
+  template addExitProc*(T: type Notcurses) =
     if not ncExitProcAdded.exchange(true): addQuitProc stopNotcurses
 
-func toKey(input: Input): Option[Keys] =
+func toKey*(input: Input): Option[Keys] =
   if input.isKey: some(cast[Keys](input.codepoint))
   else: none[Keys]()
 
-func toUTF8(input: Input): Option[string] =
+func toUTF8*(input: Input): Option[string] =
   if input.isUTF8:
     const nullC = '\x00'.cchar
     var bytes: seq[byte]
@@ -305,3 +307,16 @@ func toUTF8(input: Input): Option[string] =
     some(string.fromBytes bytes)
   else:
     none[string]()
+
+# Aliases
+type
+  Nc*          = Notcurses
+  NcChannel*   = Channel
+  NcCodepoint* = Codepoint
+  NcInput*     = Input
+  NcKeys*      = Keys
+  NcLogLevels* = LogLevels
+  NcMargins*   = Margins
+  NcOptions*   = Options
+  NcPlane*     = Plane
+  NcStyles*    = Styles
