@@ -57,7 +57,6 @@ type
   ncreel          {.nc_incomplete, importc: "struct ncreel"         .} = object
   nctab           {.nc_incomplete, importc: "struct nctab"          .} = object
   nctabbed        {.nc_incomplete, importc: "struct nctabbed"       .} = object
-  ncdirect        {.nc_incomplete, importc: "struct ncdirect"       .} = object
 
 # L127 - notcurses/notcurses.h
 macro NCCHANNEL_INITIALIZER(r, g, b: cint): culonglong =
