@@ -8,13 +8,7 @@
 
 Nim wrapper for [Notcurses](https://github.com/dankamongmen/notcurses#readme): blingful TUIs and character graphics.
 
-The wrapper builds and exposes Notcurses' raw C API via [nimterop](https://github.com/nimterop/nimterop#readme).
-
-## Under construction
-
-:construction: nim-notcurses needs significant work for Notcurses to be fully usable and for Nim programs using the wrapper to be stable. Please keep that in mind if you decide to experiment with this package.
-
-:crystal_ball: A complete overhaul has been in progress for some time on the [version_3_revamp](https://github.com/michaelsbradleyjr/nim-notcurses/tree/version_3_revamp) branch. When complete, nim-notcurses will provide both a proper Nim API and a lower-level wrapper for Notcurses' C ABI. Builds are being [tested](https://github.com/michaelsbradleyjr/nim-notcurses/actions?query=workflow%3ATests+branch%3Aversion_3_revamp) on Linux, macOS, and Windows.
+This package provides a Nim API and a lower-level wrapper for Notcurses' C ABI.
 
 ## Requirements
 
