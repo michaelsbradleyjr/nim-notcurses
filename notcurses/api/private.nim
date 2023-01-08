@@ -1,5 +1,5 @@
 when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
-  {.push raises:[].}
+  {.push raises: [].}
 else:
   {.push raises: [Defect].}
 
