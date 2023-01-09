@@ -122,11 +122,11 @@ proc getBlocking*(notcurses: Notcurses, input: var Input) =
   discard notcurses.abiPtr.notcurses_get_blocking(unsafeAddr input.abiObj)
 
 func init*(T: type Channel, r, g, b: int): T =
-  NCCHANNEL_INITIALIZER(r.cint, g.cint, b.cint).uint64.Channel
+  T(NCCHANNEL_INITIALIZER(r.cint, g.cint, b.cint).uint64)
 
 func init*(T: type Channel, fr, fg, fb, br, bg, bb: int): T =
-  NCCHANNELS_INITIALIZER(fr.cint, fg.cint, fb.cint, br.cint, bg.cint,
-    bb.cint).uint64.Channel
+  T(NCCHANNELS_INITIALIZER(fr.cint, fg.cint, fb.cint, br.cint, bg.cint,
+    bb.cint).uint64)
 
 func init*(T: type Margins, top, right, bottom, left: int = 0): T =
   (top: top.uint32, right: right.uint32, bottom: bottom.uint32,
