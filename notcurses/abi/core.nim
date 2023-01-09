@@ -1,3 +1,5 @@
+import ./version
+
 const
   NcStatic {.booldefine.}: bool = false
   nc_init_prefix = "notcurses_core_"
@@ -20,6 +22,5 @@ when not NcStatic:
       else:
         "libnotcurses-ffi.so.3"
 
-include ./private/common
 include ./private/constants
 include ./private

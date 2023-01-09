@@ -1,8 +1,8 @@
-import  ./abi
+import ./abi
+import ./abi/version
 
 export wchar_t
 
-include ./abi/private/common
 include ./api/private/constants
 
 const baseInitOption = InitOptions.CliMode

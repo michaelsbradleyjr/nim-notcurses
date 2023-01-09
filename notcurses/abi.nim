@@ -1,3 +1,5 @@
+import ./abi/version
+
 const
   NcStatic {.booldefine.}: bool = false
   nc_init_prefix = "notcurses_"
@@ -20,6 +22,5 @@ when not NcStatic:
       else:
         "libnotcurses-ffi.so.3"
 
-include ./abi/private/common
 include ./abi/private/constants
 include ./abi/private
