@@ -104,7 +104,8 @@ jobs:
               git clone --depth 1 $2 $1 \
                         --branch $3 \
                         --single-branch 2>/dev/null && \
-              cd $1 && git rev-parse HEAD)" >> ${GITHUB_OUTPUT}
+              cd $1 && git rev-parse HEAD \
+              | cut -c1-7)" >> ${GITHUB_OUTPUT}
           }
           clone1b choosenim \
                   https://github.com/dom96/choosenim.git \
