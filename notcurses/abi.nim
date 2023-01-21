@@ -22,5 +22,4 @@ when not NcStatic:
       else:
         "libnotcurses-ffi.so.3"
 
-include ./abi/private/constants
 include ./abi/private

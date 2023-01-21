@@ -1,5 +1,8 @@
 import std/macros
 
+import ./private/constants
+export constants
+
 type
   AbiDefect = object of Defect
 
