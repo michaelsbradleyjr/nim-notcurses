@@ -1,6 +1,6 @@
 import std/macros
 
-import ./private/constants
+import ./constants
 export constants
 
 type
