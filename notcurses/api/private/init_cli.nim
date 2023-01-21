@@ -1,0 +1,1 @@
+const baseInitOption = InitOptions.CliMode

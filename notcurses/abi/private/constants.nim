@@ -1,5 +1,7 @@
 import std/bitops
 
+const nim_notcurses_version* = (major: 3.cint, minor: 0.cint, patch: 9.cint)
+
 # L31 - notcurses/nckeys.h
 const PRETERUNICODEBASE* = 1115000'u32
 

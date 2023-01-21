@@ -1,5 +1,3 @@
-import ./version
-
 const
   NcStatic {.booldefine.}: bool = false
   nc_init_prefix = "notcurses_core_"
