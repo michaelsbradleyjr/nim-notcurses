@@ -35,7 +35,9 @@ For example, on macOS, you could do it like this, taking advantage of multiple c
 
 ```text
 $ git clone https://github.com/dankamongmen/notcurses.git "${HOME}/repos/notcurses"
-$ cd "${HOME}/repos/notcurses" && mkdir build && cd build
+$ cd "${HOME}/repos/notcurses"
+$ git checkout tags/v3.0.9
+$ mkdir build && cd build
 $ cmake .. -DCMAKE_BUILD_TYPE=Release
 $ make -j16
 ```
