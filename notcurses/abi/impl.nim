@@ -177,7 +177,7 @@ proc ncplane_set_styles*(n: ptr ncplane, stylebits: cuint) {.nc.}
 proc ncvisual_from_file*(file: cstring): ptr ncvisual {.nc.}
 
 type
-  # 3322 - notcurses/notcurses.h
+  # L3322 - notcurses/notcurses.h
   ncvisual_options* {.nc_bycopy, importc: "struct ncvisual_options".} = object
     n*         : ptr ncplane
     scaling*   : ncscale_e
@@ -193,13 +193,13 @@ type
     pxoffy*    : cuint
     pxoffx*    : cuint
 
-  # 3870 - notcurses/notcurses.h
+  # L3870 - notcurses/notcurses.h
   ncmselector_item* {.nc_bycopy, importc: "struct ncmselector_item".} = object
     option*  : cstring
     desc*    : cstring
     selected*: bool
 
-  # 3911 - notcurses/notcurses.h
+  # L3911 - notcurses/notcurses.h
   ncmultiselector_options*
       {.nc_bycopy, importc: "struct ncmultiselector_options".} = object
     title*        : cstring
