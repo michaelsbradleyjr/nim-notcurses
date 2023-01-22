@@ -140,18 +140,6 @@ func init*(T: type Options, initOptions: varargs[InitOptions], term = "",
       margin_r: margins.right.cuint, margin_b: margins.bottom.cuint,
       margin_l: margins.left.cuint, flags: flags))
 
-proc init*(T: type Notcurses, options: Options = Options.init,
-    file: File = stdout): T =
-  if not ncApiObject.abiPtr.isNil or not ncAbiPtr.load.isNil:
-    raise (ref ApiDefect)(msg: $AlreadyInitialized)
-  else:
-    let abiPtr = notcurses_init(unsafeAddr options.abiObj, file)
-    if abiPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
-    ncApiObject = T(abiPtr: abiPtr)
-    if not ncAbiPtr.exchange(ncApiObject.abiPtr).isNil:
-      raise (ref ApiDefect)(msg: $AlreadyInitialized)
-    ncApiObject
-
 func init*(T: type Input): T = T(abiObj: ncinput())
 
 proc getBlocking*(notcurses: Notcurses): Input =
@@ -282,6 +270,26 @@ when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
 else:
   template addExitProc*(T: type Notcurses) =
     if not ncExitProcAdded.exchange(true): addQuitProc stopNotcurses
+
+proc init*(T: type Notcurses, options: Options = Options.init,
+    file: File = stdout, addExitProc = true): T =
+  if not ncApiObject.abiPtr.isNil or not ncAbiPtr.load.isNil:
+    raise (ref ApiDefect)(msg: $AlreadyInitialized)
+  else:
+    let abiPtr = notcurses_init(unsafeAddr options.abiObj, file)
+    if abiPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
+    ncApiObject = T(abiPtr: abiPtr)
+    if not ncAbiPtr.exchange(ncApiObject.abiPtr).isNil:
+      raise (ref ApiDefect)(msg: $AlreadyInitialized)
+    if addExitProc:
+      try:
+        T.addExitProc
+      except Exception as e:
+        var msg = $AddExitProcFailed
+        if e.msg != "":
+          msg = msg & " with message \"" & e.msg & "\""
+        raise (ref ApiDefect)(msg: msg)
+    ncApiObject
 
 func toKey*(input: Input): Option[Keys] =
   if input.isKey: some(cast[Keys](input.codepoint))

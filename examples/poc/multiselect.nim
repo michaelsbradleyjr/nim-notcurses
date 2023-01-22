@@ -8,8 +8,6 @@ let
   nc = Nc.init
   stdn = nc.stdPlane
 
-Nc.addExitProc
-
 var items = [
   ncmselector_item(option: "Pa231", desc: "Protactinium-231 (162kg)", selected: false),
   ncmselector_item(option: "U233",  desc: "Uranium-233 (15kg)",       selected: false),

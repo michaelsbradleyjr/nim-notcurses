@@ -5,8 +5,6 @@ let
   nc = Nc.init
   stdn = nc.stdPlane
 
-Nc.addExitProc
-
 # https://codepoints.net/U+FFFD?lang=en
 const replacementChar = string.fromBytes hexToByteArray("0xEFBFBD", 3)
 

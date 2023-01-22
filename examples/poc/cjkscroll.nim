@@ -12,8 +12,6 @@ let
   nc = Nc.init NcOptions.init opts
   stdn = nc.stdPlane
 
-Nc.addExitProc
-
 # https://codepoints.net/cjk_unified_ideographs
 const
   first = 0x4e00

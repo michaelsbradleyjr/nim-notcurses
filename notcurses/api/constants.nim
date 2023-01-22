@@ -1,5 +1,10 @@
 type
   DefectMessages {.pure.} = enum
+    AddExitProcFailed  =
+      when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
+        "addExitProc raised an unknown exception"
+      else:
+        "addQuitProc raised an unknown exception"
     AlreadyInitialized = "Notcurses is already initialized!"
     AlreadyStopped     = "Notcurses is already stopped!"
     FailedToInitialize = "Notcurses failed to initialize!"

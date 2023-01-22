@@ -4,6 +4,4 @@ import notcurses
 
 let nc = Nc.init NcOptions.init DrainInput
 
-Nc.addExitProc
-
 sleep 3000
