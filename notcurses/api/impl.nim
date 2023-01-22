@@ -282,6 +282,8 @@ proc init*(T: type Notcurses, options: Options = Options.init,
     if not ncAbiPtr.exchange(ncApiObject.abiPtr).isNil:
       raise (ref ApiDefect)(msg: $AlreadyInitialized)
     if addExitProc:
+      when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+        {.warning[BareExcept]: off.}
       try:
         T.addExitProc
       except Exception as e:
@@ -289,6 +291,8 @@ proc init*(T: type Notcurses, options: Options = Options.init,
         if e.msg != "":
           msg = msg & " with message \"" & e.msg & "\""
         raise (ref ApiDefect)(msg: msg)
+      when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+        {.warning[BareExcept]: on.}
     ncApiObject
 
 func toKey*(input: Input): Option[Keys] =
