@@ -234,14 +234,18 @@ jobs:
           TERM: xterm-256color
         run: |
           source "${HOME}/.bash_env"
-          nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/cjkscroll.nim
-          nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/cli1.nim
-          nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/cli2.nim
-          nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/gradients.nim
-          # nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/multiselect.nim
-          nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/tui1.nim
+          declare -a modules=(
+            cjkscroll
+            cli1
+            cli2
+            gradients
+            # multiselect
+            tui1
+          )
+          for module in ${modules[@]}; do
+            nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/${module}.nim
+          done
           if [[ ${{ matrix.platform.os }} != windows ]]; then
-            echo
             ls -ladh examples/poc/* | grep -v '\..*$'
           else
             ls -ladh examples/poc/*.exe
