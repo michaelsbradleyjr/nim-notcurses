@@ -48,7 +48,7 @@ import notcurses/core/cli
 
 #### Direct mode
 
-Notcurses' Direct mode is not supported by this package, it's recommended to use CLI mode instead.
+Notcurses' Direct mode is not supported by this package, it's recommended to use CLI mode instead. For more context see [dankamongmen/notcurses#1834](https://github.com/dankamongmen/notcurses/issues/1834).
 
 ### Examples
 

@@ -60,6 +60,9 @@ type
   ncreel*          {.nc_incomplete, importc: "struct ncreel"         .} = object
   nctab*           {.nc_incomplete, importc: "struct nctab"          .} = object
   nctabbed*        {.nc_incomplete, importc: "struct nctabbed"       .} = object
+  # ncdirect*      {.nc_incomplete, importc: "struct ncdirect"       .} = object
+  # nim-notcurses does not support Direct mode, it's recommended to use CLI mode instead
+  # For more context see https://github.com/dankamongmen/notcurses/issues/1834
 
 # L127 - notcurses/notcurses.h
 macro NCCHANNEL_INITIALIZER*(r, g, b: cint): culonglong =
