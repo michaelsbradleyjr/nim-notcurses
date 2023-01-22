@@ -7,7 +7,7 @@ import std/[atomics, bitops, options]
 
 import pkg/stew/[byteutils, results]
 
-export options, byteutils, results
+export options, byteutils, results, wchar_t
 
 type
   ApiDefect* = object of Defect
