@@ -43,7 +43,7 @@ import notcurses/cli
 Or import its minimal core:
 
 ```nim
-import notcurses/core/cli
+import notcurses/cli/core
 ```
 
 #### Direct mode
