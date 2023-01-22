@@ -9,8 +9,14 @@ let
   # if locale was set manually then the InhibitSetLocale option can be used
   # when initializing Notcurses
   opts = [DrainInput, InhibitSetLocale]
-  nc = Nc.init NcOptions.init opts
+  nc = Nc.init(NcOptions.init opts, addExitProc = false)
   stdn = nc.stdPlane
+
+proc stop() {.noconv.} =
+  nc.stop.expect
+  quit(QuitSuccess)
+
+setControlCHook(stop)
 
 # https://codepoints.net/cjk_unified_ideographs
 const

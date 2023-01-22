@@ -5,6 +5,9 @@ let
   nc = Nc.init
   stdn = nc.stdPlane
 
+proc nop() {.noconv.} = discard
+setControlCHook(nop)
+
 # https://codepoints.net/U+FFFD?lang=en
 const replacementChar = string.fromBytes hexToByteArray("0xEFBFBD", 3)
 
