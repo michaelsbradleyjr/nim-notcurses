@@ -1,5 +1,6 @@
 import std/os
 import notcurses
+# this example uses Notcurses' multimedia stack so can't do `import notcurses/core`
 
 # delete me
 import notcurses/abi
