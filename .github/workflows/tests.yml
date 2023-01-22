@@ -233,22 +233,15 @@ jobs:
       # https://github.com/nim-lang/Nim/blob/version-2-0/compiler/commands.nim#L613
       # it's harmless to set an additional --nimblePath that isn't relevant
       # (doesn't exist) for a particular version of Nim/nimble
-
-      - name: Build and run examples/poc/cli1 (Linux, macOS)
-        if: matrix.platform.os != 'windows'
+      - name: Build examples
         env:
           COLORTERM: 24bit
           TERM: xterm-256color
         run: |
           source "${HOME}/.bash_env"
-          nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" -r examples/poc/cli1.nim
-          echo -e "\n"
-          ls -ladh examples/poc/cli1
-
-      - name: Build examples/poc/cli1 (Windows)
-        if: matrix.platform.os == 'windows'
-        run: |
-          source "${HOME}/.bash_env"
+          nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/cjkscroll.nim
           nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/cli1.nim
-          echo
-          ls -ladh examples/poc/cli1.exe
+          nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/cli2.nim
+          nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/gradients.nim
+          # nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/multiselect.nim
+          nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/tui1.nim
