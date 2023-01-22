@@ -25,6 +25,19 @@ $ nim c --passL:"-rpath ${HOME}/repos/notcurses/build" ...
 
 Be careful to not have a system-wide installation of Notcurses while attempting to link against your own non-installed build of it, else you may experience mysterious and hard to debug errors.
 
+### BYO Notcurses
+
+Building Notcurses is simple, but make sure to have its [requirements](https://github.com/dankamongmen/notcurses#requirements) installed.
+
+For example, on macOS, you could do it like this, taking advantage of multiple cores when running `make`:
+
+```text
+$ git clone https://github.com/dankamongmen/notcurses.git "${HOME}/repos/notcurses"
+$ cd "${HOME}/repos/notcurses" && mkdir build && cd build
+$ cmake .. -DCMAKE_BUILD_TYPE=Release
+$ make -j16
+```
+
 ## Usage
 
 ### Import
