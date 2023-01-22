@@ -20,7 +20,7 @@ If the headers and compiled libraries are not in locations well known to your sy
 
 For example, on macOS, if Notcurses is built in `${HOME}/repos/notcurses/build`, you would use:
 ```text
-nim c --passL:"-rpath ${HOME}/repos/notcurses/build" ...
+$ nim c --passL:"-rpath ${HOME}/repos/notcurses/build" ...
 ```
 
 Be careful to not have a system-wide installation of Notcurses while attempting to link against your own non-installed build of it, else you may experience mysterious and hard to debug errors.
@@ -61,8 +61,14 @@ Notcurses' Direct mode is not supported by this package, it's recommended to use
 
 See the modules in [examples/poc](https://github.com/michaelsbradleyjr/nim-notcurses/tree/version_3_revamp/examples/poc).
 
-```
+```text
 $ nim c -r examples/poc/cli1.nim
+```
+
+You can use or add other options, cf. *[Requirements](#requirements)*.
+
+```text
+$ nim c --passL:"-rpath ${HOME}/repos/notcurses/build" examples/poc/cli1.nim
 ```
 
 ### ABI
