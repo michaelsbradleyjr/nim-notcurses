@@ -10,11 +10,7 @@ Nc.addExitProc
 # https://codepoints.net/U+FFFD?lang=en
 const replacementChar = string.fromBytes hexToByteArray("0xEFBFBD", 3)
 
-proc render() = nc.render.expect
-
-proc put(s: string = "") =
-  stdn.putStr(s).expect
-  render()
+proc put(s: string = "") = stdn.putStr(s).expect
 
 proc put[T](v: Option[T]) =
   var s: string
@@ -22,8 +18,7 @@ proc put[T](v: Option[T]) =
   else: s = $v
   put s
 
-proc putLn(s: string = "") =
-  put s & "\n"
+proc putLn(s: string = "") = put s & "\n"
 
 proc putLn[T](v: Option[T]) =
   var s: string
@@ -51,7 +46,6 @@ while true:
 
   if utf8.isSome:
     let res = stdn.putStr utf8.get & "\n"
-    render()
     if res.isErr: putLn replacementChar
   else:
     putLn $utf8

@@ -4,5 +4,3 @@ import notcurses/cli
 let nc = Nc.init NcOptions.init DrainInput
 
 Nc.addExitProc
-
-nc.render.expect

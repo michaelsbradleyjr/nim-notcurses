@@ -30,4 +30,3 @@ while true:
   stdn.putWc(cast[wchar_t](wc)).expect
   inc wc
   if wc == last: wc = first
-  nc.render.expect
