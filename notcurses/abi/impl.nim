@@ -215,10 +215,10 @@ type
     flags*        : uint64
 
 var
-  lib_notcurses_major: cint
-  lib_notcurses_minor: cint
-  lib_notcurses_patch: cint
-  lib_notcurses_tweak: cint
+  lib_notcurses_major*: cint
+  lib_notcurses_minor*: cint
+  lib_notcurses_patch*: cint
+  lib_notcurses_tweak*: cint
 
 notcurses_version_components(addr lib_notcurses_major, addr lib_notcurses_minor,
   addr lib_notcurses_patch, addr lib_notcurses_tweak)
