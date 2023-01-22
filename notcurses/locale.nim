@@ -14,7 +14,7 @@ type
 
 const FailureNotExpected = "failure not expected"
 
-let
+var
   LC_ALL_c      {.header: "<locale.h>", importc: "LC_ALL"     .}: cint
   LC_COLLATE_c  {.header: "<locale.h>", importc: "LC_COLLATE" .}: cint
   LC_CTYPE_c    {.header: "<locale.h>", importc: "LC_CTYPE"   .}: cint
@@ -30,9 +30,8 @@ let
   LC_TIME*     = LC_TIME_c.Category
 
 when defined(posix):
-  let
+  var
     LC_MESSAGES_c {.header: "<locale.h>", importc: "LC_MESSAGES".}: cint
-
     LC_MESSAGES* = LC_MESSAGES_c.Category
 
 proc expect*[T: LocaleSuccess, E: LocaleError](res: Result[T, E]): T
