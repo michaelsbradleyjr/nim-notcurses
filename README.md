@@ -18,6 +18,13 @@ Same as Notcurses' [requirements](https://github.com/dankamongmen/notcurses#requ
 
 If the headers and compiled libraries are not in locations well known to your system's compiler and linker, you may need to use `--passC` and/or `--passL` with `nim c`.
 
+For example, on macOS, if Notcurses is built in `${HOME}/repos/notcurses/build`, you would use:
+```text
+nim c --passL:"-rpath ${HOME}/repos/notcurses/build" ...
+```
+
+Be careful to not have a system-wide installation of Notcurses while attempting to link against your own non-installed build of it, else you may experience mysterious and hard to debug errors.
+
 ## Usage
 
 ### Import
