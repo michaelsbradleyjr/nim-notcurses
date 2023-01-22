@@ -222,11 +222,6 @@ jobs:
           source "${HOME}/.bash_env"
           nimble --accept install --depsOnly
 
-      # - name: Build and run tests
-      #   run: |
-      #     source "${HOME}/.bash_env"
-      #     nimble test
-
       # Nim's version-2-0 branch still sets package search path to pkgs instead
       # of pkgs2 when NIMBLE_DIR environment variable is set
       # https://github.com/nim-lang/nimble/issues/1061
@@ -245,3 +240,9 @@ jobs:
           nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/gradients.nim
           # nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/multiselect.nim
           nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/tui1.nim
+          if [[ ${{ matrix.platform.os }} != windows ]]; then
+            echo
+            ls -ladh examples/poc/* | grep -v '\..*$'
+          else
+            ls -ladh examples/poc/*.exe
+          fi
