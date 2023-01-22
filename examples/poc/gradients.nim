@@ -26,7 +26,7 @@ proc gradStriations() =
   sleep 1000
 
 proc gradHigh() =
-  const
+  let
     ul = NcChannel.init(0x00, 0x00, 0x00)
     ur = NcChannel.init(0x00, 0xff, 0xff)
     ll = NcChannel.init(0xff, 0x00, 0x00)
