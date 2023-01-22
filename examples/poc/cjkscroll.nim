@@ -21,7 +21,7 @@ setControlCHook(stop)
 # https://codepoints.net/cjk_unified_ideographs
 const
   first = 0x4e00
-  last  = 0x9fa5
+  last  = 0x9fff
 
 var wc = first
 
@@ -33,4 +33,4 @@ while true:
   sleep 1
   stdn.putWc(cast[wchar_t](wc)).expect
   inc wc
-  if wc == last: wc = first
+  if wc > last: wc = first
