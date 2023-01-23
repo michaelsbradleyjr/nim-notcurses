@@ -2,7 +2,7 @@ import std/os
 import notcurses
 # this example uses Notcurses' multimedia stack so can't do `import notcurses/core`
 
-# delete me
+# delete me when nim-notcurses api supports ncmselector
 import notcurses/abi
 
 # selection with mouse in `multiselect` PoC is not working
@@ -14,6 +14,8 @@ let
 
 proc nop() {.noconv.} = discard
 setControlCHook(nop)
+
+discard notcurses_mice_enable(nc.abiPtr, NCMICE_BUTTON_EVENT)
 
 var items = [
   ncmselector_item(option: "Pa231", desc: "Protactinium-231 (162kg)", selected: false),
@@ -40,8 +42,6 @@ var items = [
   ncmselector_item(option: nil,     desc: nil,                        selected: false)
 ]
 
-discard notcurses_mice_enable(nc.abiPtr, NCMICE_BUTTON_EVENT)
-
 var sopts = ncmultiselector_options(
   title        : "this is truly an awfully long example of a MULTISELECTOR title",
   secondary    : "pick one (you will die regardless)",
@@ -56,7 +56,6 @@ var sopts = ncmultiselector_options(
 )
 
 var bgchannels = NcChannel.init(0x00, 0x20, 0x00, 0x00, 0x20, 0x00).uint64
-
 discard ncchannels_set_fg_alpha(addr bgchannels, NCALPHA_BLEND.cuint)
 discard ncchannels_set_bg_alpha(addr bgchannels, NCALPHA_BLEND.cuint)
 
@@ -67,12 +66,11 @@ if notcurses_canopen_images(nc.abiPtr):
   discard ncvisual_blit(nc.abiPtr, ncv, addr vopts)
 
 discard ncplane_set_fg_rgb(stdn.abiPtr, 0x40f040)
-
 discard ncplane_putstr_aligned(stdn.abiPtr, 0, NCALIGN_RIGHT, "multiselect widget demo".cstring)
 
-var nopts = ncplane_options(y: 3.cint, x: 0.cint, rows: 1.cuint, cols: 1.cuint)
-
-var mseln = ncplane_create(stdn.abiPtr, addr nopts)
+var
+  nopts = ncplane_options(y: 3.cint, x: 0.cint, rows: 1.cuint, cols: 1.cuint)
+  mseln = ncplane_create(stdn.abiPtr, addr nopts)
 
 discard ncplane_set_base(mseln, "".cstring, 0, bgchannels)
 
@@ -85,17 +83,14 @@ proc run_mselect() =
     if ni.event == Release: continue
     if not ncmultiselector_offer_input(ns, addr ni.abiObj):
       let key = ni.toKey
-      if key.isSome and key.get == Enter:
-        ncmultiselector_destroy(ns)
-        return
+      if key.isSome and key.get == Enter: break
       let utf8 = ni.toUTF8
       if utf8.isSome:
         case utf8.get:
           of "M", "J":
-            if ncinput_ctrl_p(addr ni.abiObj):
-              ncmultiselector_destroy(ns)
-              return
-        if utf8.get == "q": break
+            if ncinput_ctrl_p(addr ni.abiObj): break
+          of "q": break
+          else: discard
     nc.render.expect
   ncmultiselector_destroy(ns)
 
