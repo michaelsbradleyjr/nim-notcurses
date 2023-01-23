@@ -14,7 +14,7 @@ This package provides a Nim API and a lower-level wrapper for Notcurses' C ABI.
 
 Same as Notcurses' [requirements](https://github.com/dankamongmen/notcurses#requirements).
 
-:package: Notcurses v3 needs to be installed with your package manager, or you can compile and install it from source.
+:package: Notcurses v3 needs to be installed with your package manager, or you can compile it from source.
 
 If the headers and compiled libraries are not in locations well known to your system's compiler and linker, you may need to use `--passC` and/or `--passL` with `nim c`.
 
@@ -25,9 +25,9 @@ $ nim c --passC:"-I${HOME}/repos/notcurses/include" \
         ...
 ```
 
-Be careful to not have a system-wide installation of Notcurses while attempting to link against your own non-installed build of it, else you may experience mysterious and hard to debug errors.
+:bulb: Be careful to not have a system-wide installation of Notcurses while attempting to link against your own *non-installed* build of it, else you may experience mysterious and hard to debug problems.
 
-### BYO Notcurses
+### 🍻 BYO Notcurses
 
 Building Notcurses is simple, but make sure to have its [requirements](https://github.com/dankamongmen/notcurses#requirements) installed.
 
@@ -42,9 +42,11 @@ $ cmake .. -DCMAKE_BUILD_TYPE=Release
 $ make -j16
 ```
 
+:bulb: `make install` is not run after `make` *unless* you want to install your own build system-wide.
+
 ## Installation
 
-Use the [Nimble](https://github.com/nim-lang/nimble#readme) package manager to add `notcures` to an existing project. Add the following to its `.nimble` file:
+Use the [Nimble](https://github.com/nim-lang/nimble#readme) package manager to add [`notcures`](https://nimble.directory/pkg/notcurses) to an existing project. To the project's `.nimble` file add:
 
 ```nim
 requires "notcurses >= 3.0.9 & < 4.0.0"
@@ -84,17 +86,18 @@ Notcurses' Direct mode is not supported by this package, it's recommended to use
 
 ### Examples
 
-See the modules in [examples/poc](https://github.com/michaelsbradleyjr/nim-notcurses/tree/version_3_revamp/examples/poc).
+See the modules in [`examples/poc`](examples/poc). To build and run the [`cli1`](examples/poc/cli1.nim) example do:
 
 ```text
 $ nim c -r examples/poc/cli1.nim
 ```
 
-You can use or add other options, cf. *[Requirements](#requirements)*.
+You can use additional options, cf. *[Requirements](#requirements)*.
 
 ```text
 $ nim c --passC:"-I${HOME}/repos/notcurses/include" \
         --passL:"-rpath ${HOME}/repos/notcurses/build" \
+        -r \
         examples/poc/cli1.nim
 ```
 
@@ -118,7 +121,7 @@ This package follows the [version number](https://github.com/dankamongmen/notcur
 * currently [`v3.TBD`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/TBD) (upstream: [`v3.TBD`](https://github.com/dankamongmen/notcurses/releases/tag/TBD))
 * beginning with [`v2.3.13`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/v2.3.13) (upstream: [`v2.3.13`](https://github.com/dankamongmen/notcurses/releases/tag/v2.3.13)).
 
-:bulb: It's recommended to only use version `>= v3.TBD` of *this package*. Earlier versions of nim-notcurses were too raw and unproven.
+:bulb: It's recommended to only use version `>= 3.TBD` of *this package*. Earlier versions of nim-notcurses were too raw and unproven.
 
 Starting with [`v3.TBD`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/TBD) the implementation was overhauled, with Notcurses' examples and demo ported to the Nim API and tested to compile and run correctly on various platforms.
 
