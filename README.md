@@ -18,7 +18,7 @@ Same as Notcurses' [requirements](https://github.com/dankamongmen/notcurses#requ
 
 If the headers and compiled libraries are not in locations well known to your system's compiler and linker, you may need to use `--passC` and/or `--passL` with `nim c`.
 
-For example, on macOS, if Notcurses is built in `${HOME}/repos/notcurses/build`, you would use:
+For example, on macOS, if Notcurses is built in `${HOME}/repos/notcurses/build`, you would use
 ```text
 $ nim c --passC:"-I${HOME}/repos/notcurses/include" \
         --passL:"-rpath ${HOME}/repos/notcurses/build" \
@@ -31,7 +31,7 @@ $ nim c --passC:"-I${HOME}/repos/notcurses/include" \
 
 Building Notcurses is simple, but make sure to have its [requirements](https://github.com/dankamongmen/notcurses#requirements) installed.
 
-For example, on macOS, you could do it like this, taking advantage of multiple cores when running `make`:
+For example, on macOS, you could do it like this, taking advantage of multiple cores when running `make`
 
 ```text
 $ git clone https://github.com/dankamongmen/notcurses.git "${HOME}/repos/notcurses"
@@ -46,7 +46,7 @@ $ make -j16
 
 ## Installation
 
-Use the [Nimble](https://github.com/nim-lang/nimble#readme) package manager to add [`notcures`](https://nimble.directory/pkg/notcurses) to an existing project. To the project's `.nimble` file add:
+Use the [Nimble](https://github.com/nim-lang/nimble#readme) package manager to add [`notcures`](https://nimble.directory/pkg/notcurses) to an existing project. To the project's `.nimble` file add
 
 ```nim
 requires "notcurses >= 3.0.9 & < 4.0.0"
@@ -60,7 +60,7 @@ requires "notcurses >= 3.0.9 & < 4.0.0"
 import notcurses
 ```
 
-Or import its minimal core:
+Or import its minimal core
 
 ```nim
 import notcurses/core
@@ -74,7 +74,7 @@ import notcurses/core
 import notcurses/cli
 ```
 
-Or import its minimal core:
+Or import its minimal core
 
 ```nim
 import notcurses/cli/core
@@ -86,7 +86,7 @@ Notcurses' Direct mode is not supported by this package, it's recommended to use
 
 ### Examples
 
-See the modules in [`examples/poc`](examples/poc). To build and run the [`cli1`](examples/poc/cli1.nim) example do:
+See the modules in [`examples/poc`](examples/poc). To build and run the [`cli1`](examples/poc/cli1.nim) example do
 
 ```text
 $ nim c -r examples/poc/cli1.nim
@@ -109,7 +109,7 @@ If you don't fancy the Nim API provided by this package, you can import its lowe
 import notcurses/abi
 ```
 
-Or import its minimal core:
+Or import its minimal core
 
 ```nim
 import notcurses/abi/core
