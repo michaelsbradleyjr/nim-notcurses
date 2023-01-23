@@ -5,6 +5,9 @@ import notcurses
 # delete me
 import notcurses/abi
 
+# selection with mouse in `multiselect` PoC is not working
+# https://github.com/dankamongmen/notcurses/issues/2699
+
 let
   nc = Nc.init
   stdn = nc.stdPlane
