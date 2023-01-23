@@ -42,6 +42,14 @@ $ cmake .. -DCMAKE_BUILD_TYPE=Release
 $ make -j16
 ```
 
+## Installation
+
+Use the [Nimble](https://github.com/nim-lang/nimble#readme) package manager to add `notcures` to an existing project. Add the following to its `.nimble` file:
+
+```nim
+requires "notcurses >= 3.0.9 & < 4.0.0"
+```
+
 ## Usage
 
 ### Import
