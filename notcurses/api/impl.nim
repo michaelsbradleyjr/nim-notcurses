@@ -36,7 +36,8 @@ type
   Dimensions* = tuple[y, x: int]
 
   Input* = object
-    abiObj: ncinput
+    # make this private again
+    abiObj*: ncinput
 
   Margins* = tuple[top, right, bottom, left: uint32]
 
@@ -113,11 +114,10 @@ proc getBlocking*(notcurses: Notcurses, input: var Input) =
   discard notcurses.abiPtr.notcurses_get_blocking(unsafeAddr input.abiObj)
 
 func init*(T: type Channel, r, g, b: int): T =
-  T(NCCHANNEL_INITIALIZER(r.cint, g.cint, b.cint).uint64)
+  NCCHANNEL_INITIALIZER(r.cint, g.cint, b.cint).T
 
 func init*(T: type Channel, fr, fg, fb, br, bg, bb: int): T =
-  T(NCCHANNELS_INITIALIZER(fr.cint, fg.cint, fb.cint, br.cint, bg.cint,
-    bb.cint).uint64)
+  NCCHANNELS_INITIALIZER(fr.cint, fg.cint, fb.cint, br.cint, bg.cint, bb.cint).T
 
 func init*(T: type Margins, top, right, bottom, left: int = 0): T =
   (top: top.uint32, right: right.uint32, bottom: bottom.uint32,

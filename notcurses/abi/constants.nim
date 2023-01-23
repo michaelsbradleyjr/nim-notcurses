@@ -195,6 +195,13 @@ type
     NCBLIT_4x1
     NCBLIT_8x1
 
+  # L79 - notcurses/notcurses.h
+  ncalign_e* {.pure.} = enum
+    NCALIGN_UNALIGNED
+    NCALIGN_LEFT
+    NCALIGN_CENTER
+    NCALIGN_RIGHT
+
   # L101 - notcurses/notcurses.h
   ncscale_e* {.pure.} = enum
     NCSCALE_NONE

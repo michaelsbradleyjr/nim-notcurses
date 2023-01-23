@@ -9,6 +9,9 @@ let
   nc = Nc.init
   stdn = nc.stdPlane
 
+proc nop() {.noconv.} = discard
+setControlCHook(nop)
+
 var items = [
   ncmselector_item(option: "Pa231", desc: "Protactinium-231 (162kg)", selected: false),
   ncmselector_item(option: "U233",  desc: "Uranium-233 (15kg)",       selected: false),
@@ -49,39 +52,37 @@ var sopts = ncmultiselector_options(
   boxchannels  : NcChannel.init(0x20, 0xe0, 0xe0, 0x20, 0x00, 0x00).uint64
 )
 
-let bgchannels = NcChannel.init(0x00, 0x20, 0x00, 0x00, 0x20, 0x00).uint64
+var bgchannels = NcChannel.init(0x00, 0x20, 0x00, 0x00, 0x20, 0x00).uint64
 
-discard ncchannels_set_fg_alpha(bgchannels, NCALPHA_BLEND.cuint)
-discard ncchannels_set_bg_alpha(bgchannels, NCALPHA_BLEND.cuint)
+discard ncchannels_set_fg_alpha(addr bgchannels, NCALPHA_BLEND.cuint)
+discard ncchannels_set_bg_alpha(addr bgchannels, NCALPHA_BLEND.cuint)
 
 if notcurses_canopen_images(nc.abiPtr):
-  let
-    ncv = ncvisual_from_file(joinPath(currentSourcePath.parentDir,
-      "../data/covid19.jpg").cstring)
-    vopts = ncvisual_options(n: stdn.abiPtr, scaling: NCSCALE_STRETCH)
-  ncvisual_blit(nc, ncv, vopts)
+  let ncv = ncvisual_from_file(joinPath(currentSourcePath.parentDir.parentDir,
+    "data/covid19.jpg").cstring)
+  var vopts = ncvisual_options(n: stdn.abiPtr, scaling: NCSCALE_STRETCH)
+  discard ncvisual_blit(nc.abiPtr, ncv, addr vopts)
 
-ncplane_set_fg_rgb(stdn, 0x40f040)
+discard ncplane_set_fg_rgb(stdn.abiPtr, 0x40f040)
 
-ncplane_putstr_aligned(stdn, 0, NCALIGN_RIGHT, "multiselect widget demo".cstring)
+discard ncplane_putstr_aligned(stdn.abiPtr, 0, NCALIGN_RIGHT, "multiselect widget demo".cstring)
 
-let
-  nopts = ncplane_options(y: 3.cint, x: 0.cint, rows: 1.cint, cols: 1.cint,
-    userptr: nil, name: nil, resizecb: nil, flags: 0.cint)
-  mseln = ncplane_create(n, nopts)
+var nopts = ncplane_options(y: 3.cint, x: 0.cint, rows: 1.cuint, cols: 1.cuint)
 
-ncplane_set_base(mseln, "".cstring, 0.cint, bgchannels)
+var mseln = ncplane_create(stdn.abiPtr, addr nopts)
 
-var ns = ncmultiselector_create(mseln, sopts)
+discard ncplane_set_base(mseln, "".cstring, 0, bgchannels)
+
+var ns = ncmultiselector_create(mseln, addr sopts)
 
 proc run_mselect() =
   var item = 0
   inc item
   nc.render.expect
   while true:
-    let ni = nc.getBlocking
+    var ni = nc.getBlocking
     if ni.event == Release: continue
-    if not ncmultiselector_offer_input(ns, ni):
+    if not ncmultiselector_offer_input(ns, addr ni.abiObj):
       let key = ni.toKey
       if key.isSome and key.get == Enter:
         ncmultiselector_destroy(ns)
@@ -90,7 +91,7 @@ proc run_mselect() =
       if utf8.isSome:
         case utf8.get:
           of "M", "J":
-            if ncinput_ctrl_p(ni):
+            if ncinput_ctrl_p(addr ni.abiObj):
               ncmultiselector_destroy(ns)
               return
         if utf8.get == "q": break
@@ -100,30 +101,30 @@ proc run_mselect() =
 run_mselect()
 
 sopts.title = "short round title".cstring
-mseln = ncplane_create(n, nopts)
-ncplane_set_base(mseln, "".cstring, 0.cint, bgchannels)
-ns = ncmultiselector_create(mseln, sopts)
+mseln = ncplane_create(stdn.abiPtr, addr nopts)
+discard ncplane_set_base(mseln, "".cstring, 0, bgchannels)
+ns = ncmultiselector_create(mseln, addr sopts)
 run_mselect()
 
 sopts.title = "short round title".cstring
 sopts.secondary = "now this secondary is also very, very, very outlandishly long, you see"
-mseln = ncplane_create(n, nopts)
-ncplane_set_base(mseln, "".cstring, 0.cint, bgchannels)
-ns = ncmultiselector_create(mseln, sopts)
+mseln = ncplane_create(stdn.abiPtr, addr nopts)
+discard ncplane_set_base(mseln, "".cstring, 0, bgchannels)
+ns = ncmultiselector_create(mseln, addr sopts)
 run_mselect()
 
 sopts.title = "the whole world is watching".cstring
 sopts.secondary = nil
 sopts.footer = "now this FOOTERFOOTER is also very, very, very outlandishly long, you see"
-mseln = ncplane_create(n, nopts)
-ncplane_set_base(mseln, "".cstring, 0.cint, bgchannels)
-ns = ncmultiselector_create(mseln, sopts)
+mseln = ncplane_create(stdn.abiPtr, addr nopts)
+discard ncplane_set_base(mseln, "".cstring, 0, bgchannels)
+ns = ncmultiselector_create(mseln, addr sopts)
 run_mselect()
 
 sopts.title = "chomps".cstring
 sopts.secondary = nil
 sopts.footer = nil
-mseln = ncplane_create(n, nopts)
-ncplane_set_base(mseln, "".cstring, 0.cint, bgchannels)
-ns = ncmultiselector_create(mseln, &sopts)
+mseln = ncplane_create(stdn.abiPtr, addr nopts)
+discard ncplane_set_base(mseln, "".cstring, 0, bgchannels)
+ns = ncmultiselector_create(mseln, addr sopts)
 run_mselect()
