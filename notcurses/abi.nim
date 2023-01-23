@@ -6,18 +6,18 @@ when not NcStatic:
   const
     nc_init_lib =
       when defined(macosx):
-        "libnotcurses.3.dylib"
+        "libnotcurses.dylib"
       elif defined(windows):
         "libnotcurses.dll"
       else:
-        "libnotcurses.so.3"
+        "libnotcurses.so"
 
     nc_lib =
       when defined(macosx):
-        "libnotcurses-ffi.3.dylib"
+        "libnotcurses-ffi.dylib"
       elif defined(windows):
         "libnotcurses-ffi.dll"
       else:
-        "libnotcurses-ffi.so.3"
+        "libnotcurses-ffi.so"
 
 include ./abi/impl
