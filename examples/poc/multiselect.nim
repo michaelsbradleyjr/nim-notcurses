@@ -79,8 +79,6 @@ discard ncplane_set_base(mseln, "".cstring, 0, bgchannels)
 var ns = ncmultiselector_create(mseln, addr sopts)
 
 proc run_mselect() =
-  var item = 0
-  inc item
   nc.render.expect
   while true:
     var ni = nc.getBlocking
