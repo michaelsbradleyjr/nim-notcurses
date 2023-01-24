@@ -4,4 +4,5 @@ import notcurses
 
 let nc = Nc.init NcOptions.init DrainInput
 
+nc.render.expect
 sleep 3000
