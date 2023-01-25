@@ -206,6 +206,13 @@ proc putStr*(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0] =
   else:
     ok ApiSuccessPos(code: code.int)
 
+proc putStrYX*(plane: Plane, s: string, y, x: int32 = -1): Result[ApiSuccessPos, ApiError0] =
+  let code = plane.abiPtr.ncplane_putstr_yx(y, x, s.cstring)
+  if code <= 0:
+    err ApiError0(code: code.int, msg: $PutStrYX)
+  else:
+    ok ApiSuccessPos(code: code.int)
+
 proc putWc*(plane: Plane, wchar: wchar_t): Result[ApiSuccess0, ApiErrorNeg] =
   # wchar_t is implementation dependent but Notcurses seems to assume 32 bits
   # (maybe for good reason); nim-notcurses' api/abi for ncplane_putwc needs

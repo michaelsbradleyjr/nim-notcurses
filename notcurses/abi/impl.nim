@@ -180,6 +180,9 @@ proc ncplane_set_base*(n: ptr ncplane, egc: cstring, stylemask: uint16, channels
 # L2225 - notcurses/notcurses.h
 proc ncplane_putstr*(n: ptr ncplane, gclustarr: cstring): cint {.nc.}
 
+# L2265 - notcurses/notcurses.h
+proc ncplane_putstr_yx*(n: ptr ncplane, y, x: cint, gclustarr: cstring): cint {.nc.}
+
 # L2292 - notcurses/notcurses.h
 proc ncplane_putstr_aligned*(n: ptr ncplane, y: cint, align: ncalign_e, s: cstring): cint {.nc.}
 

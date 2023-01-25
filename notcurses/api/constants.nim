@@ -15,6 +15,7 @@ type
     Grad      = "ncplane_gradient failed!"
     Grad2x1   = "ncplane_gradient2x1 failed!"
     PutStr    = "ncplane_putstr failed!"
+    PutStrYX  = "ncplane_putstr_yx failed!"
     PutWc     = "ncplane_putwc failed!"
     Render    = "notcurses_render failed!"
     SetScroll = "ncplane_set_scrolling failed!"
