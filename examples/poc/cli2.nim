@@ -3,8 +3,11 @@ import notcurses/cli
 
 let nc = Nc.init
 
-# there is a sporadic bug in Notcurses whereby in some terminals capability
-# query stuf is leaking into user input at the start of the program
+# there are one/more bugs in Notcurses whereby, in some terminals, capability
+# query data is leaking into user input at the start of the program; also,
+# seemingly related, in some terminals keypresses are spuriously being reported
+# when e.g. focus is switched from the OS window for the terminal to some other
+# window, or to the OS menu bar, etc.
 
 proc nop() {.noconv.} = discard
 setControlCHook(nop)
