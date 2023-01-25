@@ -1,9 +1,10 @@
 import notcurses/cli
 # or: import notcurses/cli/core
 
-let
-  nc = Nc.init
-  stdn = nc.stdPlane
+let nc = Nc.init
+
+# there is a sporadic bug in Notcurses whereby in some terminals capability
+# query stuf is leaking into user input at the start of the program
 
 proc nop() {.noconv.} = discard
 setControlCHook(nop)
@@ -11,7 +12,7 @@ setControlCHook(nop)
 # https://codepoints.net/U+FFFD?lang=en
 const replacementChar = string.fromBytes hexToByteArray("0xEFBFBD", 3)
 
-proc put(s: string = "") = stdn.putStr(s).expect
+proc put(s: string = "") = nc.stdPlane.putStr(s).expect
 
 proc put[T](v: Option[T]) =
   var s: string
@@ -46,7 +47,7 @@ while true:
   put "utf8  : "
 
   if utf8.isSome:
-    let res = stdn.putStr utf8.get & "\n"
+    let res = nc.stdPlane.putStr utf8.get & "\n"
     if res.isErr: putLn replacementChar
   else:
     putLn $utf8
