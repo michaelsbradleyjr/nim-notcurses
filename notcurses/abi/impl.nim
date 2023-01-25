@@ -1,3 +1,7 @@
+# line number comments in this module and elsewhere re: locations in
+# notcurses.h need to be revised w.r.t. version of Notcurses currently being
+# tracked, presently v3.0.9
+
 import std/macros
 
 import ./constants
