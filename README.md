@@ -10,7 +10,11 @@ Nim wrapper for [Notcurses](https://github.com/dankamongmen/notcurses#readme): b
 
 This package provides a Nim API and a lower-level wrapper for Notcurses' C ABI.
 
-:construction: The following includes forward-looking statements regarding the aims of development being done on the [`version_3_revamp`](https://github.com/michaelsbradleyjr/nim-notcurses/tree/version_3_revamp) branch, which have not yet been committed to `master` nor been tagged as a version.
+---
+
+:construction: [`version_3_revamp`](https://github.com/michaelsbradleyjr/nim-notcurses/tree/version_3_revamp) is a work in progress, its changes are not yet included in any tagged version. What follows includes forward-looking statements.
+
+---
 
 ## Requirements
 
@@ -50,17 +54,17 @@ $ make -j16
 
 Use the [Nimble](https://github.com/nim-lang/nimble#readme) package manager to add [`notcures`](https://nimble.directory/pkg/notcurses) to an existing project. To the project's `.nimble` file add
 
-```nim
-requires "notcurses@#version_3_revamp"
-```
-
-:construction: The instructions above will be revised once changes in the [`version_3_revamp`](https://github.com/michaelsbradleyjr/nim-notcurses/tree/version_3_revamp) branch have been committed to `master` and tagged as a version.
-
 <!--
 ```nim
 requires "notcurses >= 3.TBD & < 4.0.0"
 ```
 -->
+
+```nim
+requires "notcurses@#version_3_revamp"
+```
+
+:construction: These instructions will be revised once changes in [`version_3_revamp`](https://github.com/michaelsbradleyjr/nim-notcurses/tree/version_3_revamp) are included in a tagged version.
 
 ## Usage
 
