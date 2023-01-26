@@ -10,6 +10,8 @@ Nim wrapper for [Notcurses](https://github.com/dankamongmen/notcurses#readme): b
 
 This package provides a Nim API and a lower-level wrapper for Notcurses' C ABI.
 
+:construction: The following includes forward-looking statements regarding the aims of development being done on the [`version_3_revamp`](https://github.com/michaelsbradleyjr/nim-notcurses/tree/version_3_revamp) branch, which have not yet been committed to `master` nor been tagged as a version.
+
 ## Requirements
 
 Same as Notcurses' [requirements](https://github.com/dankamongmen/notcurses#requirements).
@@ -31,7 +33,7 @@ $ nim c --passC:"-I${HOME}/repos/notcurses/include" \
 
 Building Notcurses is simple, but make sure to have its [requirements](https://github.com/dankamongmen/notcurses#requirements) installed.
 
-For example, on macOS, you could do it like this, taking advantage of multiple cores when running `make`
+For example, on Linux or macOS, you could do it like this, taking advantage of multiple cores when running `make`
 
 ```text
 $ git clone https://github.com/dankamongmen/notcurses.git "${HOME}/repos/notcurses"
@@ -42,15 +44,23 @@ $ cmake .. -DCMAKE_BUILD_TYPE=Release
 $ make -j16
 ```
 
-:bulb: `make install` is not run after `make` *unless* you want to install your own build system-wide.
+:bulb: `make install` should not be run after `make` *unless* you want to install your own build system-wide.
 
 ## Installation
 
 Use the [Nimble](https://github.com/nim-lang/nimble#readme) package manager to add [`notcures`](https://nimble.directory/pkg/notcurses) to an existing project. To the project's `.nimble` file add
 
 ```nim
-requires "notcurses >= 3.0.9 & < 4.0.0"
+requires "notcurses@#version_3_revamp"
 ```
+
+:construction: The instructions above will be revised once changes in the [`version_3_revamp`](https://github.com/michaelsbradleyjr/nim-notcurses/tree/version_3_revamp) branch have been committed to `master` and tagged as a version.
+
+<!--
+```nim
+requires "notcurses >= 3.TBD & < 4.0.0"
+```
+-->
 
 ## Usage
 
