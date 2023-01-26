@@ -61,7 +61,7 @@ requires "notcurses >= 3.TBD & < 4.0.0"
 -->
 
 ```nim
-requires "notcurses@#version_3_revamp"
+requires "notcurses#version_3_revamp"
 ```
 
 :construction: These instructions will be revised once changes in [`version_3_revamp`](https://github.com/michaelsbradleyjr/nim-notcurses/tree/version_3_revamp) are included in a tagged version.
