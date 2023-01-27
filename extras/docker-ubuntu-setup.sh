@@ -48,4 +48,5 @@ cd "${HOME}/repos/nim-notcurses"
 git switch version_3_revamp
 nimble --accept develop
 export LD_LIBRARY_PATH="$(echo "${HOME}/repos/notcurses/build:${LD_LIBRARY_PATH}" | sed -n 's/[ :].*//; /^lo$/t; /./p')"
-nim c --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build" -r examples/poc/cli1.nim
+echo && echo nim c --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build" -r examples/poc/cli1.nim && echo
+nim c --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build" -r examples/poc/cli1.nim || true
