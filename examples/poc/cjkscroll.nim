@@ -22,7 +22,7 @@ setControlCHook(stop)
 # https://codepoints.net/cjk_unified_ideographs
 const
   first = 0x4e00
-  last  = 0x9fff
+  last = 0x9fff
 
 var wc = first
 

@@ -43,7 +43,7 @@ while true:
   putLn "point : " & $ni.codepoint
 
   let key = ni.toKey
-  put   "key   : "
+  put "key   : "
   putLn key
 
   let utf8 = ni.toUTF8
