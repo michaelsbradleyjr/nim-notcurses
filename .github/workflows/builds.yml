@@ -1,4 +1,4 @@
-name: Tests
+name: Builds
 
 # on:
 #   pull_request:
@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  tests:
+  build:
     env:
       NPROC: 2
     strategy:
