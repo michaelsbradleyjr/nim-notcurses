@@ -1,6 +1,6 @@
-# line number comments in this module and elsewhere re: locations in
-# notcurses.h need to be revised w.r.t. version of Notcurses currently being
-# tracked, presently v3.0.9
+# line number comments in this and other abi modules re: decls/defs in
+# Notcurses' headers need to be revised w.r.t. the version of Notcurses
+# currently being tracked, presently v3.0.9
 
 import std/macros
 
@@ -11,20 +11,18 @@ type
   AbiDefect = object of Defect
   wchar_t* {.importc.} = object
 
-const
-  nc_header = "notcurses/notcurses.h"
-  nc_init_name = nc_init_prefix & "init"
+const nc_header = "notcurses/notcurses.h"
 
-when NcStatic:
+when ncStatic:
   {.pragma: nc, cdecl, header: nc_header, importc.}
   {.pragma: nc_bycopy, bycopy, header: nc_header.}
   {.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
-  {.pragma: nc_init, cdecl, header: nc_header, importc: nc_init_name.}
+  {.pragma: nc_init, cdecl, header: nc_header, importc.}
 else:
   {.pragma: nc, cdecl, dynlib: nc_lib, importc.}
   {.pragma: nc_bycopy, bycopy, header: nc_header.}
   {.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
-  {.pragma: nc_init, cdecl, dynlib: nc_init_lib, importc: nc_init_name.}
+  {.pragma: nc_init, cdecl, dynlib: nc_init_lib, importc.}
 
 # L187 notcurses/nckeys.h
 func nckey_synthesized_p*(w: uint32): bool =
@@ -63,9 +61,7 @@ type
   ncreel*          {.nc_incomplete, importc: "struct ncreel"         .} = object
   nctab*           {.nc_incomplete, importc: "struct nctab"          .} = object
   nctabbed*        {.nc_incomplete, importc: "struct nctabbed"       .} = object
-  # ncdirect*      {.nc_incomplete, importc: "struct ncdirect"       .} = object
-  # nim-notcurses does not support Direct mode, it's recommended to use CLI mode instead
-  # For more context see https://github.com/dankamongmen/notcurses/issues/1834
+  ncdirect*        {.nc_incomplete, importc: "struct ncdirect"       .} = object
 
 # L127 - notcurses/notcurses.h
 macro NCCHANNEL_INITIALIZER*(r, g, b: cint): culonglong =
@@ -101,8 +97,12 @@ type
     margin_l*: cuint
     flags*   : culonglong
 
-# L1026, L1030 - notcurses/notcurses.h
-proc notcurses_init*(opts: ptr notcurses_options, fp: File): ptr notcurses {.nc_init.}
+when not ncCore:
+  # L1087 - notcurses/notcurses.h
+  proc notcurses_init*(opts: ptr notcurses_options, fp: File): ptr notcurses {.nc_init.}
+else:
+  # L1091 - notcurses/notcurses.h
+  proc notcurses_core_init*(opts: ptr notcurses_options, fp: File): ptr notcurses {.nc_init.}
 
 # L1033 - notcurses/notcurses.h
 proc notcurses_stop*(nc: ptr notcurses): cint {.nc.}
@@ -261,11 +261,34 @@ proc ncmultiselector_offer_input*(n: ptr ncmultiselector, ni: ptr ncinput): bool
 # L4010 - notcurses/notcurses.h
 proc ncmultiselector_destroy*(n: ptr ncmultiselector) {.nc.}
 
+const ncd_header = "notcurses/direct.h"
+
+when ncStatic:
+  {.pragma: ncd, cdecl, header: ncd_header, importc.}
+  {.pragma: ncd_bycopy, bycopy, header: ncd_header.}
+  {.pragma: ncd_incomplete, header: ncd_header, incompleteStruct.}
+  {.pragma: ncd_init, cdecl, header: ncd_header, importc.}
+else:
+  {.pragma: ncd, cdecl, dynlib: nc_lib, importc.}
+  {.pragma: ncd_bycopy, bycopy, header: ncd_header.}
+  {.pragma: ncd_incomplete, header: ncd_header, incompleteStruct.}
+  {.pragma: ncd_init, cdecl, dynlib: nc_init_lib, importc.}
+
+when not ncCore:
+# L59 - notcurses/direct.h
+  proc ncdirect_init*(termtype: cstring, fp: File, flags: uint64): ptr ncdirect {.ncd_init.}
+else:
+# L63 - notcurses/direct.h
+  proc ncdirect_core_init*(termtype: cstring, fp: File, flags: uint64): ptr ncdirect {.ncd_init.}
+
 var
   lib_notcurses_major*: cint
   lib_notcurses_minor*: cint
   lib_notcurses_patch*: cint
   lib_notcurses_tweak*: cint
+
+# L279 - notcurses/direct.h
+proc ncdirect_stop*(nc: ptr ncdirect): cint {.ncd.}
 
 notcurses_version_components(addr lib_notcurses_major, addr lib_notcurses_minor, addr lib_notcurses_patch, addr lib_notcurses_tweak)
 

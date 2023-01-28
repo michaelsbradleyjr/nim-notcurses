@@ -1,3 +1,3 @@
 const
-  abiInit = notcurses_init
+  abiInit = notcurses_core_init
   baseInitOption = 0.InitOption

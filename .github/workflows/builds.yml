@@ -237,6 +237,7 @@ jobs:
             cjkscroll
             cli1
             cli2
+            direct1
             gradients
             multiselect
             tui1

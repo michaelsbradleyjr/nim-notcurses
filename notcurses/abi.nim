@@ -1,8 +1,8 @@
 const
-  NcStatic {.booldefine.}: bool = false
-  nc_init_prefix = "notcurses_"
+  ncCore = false
+  ncStatic {.booldefine.}: bool = false
 
-when not NcStatic:
+when not ncStatic:
   const
     nc_init_lib =
       when defined(macosx):
@@ -19,5 +19,9 @@ when not NcStatic:
         "libnotcurses-ffi.dll"
       else:
         "libnotcurses-ffi.so"
+# else:
+# look into using e.g. `{.passC/L: staticExec("pkg-config ...") .}`, but
+# consider Notcurses has a complex set of dependencies relative to
+# `import notcurses/-cli|direct/-core`, OS, and options passed to cmake
 
 include ./abi/impl

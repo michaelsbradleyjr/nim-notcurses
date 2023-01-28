@@ -283,7 +283,7 @@ proc init*(T: type Notcurses, options: Options = Options.init,
   if not ncApiObject.abiPtr.isNil or not ncAbiPtr.load.isNil:
     raise (ref ApiDefect)(msg: $AlreadyInitialized)
   else:
-    let abiPtr = notcurses_init(unsafeAddr options.abiObj, file)
+    let abiPtr = abiInit(unsafeAddr options.abiObj, file)
     if abiPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
     ncApiObject = T(abiPtr: abiPtr)
     if not ncAbiPtr.exchange(ncApiObject.abiPtr).isNil:
@@ -320,13 +320,13 @@ func toUTF8*(input: Input): Option[string] =
 
 # Aliases
 type
-  Nc*          = Notcurses
-  NcChannel*   = Channel
+  Nc* = Notcurses
+  NcChannel* = Channel
   NcCodepoint* = Codepoint
-  NcInput*     = Input
-  NcKeys*      = Keys
+  NcInput* = Input
+  NcKeys* = Keys
   NcLogLevels* = LogLevels
-  NcMargins*   = Margins
-  NcOptions*   = Options
-  NcPlane*     = Plane
-  NcStyles*    = Styles
+  NcMargins* = Margins
+  NcOptions* = Options
+  NcPlane* = Plane
+  NcStyles* = Styles

@@ -2,13 +2,13 @@
 
 [![License: Apache](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![ABI: stable](https://img.shields.io/badge/ABI-stable-green.svg?color=2dbd42)](https://github.com/michaelsbradleyjr/nim-notcurses#stability)
-[![API: experimental](https://img.shields.io/badge/API-experimental-orange.svg)](https://github.com/michaelsbradleyjr/nim-notcurses#stability)
+[![ABI wrapper: stable](https://img.shields.io/badge/ABI%20wrapper-stable-green.svg?color=2dbd42)](#stability)
+[![API: experimental](https://img.shields.io/badge/API-experimental-orange.svg)](#stability)
 [![Builds (GitHub Actions)](https://github.com/michaelsbradleyjr/nim-notcurses/workflows/Builds/badge.svg?branch=version_3_revamp)](https://github.com/michaelsbradleyjr/nim-notcurses/actions?query=workflow%3ABuilds+branch%3Aversion_3_revamp)
 
 Nim wrapper for [Notcurses](https://github.com/dankamongmen/notcurses#readme): blingful TUIs and character graphics.
 
-This package provides a Nim API and a lower-level wrapper for Notcurses' C ABI.
+This package provides a Nim API and a low-level wrapper for Notcurses' raw C API.
 
 ---
 
@@ -68,7 +68,7 @@ requires "notcurses#version_3_revamp"
 
 ## Usage
 
-### Import
+### API
 
 ```nim
 import notcurses
@@ -96,28 +96,21 @@ import notcurses/cli/core
 
 #### Direct mode
 
-Notcurses' Direct mode is not supported by this package, it's recommended to use CLI mode instead. For more context see [dankamongmen/notcurses#1834](https://github.com/dankamongmen/notcurses/issues/1834).
-
-### Examples
-
-See the modules in [`examples/poc`](examples/poc). To build and run the [`cli1`](examples/poc/cli1.nim) example do
-
-```text
-$ nim c -r examples/poc/cli1.nim
+```nim
+import notcurses/direct
 ```
 
-You can use additional options, cf. *[Requirements](#requirements)*.
+Or import its minimal core
 
-```text
-$ nim c --passC:"-I${HOME}/repos/notcurses/include" \
-        --passL:"-rpath ${HOME}/repos/notcurses/build" \
-        -r \
-        examples/poc/cli1.nim
+```nim
+import notcurses/direct/core
 ```
 
-### ABI
+:bulb: It is generally recommended to use [CLI mode](#cli-mode) instead of Direct mode. See Notcurses' [FAQs](https://github.com/dankamongmen/notcurses#faqs), and for more context see [dankamongmen/notcurses#1853](https://github.com/dankamongmen/notcurses/discussions/1853) and [dankamongmen/notcurses#1834](https://github.com/dankamongmen/notcurses/issues/1834).
 
-If you don't fancy the Nim API provided by this package, you can import its lower-level wrapper for Notcurses' C ABI and work with that directly, or use it to build an API to your liking.
+### ABI wrapper
+
+If you don't fancy the Nim API provided by this package, you can import its low-level wrapper for Notcurses' raw C API and work with that directly, or use it to build an API to your liking.
 
 ```nim
 import notcurses/abi
@@ -128,6 +121,34 @@ Or import its minimal core
 ```nim
 import notcurses/abi/core
 ```
+
+## Examples
+
+See the modules in [`examples/poc`](examples/poc). To build and run the [`cli1`](examples/poc/cli1.nim) example do
+
+```text
+$ nim c -r examples/poc/cli1.nim
+```
+
+You can use additional options, cf. [Requirements](#requirements).
+
+```text
+$ nim c --passC:"-I${HOME}/repos/notcurses/include" \
+        --passL:"-rpath ${HOME}/repos/notcurses/build" \
+        -r \
+        examples/poc/cli1.nim
+```
+
+## Goals
+
+* Provide a comprehensive wrapper for Notcurses' raw C API, and keep it up-to-date as Notcurses evolves.
+* Offer a higher-level wrapper built atop the lower-level one, allowing Notcurses to be readily leveraged with the language features of Nim.
+
+The high-level wrapper is referred to as a *Nim API* elsewhere in this document and repository, for want of a better description.
+
+In the future, it may be desirable to split this project into two packages: `notcurses` and `notcurses_abi`. The latter would be a dependency of the former. At present, it makes sense to develop the wrappers together as a single package.
+
+**Non-goals:** provide an extensive widgets library, a text-based windowing system, or other advanced facilities that could be built with nim-notcurses. Such things can be explored in projects that have nim-notcurses as a dependency.
 
 ## Versioning
 
@@ -141,18 +162,16 @@ Starting with [`v3.TBD`](https://github.com/michaelsbradleyjr/nim-notcurses/rele
 
 ## Stability
 
-Notcurses' C ABI is stable per major version, and this package's lower-level wrapper for it is likewise stable.
+Notcurses' ABI is stable per major version, and this package's low-level wrapper is likewise stable.
 
-The Nim API provided by this package is currently marked as experimental. Until it is marked as stable, it may be subject to breaking changes across patch and minor versions.
+The Nim API (high-level wrapper) provided by this package is currently marked as experimental. Until it is marked as stable, it may be subject to breaking changes across patch and minor versions.
 
 ## License
 
-### Wrapper license
-
 nim-notcurses is licensed and distributed under either of:
 
-* Apache License, Version 2.0: [LICENSE-APACHEv2](LICENSE-APACHEv2) or https://opensource.org/licenses/Apache-2.0
-* MIT license: [LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT
+* Apache License, Version 2.0: [LICENSE-APACHEv2](LICENSE-APACHEv2) or [https://opensource.org/licenses/Apache-2.0](https://opensource.org/licenses/Apache-2.0)
+* MIT license: [LICENSE-MIT](LICENSE-MIT) or [https://opensource.org/licenses/MIT](https://opensource.org/licenses/MIT)
 
 at your option. The contents of this repository may not be copied, modified, or distributed except according to those terms.
 
