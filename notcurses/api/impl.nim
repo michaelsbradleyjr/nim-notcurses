@@ -283,7 +283,14 @@ proc init*(T: type Notcurses, options: Options = Options.init,
   if not ncApiObject.abiPtr.isNil or not ncAbiPtr.load.isNil:
     raise (ref ApiDefect)(msg: $AlreadyInitialized)
   else:
-    let abiPtr = abiInit(unsafeAddr options.abiObj, file)
+    var abiPtr: ptr notcurses
+    when (NimMajor, NimMinor, NimPatch) < (1, 4, 0):
+      try:
+        abiPtr = abiInit(unsafeAddr options.abiObj, file)
+      except Exception:
+        raise (ref ApiDefect)(msg: $FailedToInitialize)
+    else:
+      abiPtr = abiInit(unsafeAddr options.abiObj, file)
     if abiPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
     ncApiObject = T(abiPtr: abiPtr)
     if not ncAbiPtr.exchange(ncApiObject.abiPtr).isNil:
