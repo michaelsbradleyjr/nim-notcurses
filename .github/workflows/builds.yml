@@ -10,7 +10,6 @@ name: Builds
 #   workflow_dispatch:
 
 on:
-  pull_request:
   push:
   schedule:
     - cron: '0 0 * * *'
