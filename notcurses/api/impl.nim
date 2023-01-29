@@ -7,7 +7,7 @@ import std/[atomics, bitops, options]
 
 import pkg/stew/[byteutils, results]
 
-export options, byteutils, results, wchar_t
+export byteutils, options, results, wchar_t
 
 type
   ApiDefect* = object of Defect
@@ -122,11 +122,11 @@ proc get*(T: type Notcurses): T =
 proc getBlocking*(notcurses: Notcurses, input: var Input) =
   discard notcurses.abiPtr.notcurses_get_blocking(unsafeAddr input.abiObj)
 
-func init*(T: type Channel, r, g, b: int): T =
-  NCCHANNEL_INITIALIZER(r.cint, g.cint, b.cint).T
+func init*(T: type Channel, r, g, b: int32): T =
+  NCCHANNEL_INITIALIZER(r, g, b).T
 
-func init*(T: type Channel, fr, fg, fb, br, bg, bb: int): T =
-  NCCHANNELS_INITIALIZER(fr.cint, fg.cint, fb.cint, br.cint, bg.cint, bb.cint).T
+func init*(T: type Channel, fr, fg, fb, br, bg, bb: int32): T =
+  NCCHANNELS_INITIALIZER(fr, fg, fb, br, bg, bb).T
 
 func init*(T: type Margins, top, right, bottom, left: int = 0): T =
   (top: top.uint32, right: right.uint32, bottom: bottom.uint32,
@@ -293,11 +293,14 @@ proc init*(T: type Notcurses, options: Options = Options.init,
     raise (ref ApiDefect)(msg: $AlreadyInitialized)
   else:
     # it became necessary re: recent commits in Nim's version-1-6 and
-    # version-2-0 branches to here use `ptr abi.notcurses` instead of
-    # `ptr notcurses` (latter is used elsewhere in this module); seems like a
-    # compiler bug; regardless, happily, the change is compatible with older
-    # versions of Nim
-    var abiPtr: ptr abi.notcurses
+    # version-2-0 branches to here use `ptr abi.notcurses` or
+    # `ptr core.notcurses` instead of `ptr ncdirect` (latter is used elsewhere
+    # in this module); seems like a compiler bug; regardless, happily, the
+    # change is compatible with older versions of Nim
+    when compiles(abi.notcurses):
+      var abiPtr: ptr abi.notcurses
+    else:
+      var abiPtr: ptr core.notcurses
     when (NimMajor, NimMinor, NimPatch) < (1, 6, 0):
       try:
         abiPtr = abiInit(unsafeAddr options.abiObj, file)

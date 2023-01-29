@@ -1,5 +1,5 @@
-import notcurses/cli
-# or: import notcurses/cli/core
+import notcurses/cli/core
+# or: import notcurses/cli
 
 let nc = Nc.init
 

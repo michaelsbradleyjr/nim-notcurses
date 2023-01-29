@@ -281,6 +281,9 @@ else:
 # L63 - notcurses/direct.h
   proc ncdirect_core_init*(termtype: cstring, fp: File, flags: uint64): ptr ncdirect {.ncd_init.}
 
+# L92 - notcurses/direct.h
+proc ncdirect_putstr*(nc: ptr ncdirect, channels: uint64, utf8: cstring): cint {.ncd.}
+
 # L279 - notcurses/direct.h
 proc ncdirect_stop*(nc: ptr ncdirect): cint {.ncd.}
 
