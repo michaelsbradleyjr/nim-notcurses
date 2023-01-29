@@ -283,8 +283,13 @@ proc init*(T: type Notcurses, options: Options = Options.init,
   if not ncApiObject.abiPtr.isNil or not ncAbiPtr.load.isNil:
     raise (ref ApiDefect)(msg: $AlreadyInitialized)
   else:
-    var abiPtr: ptr notcurses
-    when (NimMajor, NimMinor, NimPatch) < (1, 4, 0):
+    # it became necessary re: recent commits in Nim's version-1-6 and
+    # version-2-0 branches to here use `ptr abi.notcurses` instead of
+    # `ptr notcurses` (latter is used elsewhere in this module); seems like a
+    # compiler bug; regardless, happily, the change is compatible with older
+    # versions of Nim
+    var abiPtr: ptr abi.notcurses
+    when (NimMajor, NimMinor, NimPatch) < (1, 6, 0):
       try:
         abiPtr = abiInit(unsafeAddr options.abiObj, file)
       except Exception:
