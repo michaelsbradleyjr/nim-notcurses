@@ -2,7 +2,7 @@
 # Notcurses' headers need to be revised w.r.t. the version of Notcurses
 # currently being tracked, presently v3.0.9
 
-import std/macros
+import std/[macros, terminal]
 
 import ./constants
 export constants
@@ -300,3 +300,14 @@ if nim_notcurses_version.major != lib_notcurses_major:
     $lib_notcurses_major & " (nim-notcurses: " & $nim_notcurses_version.major &
     "." & $nim_notcurses_version.minor & "." & $nim_notcurses_version.patch &
     ", libnotcurses: " & $notcurses_version() & ")")
+elif (nim_notcurses_version.major, nim_notcurses_version.minor) >
+    (lib_notcurses_major, lib_notcurses_minor):
+  let msg =
+    "nim-notcurses minor version " & $nim_notcurses_version.major & "." &
+    $nim_notcurses_version.minor &
+    " is newer than Notcurses library minor version " & $lib_notcurses_major &
+    "." & $lib_notcurses_minor & " (nim-notcurses: " &
+    $nim_notcurses_version.major & "." & $nim_notcurses_version.minor &
+    "." & $nim_notcurses_version.patch & ", libnotcurses: " &
+    $notcurses_version() & ")"
+  styledWriteLine(stderr, fgYellow, "Warning: ", resetStyle, msg)
