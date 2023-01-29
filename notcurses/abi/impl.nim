@@ -2,7 +2,7 @@
 # Notcurses' headers need to be revised w.r.t. the version of Notcurses
 # currently being tracked, presently v3.0.9
 
-import std/[macros, terminal]
+import std/[macros, strutils, terminal]
 
 import ./constants
 export constants
@@ -292,22 +292,36 @@ proc ncdirect_stop*(nc: ptr ncdirect): cint {.ncd.}
 
 notcurses_version_components(addr lib_notcurses_major, addr lib_notcurses_minor, addr lib_notcurses_patch, addr lib_notcurses_tweak)
 
+let majorMismatchMsg = ("""
+nim-notcurses major version $1 is not compatible with Notcurses library major
+version $4 (nim-notcurses: $1.$2.$3, libnotcurses: $5)
+""" % [
+  $nim_notcurses_version.major,
+  $nim_notcurses_version.minor,
+  $nim_notcurses_version.patch,
+  $lib_notcurses_major,
+  $notcurses_version()
+]).strip.replace("\n", " ")
+
 if nim_notcurses_version.major != lib_notcurses_major:
-  raise (ref AbiDefect)(msg:
-    "nim-notcurses major version " &
-    $nim_notcurses_version.major &
-    " is not compatible with Notcurses library major version " &
-    $lib_notcurses_major & " (nim-notcurses: " & $nim_notcurses_version.major &
-    "." & $nim_notcurses_version.minor & "." & $nim_notcurses_version.patch &
-    ", libnotcurses: " & $notcurses_version() & ")")
-elif (nim_notcurses_version.major, nim_notcurses_version.minor) >
-    (lib_notcurses_major, lib_notcurses_minor):
-  let msg =
-    "nim-notcurses minor version " & $nim_notcurses_version.major & "." &
-    $nim_notcurses_version.minor &
-    " is newer than Notcurses library minor version " & $lib_notcurses_major &
-    "." & $lib_notcurses_minor & " (nim-notcurses: " &
-    $nim_notcurses_version.major & "." & $nim_notcurses_version.minor &
-    "." & $nim_notcurses_version.patch & ", libnotcurses: " &
-    $notcurses_version() & ")"
-  styledWriteLine(stderr, fgYellow, "Warning: ", resetStyle, msg)
+  styledWriteLine(stderr, fgRed, "Error: ", resetStyle, majorMismatchMsg)
+  raise (ref AbiDefect)(msg: "libnotcurses major version mismatch")
+
+const ncWarnMinor {.booldefine.}: bool = true
+
+when ncWarnMinor:
+  let minorMismatchMsg = ("""
+nim-notcurses minor version $1.$2 is newer than Notcurses library minor
+version $4.$5 (nim-notcurses: $1.$2.$3, libnotcurses: $6)
+  """ % [
+    $nim_notcurses_version.major,
+    $nim_notcurses_version.minor,
+    $nim_notcurses_version.patch,
+    $lib_notcurses_major,
+    $lib_notcurses_minor,
+    $notcurses_version()
+  ]).strip.replace("\n", " ")
+
+  if (nim_notcurses_version.major, nim_notcurses_version.minor) >
+      (lib_notcurses_major, lib_notcurses_minor):
+    styledWriteLine(stderr, fgYellow, "Warning: ", resetStyle, minorMismatchMsg)
