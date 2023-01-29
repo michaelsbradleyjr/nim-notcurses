@@ -281,14 +281,14 @@ else:
 # L63 - notcurses/direct.h
   proc ncdirect_core_init*(termtype: cstring, fp: File, flags: uint64): ptr ncdirect {.ncd_init.}
 
-var
-  lib_notcurses_major*: cint
-  lib_notcurses_minor*: cint
-  lib_notcurses_patch*: cint
-  lib_notcurses_tweak*: cint
-
 # L279 - notcurses/direct.h
 proc ncdirect_stop*(nc: ptr ncdirect): cint {.ncd.}
+
+var
+  lib_notcurses_major: cint
+  lib_notcurses_minor: cint
+  lib_notcurses_patch: cint
+  lib_notcurses_tweak: cint
 
 notcurses_version_components(addr lib_notcurses_major, addr lib_notcurses_minor, addr lib_notcurses_patch, addr lib_notcurses_tweak)
 
