@@ -41,23 +41,23 @@ type
 
   Input* = object
     # make this private again
-    abiObj*: ncinput
+    cObj*: ncinput
 
   Margins* = tuple[top, right, bottom, left: uint32]
 
   Notcurses* = object
     # make this private again
-    abiPtr*: ptr notcurses
+    cPtr*: ptr notcurses
 
   NotcursesDirect* = object
-    abiPtr: ptr ncdirect
+    cPtr: ptr ncdirect
 
   Options* = object
-    abiObj: notcurses_options
+    cObj: notcurses_options
 
   Plane* = object
     # make this private again
-    abiPtr*: ptr ncplane
+    cPtr*: ptr ncplane
 
 const
   NimNotcursesMajor* = nim_notcurses_version.major.int
@@ -80,32 +80,32 @@ let
   LibNotcursesTweak* = lib_notcurses_tweak.int
 
 var
-  ncAbiPtr: Atomic[pointer]
-  ncApiObject {.threadvar.}: Notcurses
-  ncdApiObject {.threadvar.}: NotcursesDirect
+  ncPtr: Atomic[pointer]
+  ncApiObj {.threadvar.}: Notcurses
+  ncdApiObj {.threadvar.}: NotcursesDirect
   ncExitProcAdded: Atomic[bool]
   ncStopped: Atomic[bool]
 
 func `$`*(codepoint: Codepoint): string = $codepoint.uint32
 
-func `$`*(input: Input): string = $input.abiObj
+func `$`*(input: Input): string = $input.cObj
 
-func `$`*(options: Options): string = $options.abiObj
+func `$`*(options: Options): string = $options.cObj
 
-func codepoint*(input: Input): Codepoint = input.abiObj.id.Codepoint
+func codepoint*(input: Input): Codepoint = input.cObj.id.Codepoint
 
 # if writing to y, x is one-shot, i.e. no updates over time (maybe upon
 # resize?) then can use `var int` for the parameters, and in the body have
 # cuint vars, then write to the argument vars (with conversion) after abi call
 proc dimYX*(plane: Plane, y, x: var uint32) =
-  plane.abiPtr.ncplane_dim_yx(addr y, addr x)
+  plane.cPtr.ncplane_dim_yx(addr y, addr x)
 
 proc dimYX*(plane: Plane): Dimensions =
   var y, x: cuint
   plane.dimYX(y, x)
   (y: y.int, x: x.int)
 
-func event*(input: Input): InputEvents = cast[InputEvents](input.abiObj.evtype)
+func event*(input: Input): InputEvents = cast[InputEvents](input.cObj.evtype)
 
 proc expect*[T: ApiSuccess | bool, E: ApiError](res: Result[T, E]): T
     {.discardable.} =
@@ -115,43 +115,43 @@ proc expect*[E: ApiError](res: Result[void, E]) =
   expect(res, $FailureNotExpected)
 
 proc get*(T: type Notcurses): T =
-  let abiPtr = ncAbiPtr.load
-  if abiPtr.isNil:
+  let cPtr = ncPtr.load
+  if cPtr.isNil:
     raise (ref ApiDefect)(msg: $NotInitialized)
-  elif ncApiObject.abiPtr.isNil or ncApiObject.abiPtr != abiPtr:
+  elif ncApiObj.cPtr.isNil or ncApiObj.cPtr != cPtr:
     # it became necessary re: recent commits in Nim's version-1-6 and
     # version-2-0 branches to here use `ptr abi.notcurses` or
     # `ptr core.notcurses` instead of `ptr notcurses` (latter is used
     # elsewhere in this module); seems like a compiler bug; regardless,
     # happily, the change is compatible with older versions of Nim
     when compiles(abi.notcurses):
-      ncApiObject = T(abiPtr: cast[ptr abi.notcurses](abiPtr))
+      ncApiObj = T(cPtr: cast[ptr abi.notcurses](cPtr))
     else:
-      ncApiObject = T(abiPtr: cast[ptr core.notcurses](abiPtr))
-  ncApiObject
+      ncApiObj = T(cPtr: cast[ptr core.notcurses](cPtr))
+  ncApiObj
 
 proc get*(T: type NotcursesDirect): T =
-  let abiPtr = ncAbiPtr.load
-  if abiPtr.isNil:
+  let cPtr = ncPtr.load
+  if cPtr.isNil:
     raise (ref ApiDefect)(msg: $NotInitialized)
-  elif ncdApiObject.abiPtr.isNil or ncdApiObject.abiPtr != abiPtr:
+  elif ncdApiObj.cPtr.isNil or ncdApiObj.cPtr != cPtr:
     # it became necessary re: recent commits in Nim's version-1-6 and
     # version-2-0 branches to here use `ptr abi.ncdirect` or
     # `ptr core.ncdirect` instead of `ptr ncdirect` (latter is used elsewhere
     # in this module); seems like a compiler bug; regardless, happily, the
     # change is compatible with older versions of Nim
     when compiles(abi.notcurses):
-      ncdApiObject = T(abiPtr: cast[ptr abi.ncdirect](abiPtr))
+      ncdApiObj = T(cPtr: cast[ptr abi.ncdirect](cPtr))
     else:
-      ncdApiObject = T(abiPtr: cast[ptr core.ncdirect](abiPtr))
-  ncdApiObject
+      ncdApiObj = T(cPtr: cast[ptr core.ncdirect](cPtr))
+  ncdApiObj
 
 # when implementing api for notcurses_get, etc. (i.e. the abi calls that return
 # 0.uint32 on timeout), use Option none for timeout and Option some
 # NotcursesCodepoint otherwise
 
 proc getBlocking*(nc: Notcurses, input: var Input) =
-  discard nc.abiPtr.notcurses_get_blocking(unsafeAddr input.abiObj)
+  discard nc.cPtr.notcurses_get_blocking(unsafeAddr input.cObj)
 
 func init*(T: type Channel, r, g, b: int32): T =
   NCCHANNEL_INITIALIZER(r, g, b).T
@@ -165,20 +165,17 @@ func init*(T: type Margins, top, right, bottom, left = 0'u32): T =
 
 func init*(T: type Options, initOptions: varargs[InitOptions], term = "",
     logLevel = LogLevels.Panic, margins = Margins.init): T =
-  when compiles(baseInitOption):
-    var flags = baseInitOption.uint64
-  else:
-    var flags = 0'u64
+  var flags = baseInitOption.uint64
   if initOptions.len >= 1:
     for o in initOptions[0..^1]:
       flags = bitor(flags, o.uint64)
   if term == "":
-    T(abiObj: notcurses_options(loglevel: cast[ncloglevel_e](logLevel),
+    T(cObj: notcurses_options(loglevel: cast[ncloglevel_e](logLevel),
       margin_t: margins.top.cuint, margin_r: margins.right.cuint,
       margin_b: margins.bottom.cuint, margin_l: margins.left.cuint,
       flags: flags))
   else:
-    T(abiObj: notcurses_options(termtype: term.cstring,
+    T(cObj: notcurses_options(termtype: term.cstring,
       loglevel: cast[ncloglevel_e](logLevel), margin_t: margins.top.cuint,
       margin_r: margins.right.cuint, margin_b: margins.bottom.cuint,
       margin_l: margins.left.cuint, flags: flags))
@@ -191,14 +188,14 @@ func init*(T: type DirectOptions, initOptions: varargs[DirectInitOptions],
       flags = bitor(flags, o.uint64)
   T(flags: flags, term: term)
 
-func init*(T: type Input): T = T(abiObj: ncinput())
+func init*(T: type Input): T = T(cObj: ncinput())
 
 proc getBlocking*(nc: Notcurses): Input =
   var input = Input.init
   nc.getBlocking input
   input
 
-func getScrolling*(plane: Plane): bool = plane.abiPtr.ncplane_scrolling_p
+func getScrolling*(plane: Plane): bool = plane.cPtr.ncplane_scrolling_p
 
 proc gradient*(plane: Plane, y, x: int, ylen, xlen: uint, ul, ur, ll,
     lr: Channel, egc = "", styles: varargs[Styles]):
@@ -207,7 +204,7 @@ proc gradient*(plane: Plane, y, x: int, ylen, xlen: uint, ul, ur, ll,
   if styles.len >= 1:
     for s in styles[0..^1]:
       stylebits = bitor(stylebits, s.cuint)
-  let code = plane.abiPtr.ncplane_gradient(y.cint, x.cint, ylen.cuint,
+  let code = plane.cPtr.ncplane_gradient(y.cint, x.cint, ylen.cuint,
     xlen.cuint, egc.cstring, stylebits.uint16, ul.uint64, ur.uint64, ll.uint64,
     lr.uint64)
   if code < 0.cint:
@@ -217,7 +214,7 @@ proc gradient*(plane: Plane, y, x: int, ylen, xlen: uint, ul, ur, ll,
 
 proc gradient2x1*(plane: Plane, y, x: int, ylen, xlen: uint, ul, ur, ll,
     lr: Channel): Result[ApiSuccess0, ApiErrorNeg] =
-  let code = plane.abiPtr.ncplane_gradient2x1(y.cint, x.cint, ylen.cuint,
+  let code = plane.cPtr.ncplane_gradient2x1(y.cint, x.cint, ylen.cuint,
     xlen.cuint, ul.uint32, ur.uint32, ll.uint32, lr.uint32)
   if code < 0.cint:
     err ApiErrorNeg(code: code.int, msg: $Grad2x1)
@@ -251,7 +248,7 @@ func isUTF8*(codepoint: Codepoint): bool =
 func isUTF8*(input: Input): bool = input.codepoint.isUTF8
 
 proc putStr*(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0] =
-  let code = plane.abiPtr.ncplane_putstr s.cstring
+  let code = plane.cPtr.ncplane_putstr s.cstring
   if code <= 0.cint:
     err ApiError0(code: code.int, msg: $PutStr)
   else:
@@ -259,14 +256,14 @@ proc putStr*(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0] =
 
 proc putStr*(ncd: NotcursesDirect, s: string, channel = 0.Channel):
     Result[ApiSuccess0, ApiErrorNeg] =
-  let code = ncd.abiPtr.ncdirect_putstr(channel.uint64, s.cstring)
+  let code = ncd.cPtr.ncdirect_putstr(channel.uint64, s.cstring)
   if code < 0:
     err ApiErrorNeg(code: code.int, msg: $DirectPutStr)
   else:
     ok ApiSuccess0(code: code.int)
 
 proc putStrYX*(plane: Plane, s: string, y, x = -1'i32): Result[ApiSuccessPos, ApiError0] =
-  let code = plane.abiPtr.ncplane_putstr_yx(y, x, s.cstring)
+  let code = plane.cPtr.ncplane_putstr_yx(y, x, s.cstring)
   if code <= 0:
     err ApiError0(code: code.int, msg: $PutStrYX)
   else:
@@ -277,14 +274,14 @@ proc putWc*(plane: Plane, wchar: wchar_t): Result[ApiSuccess0, ApiErrorNeg] =
   # (maybe for good reason); nim-notcurses' api/abi for ncplane_putwc needs
   # additional consideration; it's possible to use sizeof to check the size (in
   # bytes) of wchar_t, not sure if that's helpful in this context
-  let code = plane.abiPtr.ncplane_putwc wchar
+  let code = plane.cPtr.ncplane_putwc wchar
   if code < 0.cint:
     err ApiErrorNeg(code: code.int, msg: $PutWc)
   else:
     ok ApiSuccess0(code: code.int)
 
 proc render*(nc: Notcurses): Result[void, ApiErrorNeg] =
-  let code = nc.abiPtr.notcurses_render
+  let code = nc.cPtr.notcurses_render
   if code < 0.cint:
     err ApiErrorNeg(code: code.int, msg: $Render)
   else:
@@ -292,7 +289,7 @@ proc render*(nc: Notcurses): Result[void, ApiErrorNeg] =
 
 proc setScrolling*(plane: Plane, enable: bool): Result[bool, ApiError] =
   let
-    wasEnabled = plane.abiPtr.ncplane_set_scrolling enable.cuint
+    wasEnabled = plane.cPtr.ncplane_set_scrolling enable.cuint
     isEnabled = plane.getScrolling
   if isEnabled != enable:
     err ApiError(msg: $SetScroll)
@@ -304,41 +301,41 @@ proc setStyles*(plane: Plane, styles: varargs[Styles]) =
   if styles.len >= 1:
     for s in styles[0..^1]:
       stylebits = bitor(stylebits, s.cuint)
-  plane.abiPtr.ncplane_set_styles stylebits
+  plane.cPtr.ncplane_set_styles stylebits
 
 # if writing to y, x is one-shot, i.e. no updates over time (maybe upon
 # resize?) then can use `var int` for the parameters, and in the body have
 # cuint vars, then write to the argument vars (with conversion) after abi call
 proc stdDimYX*(nc: Notcurses, y, x: var uint32): Plane =
-  let abiPtr = nc.abiPtr.notcurses_stddim_yx(addr y, addr x)
-  Plane(abiPtr: abiPtr)
+  let cPtr = nc.cPtr.notcurses_stddim_yx(addr y, addr x)
+  Plane(cPtr: cPtr)
 
 proc stdPlane*(nc: Notcurses): Plane =
-  let abiPtr = nc.abiPtr.notcurses_stdplane
-  Plane(abiPtr: abiPtr)
+  let cPtr = nc.cPtr.notcurses_stdplane
+  Plane(cPtr: cPtr)
 
 proc stop*(nc: Notcurses): Result[void, ApiErrorNeg] =
   if ncStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
-  let code = nc.abiPtr.notcurses_stop
+  let code = nc.cPtr.notcurses_stop
   if code < 0.cint:
     err ApiErrorNeg(code: code.int, msg: $Stop)
   elif ncStopped.exchange(true):
     raise (ref ApiDefect)(msg: $AlreadyStopped)
   else:
-    ncAbiPtr.store(nil)
-    ncApiObject = Notcurses()
+    ncPtr.store(nil)
+    ncApiObj = Notcurses()
     ok()
 
 proc stop*(ncd: NotcursesDirect): Result[void, ApiErrorNeg] =
   if ncStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
-  let code = ncd.abiPtr.ncdirect_stop
+  let code = ncd.cPtr.ncdirect_stop
   if code < 0:
     err ApiErrorNeg(code: code.int, msg: $DirectStop)
   elif ncStopped.exchange(true):
     raise (ref ApiDefect)(msg: $AlreadyStopped)
   else:
-    ncAbiPtr.store(nil)
-    ncdApiObject = NotcursesDirect()
+    ncPtr.store(nil)
+    ncdApiObj = NotcursesDirect()
     ok()
 
 proc stopNotcurses() {.noconv.} = Notcurses.get.stop.expect
@@ -359,7 +356,7 @@ else:
 
 proc init*(T: type Notcurses, options = Options.init, file = stdout,
     addExitProc = true): T =
-  if not ncAbiPtr.load.isNil:
+  if not ncPtr.load.isNil:
     raise (ref ApiDefect)(msg: $AlreadyInitialized)
   else:
     # it became necessary re: recent commits in Nim's version-1-6 and
@@ -368,19 +365,19 @@ proc init*(T: type Notcurses, options = Options.init, file = stdout,
     # in this module); seems like a compiler bug; regardless, happily, the
     # change is compatible with older versions of Nim
     when compiles(abi.notcurses):
-      var abiPtr: ptr abi.notcurses
+      var cPtr: ptr abi.notcurses
     else:
-      var abiPtr: ptr core.notcurses
+      var cPtr: ptr core.notcurses
     when (NimMajor, NimMinor, NimPatch) < (1, 6, 0):
       try:
-        abiPtr = ncAbiInit(unsafeAddr options.abiObj, file)
+        cPtr = ncInit(unsafeAddr options.cObj, file)
       except Exception:
         raise (ref ApiDefect)(msg: $FailedToInitialize)
     else:
-      abiPtr = ncAbiInit(unsafeAddr options.abiObj, file)
-    if abiPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
-    ncApiObject = T(abiPtr: abiPtr)
-    if not ncAbiPtr.exchange(cast[pointer](ncApiObject.abiPtr)).isNil:
+      cPtr = ncInit(unsafeAddr options.cObj, file)
+    if cPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
+    ncApiObj = T(cPtr: cPtr)
+    if not ncPtr.exchange(cast[pointer](ncApiObj.cPtr)).isNil:
       raise (ref ApiDefect)(msg: $AlreadyInitialized)
     if addExitProc:
       when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
@@ -395,11 +392,11 @@ proc init*(T: type Notcurses, options = Options.init, file = stdout,
       when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
         {.warning[BareExcept]: on.}
     ncStopped.store(false)
-    ncApiObject
+    ncApiObj
 
 proc init*(T: type NotcursesDirect, options = DirectOptions.init, file = stdout,
     addExitProc = true): T =
-  if not ncAbiPtr.load.isNil:
+  if not ncPtr.load.isNil:
     raise (ref ApiDefect)(msg: $AlreadyInitialized)
   else:
     # it became necessary re: recent commits in Nim's version-1-6 and
@@ -408,21 +405,21 @@ proc init*(T: type NotcursesDirect, options = DirectOptions.init, file = stdout,
     # in this module); seems like a compiler bug; regardless, happily, the
     # change is compatible with older versions of Nim
     when compiles(abi.ncdirect):
-      var abiPtr: ptr abi.ncdirect
+      var cPtr: ptr abi.ncdirect
     else:
-      var abiPtr: ptr core.ncdirect
+      var cPtr: ptr core.ncdirect
     var term: cstring
     if options.term != "": term = options.term.cstring
     when (NimMajor, NimMinor, NimPatch) < (1, 6, 0):
       try:
-        abiPtr = ncdAbiInit(term, file, options.flags)
+        cPtr = ncdInit(term, file, options.flags)
       except Exception:
         raise (ref ApiDefect)(msg: $FailedToInitialize)
     else:
-      abiPtr = ncdAbiInit(term, file, options.flags)
-    if abiPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
-    ncdApiObject = T(abiPtr: abiPtr)
-    if not ncAbiPtr.exchange(cast[pointer](ncdApiObject.abiPtr)).isNil:
+      cPtr = ncdInit(term, file, options.flags)
+    if cPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
+    ncdApiObj = T(cPtr: cPtr)
+    if not ncPtr.exchange(cast[pointer](ncdApiObj.cPtr)).isNil:
       raise (ref ApiDefect)(msg: $AlreadyInitialized)
     if addExitProc:
       when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
@@ -437,7 +434,7 @@ proc init*(T: type NotcursesDirect, options = DirectOptions.init, file = stdout,
       when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
         {.warning[BareExcept]: on.}
     ncStopped.store(false)
-    ncdApiObject
+    ncdApiObj
 
 func toKey*(input: Input): Option[Keys] =
   if input.isKey: some(cast[Keys](input.codepoint))
@@ -447,8 +444,8 @@ func toUTF8*(input: Input): Option[string] =
   if input.isUTF8:
     const nullC = '\x00'.cchar
     var bytes: seq[byte]
-    bytes.add input.abiObj.utf8[0].byte
-    for c in input.abiObj.utf8[1..3]:
+    bytes.add input.cObj.utf8[0].byte
+    for c in input.cObj.utf8[1..3]:
       if c != nullC: bytes.add c.byte
       else: break
     some(string.fromBytes bytes)
