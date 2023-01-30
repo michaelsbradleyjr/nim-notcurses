@@ -15,14 +15,13 @@ const nc_header = "notcurses/notcurses.h"
 
 when ncStatic:
   {.pragma: nc, cdecl, header: nc_header, importc.}
-  {.pragma: nc_bycopy, bycopy, header: nc_header.}
-  {.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
   {.pragma: nc_init, cdecl, header: nc_header, importc.}
 else:
   {.pragma: nc, cdecl, dynlib: nc_lib, importc.}
-  {.pragma: nc_bycopy, bycopy, header: nc_header.}
-  {.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
   {.pragma: nc_init, cdecl, dynlib: nc_init_lib, importc.}
+
+{.pragma: nc_bycopy, bycopy, header: nc_header.}
+{.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
 
 # L187 notcurses/nckeys.h
 func nckey_synthesized_p*(w: uint32): bool =
@@ -265,13 +264,9 @@ const ncd_header = "notcurses/direct.h"
 
 when ncStatic:
   {.pragma: ncd, cdecl, header: ncd_header, importc.}
-  {.pragma: ncd_bycopy, bycopy, header: ncd_header.}
-  {.pragma: ncd_incomplete, header: ncd_header, incompleteStruct.}
   {.pragma: ncd_init, cdecl, header: ncd_header, importc.}
 else:
   {.pragma: ncd, cdecl, dynlib: nc_lib, importc.}
-  {.pragma: ncd_bycopy, bycopy, header: ncd_header.}
-  {.pragma: ncd_incomplete, header: ncd_header, incompleteStruct.}
   {.pragma: ncd_init, cdecl, dynlib: nc_init_lib, importc.}
 
 when not ncCore:
