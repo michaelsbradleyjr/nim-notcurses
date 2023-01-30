@@ -15,7 +15,7 @@ setControlCHook(nop)
 # https://codepoints.net/U+FFFD?lang=en
 const replacementChar = string.fromBytes hexToByteArray("0xEFBFBD", 3)
 
-proc put(s: string = "") = nc.stdPlane.putStr(s).expect
+proc put(s = "") = nc.stdPlane.putStr(s).expect
 
 proc put[T](v: Option[T]) =
   var s: string
@@ -23,7 +23,7 @@ proc put[T](v: Option[T]) =
   else: s = $v
   put s
 
-proc putLn(s: string = "") = put s & "\n"
+proc putLn(s = "") = put s & "\n"
 
 proc putLn[T](v: Option[T]) =
   var s: string
