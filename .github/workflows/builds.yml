@@ -241,7 +241,6 @@ jobs:
             direct_sgr
             gradients
             multiselect
-            direct_sgr
             tui1
           )
           for module in ${modules[@]}; do
