@@ -97,7 +97,7 @@ func codepoint*(input: Input): Codepoint = input.abiObj.id.Codepoint
 # if writing to y, x is one-shot, i.e. no updates over time (maybe upon
 # resize?) then can use `var int` for the parameters, and in the body have
 # cuint vars, then write to the argument vars (with conversion) after abi call
-proc dimYX*(plane: Plane, y, x: var cuint) =
+proc dimYX*(plane: Plane, y, x: var uint32) =
   plane.abiPtr.ncplane_dim_yx(addr y, addr x)
 
 proc dimYX*(plane: Plane): Dimensions =
@@ -159,12 +159,12 @@ func init*(T: type Channel, r, g, b: int32): T =
 func init*(T: type Channel, fr, fg, fb, br, bg, bb: int32): T =
   NCCHANNELS_INITIALIZER(fr, fg, fb, br, bg, bb).T
 
-func init*(T: type Margins, top, right, bottom, left: int = 0): T =
+func init*(T: type Margins, top, right, bottom, left = 0'u32): T =
   (top: top.uint32, right: right.uint32, bottom: bottom.uint32,
    left: left.uint32)
 
 func init*(T: type Options, initOptions: varargs[InitOptions], term = "",
-    logLevel: LogLevels = LogLevels.Panic, margins: Margins = Margins.init): T =
+    logLevel = LogLevels.Panic, margins = Margins.init): T =
   when compiles(baseInitOption):
     var flags = baseInitOption.uint64
   else:
@@ -201,7 +201,7 @@ proc getBlocking*(notcurses: Notcurses): Input =
 func getScrolling*(plane: Plane): bool = plane.abiPtr.ncplane_scrolling_p
 
 proc gradient*(plane: Plane, y, x: int, ylen, xlen: uint, ul, ur, ll,
-    lr: Channel, egc: string = "", styles: varargs[Styles]):
+    lr: Channel, egc = "", styles: varargs[Styles]):
     Result[ApiSuccess0, ApiErrorNeg] =
   var stylebits = 0.cuint
   if styles.len >= 1:
@@ -265,7 +265,7 @@ proc putStr*(direct: NotcursesDirect, s: string, channel = 0.Channel):
   else:
     ok ApiSuccess0(code: code.int)
 
-proc putStrYX*(plane: Plane, s: string, y, x: int32 = -1): Result[ApiSuccessPos, ApiError0] =
+proc putStrYX*(plane: Plane, s: string, y, x = -1'i32): Result[ApiSuccessPos, ApiError0] =
   let code = plane.abiPtr.ncplane_putstr_yx(y, x, s.cstring)
   if code <= 0:
     err ApiError0(code: code.int, msg: $PutStrYX)
@@ -309,7 +309,7 @@ proc setStyles*(plane: Plane, styles: varargs[Styles]) =
 # if writing to y, x is one-shot, i.e. no updates over time (maybe upon
 # resize?) then can use `var int` for the parameters, and in the body have
 # cuint vars, then write to the argument vars (with conversion) after abi call
-proc stdDimYX*(notcurses: Notcurses, y, x: var cuint): Plane =
+proc stdDimYX*(notcurses: Notcurses, y, x: var uint32): Plane =
   let abiPtr = notcurses.abiPtr.notcurses_stddim_yx(addr y, addr x)
   Plane(abiPtr: abiPtr)
 
@@ -357,8 +357,8 @@ else:
   template addExitProc*(T: type NotcursesDirect) =
     if not ncExitProcAdded.exchange(true): addQuitProc stopNotcursesDirect
 
-proc init*(T: type Notcurses, options: Options = Options.init,
-    file: File = stdout, addExitProc = true): T =
+proc init*(T: type Notcurses, options = Options.init, file = stdout,
+    addExitProc = true): T =
   if not ncAbiPtr.load.isNil:
     raise (ref ApiDefect)(msg: $AlreadyInitialized)
   else:
@@ -397,8 +397,8 @@ proc init*(T: type Notcurses, options: Options = Options.init,
     ncStopped.store(false)
     ncApiObject
 
-proc init*(T: type NotcursesDirect, options = DirectOptions.init,
-    file: File = stdout, addExitProc = true): T =
+proc init*(T: type NotcursesDirect, options = DirectOptions.init, file = stdout,
+    addExitProc = true): T =
   if not ncAbiPtr.load.isNil:
     raise (ref ApiDefect)(msg: $AlreadyInitialized)
   else:
