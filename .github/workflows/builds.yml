@@ -238,9 +238,10 @@ jobs:
             cli1
             cli2
             direct1
+            direct_sgr
             gradients
             multiselect
-            sgr_direct
+            direct_sgr
             tui1
           )
           for module in ${modules[@]}; do
