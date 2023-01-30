@@ -35,18 +35,18 @@ elif (NimMajor, NimMinor, NimPatch) < (1, 9, 1):
 else:
   --mm:orc
 
-# macOS' Xcode's `ld` will report:
-# "ld: warning: option -s is obsolete and being ignored"
-# however, the resulting binary will still be about 15K smaller; supplying
-# `--define:strip` or `switch("define", "strip")` in config.nims does not
-# produce an equivalent binary, though manually passing the same
-# `--define/-d:strip` as an option to `nim c` on the command-line does produce
-# an equivalent binary
 when defined(release):
   --hints:off
   --opt:size
   --passC:"-flto"
   --passL:"-flto"
+  # macOS' Xcode's `ld` will report:
+  # "ld: warning: option -s is obsolete and being ignored"
+  # however, the resulting binary will still be about 15K smaller; supplying
+  # `--define:strip` or `switch("define", "strip")` in config.nims does not
+  # produce an equivalent binary, though manually passing the same
+  # `--define/-d:strip` as an option to `nim c` on the command-line does
+  # produce an equivalent binary
   --passL:"-s"
 else:
   --debugger:native
