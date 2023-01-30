@@ -45,7 +45,7 @@ proc getLocale(category: Category, categoryName: string):
     Result[LocaleSuccess, LocaleError] =
   let loc = setlocale(category.cint, nil)
   if loc.isNil:
-    err LocaleError(msg: "setlocale failed to query " & categoryName & "!")
+    err LocaleError(msg: "setlocale failed to query " & categoryName)
   else:
     ok $loc
 
@@ -58,7 +58,7 @@ proc setLocale(category: Category, locale: string, categoryName: string):
   let loc = setlocale(category.cint, locale.cstring)
   if loc.isNil:
     err LocaleError(msg: "setlocale failed to install " & locale & " as " &
-      categoryName & "!")
+      categoryName)
   else:
     ok $loc
 

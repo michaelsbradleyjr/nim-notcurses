@@ -1,3 +1,3 @@
 const
-  abiInit = notcurses_init
+  ncAbiInit = notcurses_init
   baseInitOption = InitOptions.CliMode

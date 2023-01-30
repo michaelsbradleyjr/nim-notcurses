@@ -5,21 +5,33 @@ type
         "addExitProc raised an unknown exception"
       else:
         "addQuitProc raised an unknown exception"
-    AlreadyInitialized = "Notcurses is already initialized!"
-    AlreadyStopped     = "Notcurses is already stopped!"
-    FailedToInitialize = "Notcurses failed to initialize!"
+    AlreadyInitialized = "Notcurses is already initialized"
+    AlreadyStopped     = "Notcurses is already stopped"
+    FailedToInitialize = "Notcurses failed to initialize"
     FailureNotExpected = "failure not expected"
-    NotInitialized     = "Notcurses is not initialized!"
+    NotInitialized     = "Notcurses is not initialized"
+
+  DirectInitOption* = distinct uint64
+
+  DirectInitOptions* {.pure.} = enum
+    DirectInhibitSetlocale  = NCDIRECT_OPTION_INHIBIT_SETLOCALE
+    DirectInhibitCbreak     = NCDIRECT_OPTION_INHIBIT_CBREAK
+    DirectDrainInput        = NCDIRECT_OPTION_DRAIN_INPUT
+    DirectNoQuitSighandlers = NCDIRECT_OPTION_NO_QUIT_SIGHANDLERS
+    DirectVerbose           = NCDIRECT_OPTION_VERBOSE
+    DirectVeryVerbose       = NCDIRECT_OPTION_VERY_VERBOSE
 
   ErrorMessages {.pure.} = enum
-    Grad      = "ncplane_gradient failed!"
-    Grad2x1   = "ncplane_gradient2x1 failed!"
-    PutStr    = "ncplane_putstr failed!"
-    PutStrYX  = "ncplane_putstr_yx failed!"
-    PutWc     = "ncplane_putwc failed!"
-    Render    = "notcurses_render failed!"
-    SetScroll = "ncplane_set_scrolling failed!"
-    Stop      = "notcurses_stop failed!"
+    DirectPutStr = "ncdirect_putstr failed"
+    DirectStop   = "ncdirect_stop failed"
+    Grad         = "ncplane_gradient failed"
+    Grad2x1      = "ncplane_gradient2x1 failed"
+    PutStr       = "ncplane_putstr failed"
+    PutStrYX     = "ncplane_putstr_yx failed"
+    PutWc        = "ncplane_putwc failed"
+    Render       = "notcurses_render failed"
+    SetScroll    = "ncplane_set_scrolling failed"
+    Stop         = "notcurses_stop failed"
 
   InitOption* = distinct culonglong
 

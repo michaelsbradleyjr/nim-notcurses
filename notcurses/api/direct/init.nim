@@ -1,1 +1,1 @@
-const abiInit = ncdirect_init
+const ncdAbiInit = ncdirect_init

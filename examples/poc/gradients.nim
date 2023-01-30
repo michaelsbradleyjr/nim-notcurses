@@ -1,6 +1,6 @@
 import std/os
-import notcurses
-# or: import notcurses/core
+import notcurses/core
+# or: import notcurses
 
 let
   nc = Nc.init NcOptions.init DrainInput

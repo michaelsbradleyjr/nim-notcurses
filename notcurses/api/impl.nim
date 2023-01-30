@@ -35,6 +35,10 @@ type
   # maybe PlaneDimensions if need to disambiguate re: other dimensions types
   Dimensions* = tuple[y, x: int]
 
+  DirectOptions* = object
+    flags: uint64
+    term: string
+
   Input* = object
     # make this private again
     abiObj*: ncinput
@@ -44,6 +48,9 @@ type
   Notcurses* = object
     # make this private again
     abiPtr*: ptr notcurses
+
+  NotcursesDirect* = object
+    abiPtr: ptr ncdirect
 
   Options* = object
     abiObj: notcurses_options
@@ -73,8 +80,9 @@ let
   LibNotcursesTweak* = lib_notcurses_tweak.int
 
 var
-  ncAbiPtr: Atomic[ptr notcurses]
+  ncAbiPtr: Atomic[pointer]
   ncApiObject {.threadvar.}: Notcurses
+  ncdApiObject {.threadvar.}: NotcursesDirect
   ncExitProcAdded: Atomic[bool]
   ncStopped: Atomic[bool]
 
@@ -112,8 +120,33 @@ proc get*(T: type Notcurses): T =
     if abiPtr.isNil:
       raise (ref ApiDefect)(msg: $NotInitialized)
     else:
-      ncApiObject = T(abiPtr: abiPtr)
+      # it became necessary re: recent commits in Nim's version-1-6 and
+      # version-2-0 branches to here use `ptr abi.notcurses` or
+      # `ptr core.notcurses` instead of `ptr notcurses` (latter is used
+      # elsewhere in this module); seems like a compiler bug; regardless,
+      # happily, the change is compatible with older versions of Nim
+      when compiles(abi.notcurses):
+        ncApiObject = T(abiPtr: cast[ptr abi.notcurses](abiPtr))
+      else:
+        ncApiObject = T(abiPtr: cast[ptr core.notcurses](abiPtr))
   ncApiObject
+
+proc get*(T: type NotcursesDirect): T =
+  if ncdApiObject.abiPtr.isNil:
+    let abiPtr = ncAbiPtr.load
+    if abiPtr.isNil:
+      raise (ref ApiDefect)(msg: $NotInitialized)
+    else:
+      # it became necessary re: recent commits in Nim's version-1-6 and
+      # version-2-0 branches to here use `ptr abi.ncdirect` or
+      # `ptr core.ncdirect` instead of `ptr ncdirect` (latter is used elsewhere
+      # in this module); seems like a compiler bug; regardless, happily, the
+      # change is compatible with older versions of Nim
+      when compiles(abi.notcurses):
+        ncdApiObject = T(abiPtr: cast[ptr abi.ncdirect](abiPtr))
+      else:
+        ncdApiObject = T(abiPtr: cast[ptr core.ncdirect](abiPtr))
+  ncdApiObject
 
 # when implementing api for notcurses_get, etc. (i.e. the abi calls that return
 # 0.uint32 on timeout), use Option none for timeout and Option some
@@ -134,10 +167,13 @@ func init*(T: type Margins, top, right, bottom, left: int = 0): T =
 
 func init*(T: type Options, initOptions: varargs[InitOptions], term = "",
     logLevel: LogLevels = LogLevels.Panic, margins: Margins = Margins.init): T =
-  var flags = baseInitOption.culonglong
+  when compiles(baseInitOption):
+    var flags = baseInitOption.uint64
+  else:
+    var flags = 0'u64
   if initOptions.len >= 1:
     for o in initOptions[0..^1]:
-      flags = bitor(flags, o.culonglong)
+      flags = bitor(flags, o.uint64)
   if term == "":
     T(abiObj: notcurses_options(loglevel: cast[ncloglevel_e](logLevel),
       margin_t: margins.top.cuint, margin_r: margins.right.cuint,
@@ -148,6 +184,14 @@ func init*(T: type Options, initOptions: varargs[InitOptions], term = "",
       loglevel: cast[ncloglevel_e](logLevel), margin_t: margins.top.cuint,
       margin_r: margins.right.cuint, margin_b: margins.bottom.cuint,
       margin_l: margins.left.cuint, flags: flags))
+
+func init*(T: type DirectOptions, initOptions: varargs[DirectInitOptions],
+    term = ""): T =
+  var flags = 0'u64
+  if initOptions.len >= 1:
+    for o in initOptions[0..^1]:
+      flags = bitor(flags, o.uint64)
+  T(flags: flags, term: term)
 
 func init*(T: type Input): T = T(abiObj: ncinput())
 
@@ -215,6 +259,14 @@ proc putStr*(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0] =
   else:
     ok ApiSuccessPos(code: code.int)
 
+proc putStr*(direct: NotcursesDirect, s: string, channel = 0.Channel):
+    Result[ApiSuccess0, ApiErrorNeg] =
+  let code = direct.abiPtr.ncdirect_putstr(channel.uint64, s.cstring)
+  if code < 0:
+    err ApiErrorNeg(code: code.int, msg: $DirectPutStr)
+  else:
+    ok ApiSuccess0(code: code.int)
+
 proc putStrYX*(plane: Plane, s: string, y, x: int32 = -1): Result[ApiSuccessPos, ApiError0] =
   let code = plane.abiPtr.ncplane_putstr_yx(y, x, s.cstring)
   if code <= 0:
@@ -277,15 +329,31 @@ proc stop*(notcurses: Notcurses): Result[void, ApiErrorNeg] =
   else:
     ok()
 
+proc stop*(direct: NotcursesDirect): Result[void, ApiErrorNeg] =
+  if ncStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
+  let code = direct.abiPtr.ncdirect_stop
+  if code < 0:
+    err ApiErrorNeg(code: code.int, msg: $DirectStop)
+  elif ncStopped.exchange(true):
+    raise (ref ApiDefect)(msg: $AlreadyStopped)
+  else:
+    ok()
+
 proc stopNotcurses() {.noconv.} = Notcurses.get.stop.expect
+
+proc stopNotcursesDirect() {.noconv.} = NotcursesDirect.get.stop.expect
 
 when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
   import std/exitprocs
   template addExitProc*(T: type Notcurses) =
     if not ncExitProcAdded.exchange(true): addExitProc stopNotcurses
+  template addExitProc*(T: type NotcursesDirect) =
+    if not ncExitProcAdded.exchange(true): addExitProc stopNotcursesDirect
 else:
   template addExitProc*(T: type Notcurses) =
     if not ncExitProcAdded.exchange(true): addQuitProc stopNotcurses
+  template addExitProc*(T: type NotcursesDirect) =
+    if not ncExitProcAdded.exchange(true): addQuitProc stopNotcursesDirect
 
 proc init*(T: type Notcurses, options: Options = Options.init,
     file: File = stdout, addExitProc = true): T =
@@ -294,7 +362,7 @@ proc init*(T: type Notcurses, options: Options = Options.init,
   else:
     # it became necessary re: recent commits in Nim's version-1-6 and
     # version-2-0 branches to here use `ptr abi.notcurses` or
-    # `ptr core.notcurses` instead of `ptr ncdirect` (latter is used elsewhere
+    # `ptr core.notcurses` instead of `ptr notcurses` (latter is used elsewhere
     # in this module); seems like a compiler bug; regardless, happily, the
     # change is compatible with older versions of Nim
     when compiles(abi.notcurses):
@@ -303,14 +371,14 @@ proc init*(T: type Notcurses, options: Options = Options.init,
       var abiPtr: ptr core.notcurses
     when (NimMajor, NimMinor, NimPatch) < (1, 6, 0):
       try:
-        abiPtr = abiInit(unsafeAddr options.abiObj, file)
+        abiPtr = ncAbiInit(unsafeAddr options.abiObj, file)
       except Exception:
         raise (ref ApiDefect)(msg: $FailedToInitialize)
     else:
-      abiPtr = abiInit(unsafeAddr options.abiObj, file)
+      abiPtr = ncAbiInit(unsafeAddr options.abiObj, file)
     if abiPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
     ncApiObject = T(abiPtr: abiPtr)
-    if not ncAbiPtr.exchange(ncApiObject.abiPtr).isNil:
+    if not ncAbiPtr.exchange(cast[pointer](ncApiObject.abiPtr)).isNil:
       raise (ref ApiDefect)(msg: $AlreadyInitialized)
     if addExitProc:
       when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
@@ -325,6 +393,47 @@ proc init*(T: type Notcurses, options: Options = Options.init,
       when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
         {.warning[BareExcept]: on.}
     ncApiObject
+
+proc init*(T: type NotcursesDirect, options = DirectOptions.init,
+    file: File = stdout, addExitProc = true): T =
+  if not ncdApiObject.abiPtr.isNil or not ncAbiPtr.load.isNil:
+    raise (ref ApiDefect)(msg: $AlreadyInitialized)
+  else:
+    # it became necessary re: recent commits in Nim's version-1-6 and
+    # version-2-0 branches to here use `ptr abi.ncdirect` or
+    # `ptr core.ncdirect` instead of `ptr ncdirect` (latter is used elsewhere
+    # in this module); seems like a compiler bug; regardless, happily, the
+    # change is compatible with older versions of Nim
+    when compiles(abi.ncdirect):
+      var abiPtr: ptr abi.ncdirect
+    else:
+      var abiPtr: ptr core.ncdirect
+    var term: cstring
+    if options.term != "": term = options.term.cstring
+    when (NimMajor, NimMinor, NimPatch) < (1, 6, 0):
+      try:
+        abiPtr = ncdAbiInit(term, file, options.flags)
+      except Exception:
+        raise (ref ApiDefect)(msg: $FailedToInitialize)
+    else:
+      abiPtr = ncdAbiInit(term, file, options.flags)
+    if abiPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
+    ncdApiObject = T(abiPtr: abiPtr)
+    if not ncAbiPtr.exchange(cast[pointer](ncdApiObject.abiPtr)).isNil:
+      raise (ref ApiDefect)(msg: $AlreadyInitialized)
+    if addExitProc:
+      when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+        {.warning[BareExcept]: off.}
+      try:
+        T.addExitProc
+      except Exception as e:
+        var msg = $AddExitProcFailed
+        if e.msg != "":
+          msg = msg & " with message \"" & e.msg & "\""
+        raise (ref ApiDefect)(msg: msg)
+      when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+        {.warning[BareExcept]: on.}
+    ncdApiObject
 
 func toKey*(input: Input): Option[Keys] =
   if input.isKey: some(cast[Keys](input.codepoint))
@@ -354,3 +463,5 @@ type
   NcOptions* = Options
   NcPlane* = Plane
   NcStyles* = Styles
+  Ncd* = NotcursesDirect
+  NcdOptions* = DirectOptions
