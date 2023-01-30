@@ -260,9 +260,8 @@ proc ncmultiselector_offer_input*(n: ptr ncmultiselector, ni: ptr ncinput): bool
 # L4010 - notcurses/notcurses.h
 proc ncmultiselector_destroy*(n: ptr ncmultiselector) {.nc.}
 
-const ncd_header = "notcurses/direct.h"
-
 when ncStatic:
+  const ncd_header = "notcurses/direct.h"
   {.pragma: ncd, cdecl, header: ncd_header, importc.}
   {.pragma: ncd_init, cdecl, header: ncd_header, importc.}
 else:
