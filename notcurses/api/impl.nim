@@ -115,37 +115,35 @@ proc expect*[E: ApiError](res: Result[void, E]) =
   expect(res, $FailureNotExpected)
 
 proc get*(T: type Notcurses): T =
-  if ncApiObject.abiPtr.isNil:
-    let abiPtr = ncAbiPtr.load
-    if abiPtr.isNil:
-      raise (ref ApiDefect)(msg: $NotInitialized)
+  let abiPtr = ncAbiPtr.load
+  if abiPtr.isNil:
+    raise (ref ApiDefect)(msg: $NotInitialized)
+  elif ncApiObject.abiPtr.isNil or ncApiObject.abiPtr != abiPtr:
+    # it became necessary re: recent commits in Nim's version-1-6 and
+    # version-2-0 branches to here use `ptr abi.notcurses` or
+    # `ptr core.notcurses` instead of `ptr notcurses` (latter is used
+    # elsewhere in this module); seems like a compiler bug; regardless,
+    # happily, the change is compatible with older versions of Nim
+    when compiles(abi.notcurses):
+      ncApiObject = T(abiPtr: cast[ptr abi.notcurses](abiPtr))
     else:
-      # it became necessary re: recent commits in Nim's version-1-6 and
-      # version-2-0 branches to here use `ptr abi.notcurses` or
-      # `ptr core.notcurses` instead of `ptr notcurses` (latter is used
-      # elsewhere in this module); seems like a compiler bug; regardless,
-      # happily, the change is compatible with older versions of Nim
-      when compiles(abi.notcurses):
-        ncApiObject = T(abiPtr: cast[ptr abi.notcurses](abiPtr))
-      else:
-        ncApiObject = T(abiPtr: cast[ptr core.notcurses](abiPtr))
+      ncApiObject = T(abiPtr: cast[ptr core.notcurses](abiPtr))
   ncApiObject
 
 proc get*(T: type NotcursesDirect): T =
-  if ncdApiObject.abiPtr.isNil:
-    let abiPtr = ncAbiPtr.load
-    if abiPtr.isNil:
-      raise (ref ApiDefect)(msg: $NotInitialized)
+  let abiPtr = ncAbiPtr.load
+  if abiPtr.isNil:
+    raise (ref ApiDefect)(msg: $NotInitialized)
+  elif ncdApiObject.abiPtr.isNil or ncdApiObject.abiPtr != abiPtr:
+    # it became necessary re: recent commits in Nim's version-1-6 and
+    # version-2-0 branches to here use `ptr abi.ncdirect` or
+    # `ptr core.ncdirect` instead of `ptr ncdirect` (latter is used elsewhere
+    # in this module); seems like a compiler bug; regardless, happily, the
+    # change is compatible with older versions of Nim
+    when compiles(abi.notcurses):
+      ncdApiObject = T(abiPtr: cast[ptr abi.ncdirect](abiPtr))
     else:
-      # it became necessary re: recent commits in Nim's version-1-6 and
-      # version-2-0 branches to here use `ptr abi.ncdirect` or
-      # `ptr core.ncdirect` instead of `ptr ncdirect` (latter is used elsewhere
-      # in this module); seems like a compiler bug; regardless, happily, the
-      # change is compatible with older versions of Nim
-      when compiles(abi.notcurses):
-        ncdApiObject = T(abiPtr: cast[ptr abi.ncdirect](abiPtr))
-      else:
-        ncdApiObject = T(abiPtr: cast[ptr core.ncdirect](abiPtr))
+      ncdApiObject = T(abiPtr: cast[ptr core.ncdirect](abiPtr))
   ncdApiObject
 
 # when implementing api for notcurses_get, etc. (i.e. the abi calls that return
@@ -327,6 +325,8 @@ proc stop*(notcurses: Notcurses): Result[void, ApiErrorNeg] =
   elif ncStopped.exchange(true):
     raise (ref ApiDefect)(msg: $AlreadyStopped)
   else:
+    ncAbiPtr.store(nil)
+    ncApiObject = Notcurses()
     ok()
 
 proc stop*(direct: NotcursesDirect): Result[void, ApiErrorNeg] =
@@ -337,6 +337,8 @@ proc stop*(direct: NotcursesDirect): Result[void, ApiErrorNeg] =
   elif ncStopped.exchange(true):
     raise (ref ApiDefect)(msg: $AlreadyStopped)
   else:
+    ncAbiPtr.store(nil)
+    ncdApiObject = NotcursesDirect()
     ok()
 
 proc stopNotcurses() {.noconv.} = Notcurses.get.stop.expect
@@ -357,7 +359,7 @@ else:
 
 proc init*(T: type Notcurses, options: Options = Options.init,
     file: File = stdout, addExitProc = true): T =
-  if not ncApiObject.abiPtr.isNil or not ncAbiPtr.load.isNil:
+  if not ncAbiPtr.load.isNil:
     raise (ref ApiDefect)(msg: $AlreadyInitialized)
   else:
     # it became necessary re: recent commits in Nim's version-1-6 and
@@ -392,11 +394,12 @@ proc init*(T: type Notcurses, options: Options = Options.init,
         raise (ref ApiDefect)(msg: msg)
       when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
         {.warning[BareExcept]: on.}
+    ncStopped.store(false)
     ncApiObject
 
 proc init*(T: type NotcursesDirect, options = DirectOptions.init,
     file: File = stdout, addExitProc = true): T =
-  if not ncdApiObject.abiPtr.isNil or not ncAbiPtr.load.isNil:
+  if not ncAbiPtr.load.isNil:
     raise (ref ApiDefect)(msg: $AlreadyInitialized)
   else:
     # it became necessary re: recent commits in Nim's version-1-6 and
@@ -433,6 +436,7 @@ proc init*(T: type NotcursesDirect, options = DirectOptions.init,
         raise (ref ApiDefect)(msg: msg)
       when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
         {.warning[BareExcept]: on.}
+    ncStopped.store(false)
     ncdApiObject
 
 func toKey*(input: Input): Option[Keys] =
