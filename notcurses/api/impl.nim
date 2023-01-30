@@ -150,8 +150,8 @@ proc get*(T: type NotcursesDirect): T =
 # 0.uint32 on timeout), use Option none for timeout and Option some
 # NotcursesCodepoint otherwise
 
-proc getBlocking*(notcurses: Notcurses, input: var Input) =
-  discard notcurses.abiPtr.notcurses_get_blocking(unsafeAddr input.abiObj)
+proc getBlocking*(nc: Notcurses, input: var Input) =
+  discard nc.abiPtr.notcurses_get_blocking(unsafeAddr input.abiObj)
 
 func init*(T: type Channel, r, g, b: int32): T =
   NCCHANNEL_INITIALIZER(r, g, b).T
@@ -193,9 +193,9 @@ func init*(T: type DirectOptions, initOptions: varargs[DirectInitOptions],
 
 func init*(T: type Input): T = T(abiObj: ncinput())
 
-proc getBlocking*(notcurses: Notcurses): Input =
+proc getBlocking*(nc: Notcurses): Input =
   var input = Input.init
-  notcurses.getBlocking input
+  nc.getBlocking input
   input
 
 func getScrolling*(plane: Plane): bool = plane.abiPtr.ncplane_scrolling_p
@@ -257,9 +257,9 @@ proc putStr*(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0] =
   else:
     ok ApiSuccessPos(code: code.int)
 
-proc putStr*(direct: NotcursesDirect, s: string, channel = 0.Channel):
+proc putStr*(ncd: NotcursesDirect, s: string, channel = 0.Channel):
     Result[ApiSuccess0, ApiErrorNeg] =
-  let code = direct.abiPtr.ncdirect_putstr(channel.uint64, s.cstring)
+  let code = ncd.abiPtr.ncdirect_putstr(channel.uint64, s.cstring)
   if code < 0:
     err ApiErrorNeg(code: code.int, msg: $DirectPutStr)
   else:
@@ -283,8 +283,8 @@ proc putWc*(plane: Plane, wchar: wchar_t): Result[ApiSuccess0, ApiErrorNeg] =
   else:
     ok ApiSuccess0(code: code.int)
 
-proc render*(notcurses: Notcurses): Result[void, ApiErrorNeg] =
-  let code = notcurses.abiPtr.notcurses_render
+proc render*(nc: Notcurses): Result[void, ApiErrorNeg] =
+  let code = nc.abiPtr.notcurses_render
   if code < 0.cint:
     err ApiErrorNeg(code: code.int, msg: $Render)
   else:
@@ -309,17 +309,17 @@ proc setStyles*(plane: Plane, styles: varargs[Styles]) =
 # if writing to y, x is one-shot, i.e. no updates over time (maybe upon
 # resize?) then can use `var int` for the parameters, and in the body have
 # cuint vars, then write to the argument vars (with conversion) after abi call
-proc stdDimYX*(notcurses: Notcurses, y, x: var uint32): Plane =
-  let abiPtr = notcurses.abiPtr.notcurses_stddim_yx(addr y, addr x)
+proc stdDimYX*(nc: Notcurses, y, x: var uint32): Plane =
+  let abiPtr = nc.abiPtr.notcurses_stddim_yx(addr y, addr x)
   Plane(abiPtr: abiPtr)
 
-proc stdPlane*(notcurses: Notcurses): Plane =
-  let abiPtr = notcurses.abiPtr.notcurses_stdplane
+proc stdPlane*(nc: Notcurses): Plane =
+  let abiPtr = nc.abiPtr.notcurses_stdplane
   Plane(abiPtr: abiPtr)
 
-proc stop*(notcurses: Notcurses): Result[void, ApiErrorNeg] =
+proc stop*(nc: Notcurses): Result[void, ApiErrorNeg] =
   if ncStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
-  let code = notcurses.abiPtr.notcurses_stop
+  let code = nc.abiPtr.notcurses_stop
   if code < 0.cint:
     err ApiErrorNeg(code: code.int, msg: $Stop)
   elif ncStopped.exchange(true):
@@ -329,9 +329,9 @@ proc stop*(notcurses: Notcurses): Result[void, ApiErrorNeg] =
     ncApiObject = Notcurses()
     ok()
 
-proc stop*(direct: NotcursesDirect): Result[void, ApiErrorNeg] =
+proc stop*(ncd: NotcursesDirect): Result[void, ApiErrorNeg] =
   if ncStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
-  let code = direct.abiPtr.ncdirect_stop
+  let code = ncd.abiPtr.ncdirect_stop
   if code < 0:
     err ApiErrorNeg(code: code.int, msg: $DirectStop)
   elif ncStopped.exchange(true):
