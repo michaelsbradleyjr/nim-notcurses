@@ -24,4 +24,5 @@ when not ncStatic:
 # consider Notcurses has a complex set of dependencies relative to
 # `import notcurses/-cli|direct/-core`, OS, and options passed to cmake
 
+include ./constants
 include ./impl

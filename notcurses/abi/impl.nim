@@ -4,9 +4,6 @@
 
 import std/[macros, strutils, terminal]
 
-import ./constants
-export constants
-
 type
   AbiDefect = object of Defect
   wchar_t* {.importc.} = object
