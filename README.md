@@ -148,7 +148,7 @@ The high-level wrapper is referred to as a *Nim API* elsewhere in this document 
 
 In the future, it may be desirable to split this project into two packages: `notcurses` and `notcurses_abi`. The latter would be a dependency of the former. At present, it makes sense to develop the wrappers together as a single package.
 
-**Non-goals:** provide an extensive widgets library, a text-based windowing system, or other advanced facilities that could be built with nim-notcurses. Such things can be explored in projects that have nim-notcurses as a dependency.
+**Non-goals:** provide an extensible widgets library, a text-based windowing system, or other advanced facilities that could be built with nim-notcurses. Such things can be explored in projects that have nim-notcurses as a dependency.
 
 ## Versioning
 
