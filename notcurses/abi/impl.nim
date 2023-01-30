@@ -286,36 +286,34 @@ var
 
 notcurses_version_components(addr lib_notcurses_major, addr lib_notcurses_minor, addr lib_notcurses_patch, addr lib_notcurses_tweak)
 
-let majorMismatchMsg = ("""
+if nim_notcurses_version.major != lib_notcurses_major:
+  let majorMismatchMsg = ("""
 nim-notcurses major version $1 is not compatible with Notcurses library major
 version $4 (nim-notcurses: $1.$2.$3, libnotcurses: $5)
-""" % [
-  $nim_notcurses_version.major,
-  $nim_notcurses_version.minor,
-  $nim_notcurses_version.patch,
-  $lib_notcurses_major,
-  $notcurses_version()
-]).strip.replace("\n", " ")
-
-if nim_notcurses_version.major != lib_notcurses_major:
+  """ % [
+    $nim_notcurses_version.major,
+    $nim_notcurses_version.minor,
+    $nim_notcurses_version.patch,
+    $lib_notcurses_major,
+    $notcurses_version()
+  ]).strip.replace("\n", " ")
   styledWriteLine(stderr, fgRed, "Error: ", resetStyle, majorMismatchMsg)
   raise (ref AbiDefect)(msg: "libnotcurses major version mismatch")
 
 const ncWarnMinor {.booldefine.}: bool = true
 
 when ncWarnMinor:
-  let minorMismatchMsg = ("""
-nim-notcurses minor version $1.$2 is newer than Notcurses library minor
-version $4.$5 (nim-notcurses: $1.$2.$3, libnotcurses: $6)
-  """ % [
-    $nim_notcurses_version.major,
-    $nim_notcurses_version.minor,
-    $nim_notcurses_version.patch,
-    $lib_notcurses_major,
-    $lib_notcurses_minor,
-    $notcurses_version()
-  ]).strip.replace("\n", " ")
-
   if (nim_notcurses_version.major, nim_notcurses_version.minor) >
       (lib_notcurses_major, lib_notcurses_minor):
+    let minorMismatchMsg = ("""
+nim-notcurses minor version $1.$2 is newer than Notcurses library minor
+version $4.$5 (nim-notcurses: $1.$2.$3, libnotcurses: $6)
+    """ % [
+      $nim_notcurses_version.major,
+      $nim_notcurses_version.minor,
+      $nim_notcurses_version.patch,
+      $lib_notcurses_major,
+      $lib_notcurses_minor,
+      $notcurses_version()
+    ]).strip.replace("\n", " ")
     styledWriteLine(stderr, fgYellow, "Warning: ", resetStyle, minorMismatchMsg)
