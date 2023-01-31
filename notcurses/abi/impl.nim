@@ -59,20 +59,16 @@ type
   ncdirect*        {.nc_incomplete, importc: "struct ncdirect"       .} = object
 
 # L127 - notcurses/notcurses.h
-macro NCCHANNEL_INITIALIZER*(r, g, b: cint): culonglong =
+macro NCCHANNEL_INITIALIZER*(r, g, b: cuint): uint32 =
   quote do:
-    let
-      rr  = `r`.culonglong
-      gg  = `g`.culonglong
-      bb  = `b`.culonglong
-    (rr shl 16) + (gg shl 8) + bb + NC_BGDEFAULT_MASK
+    (`r` shl 16) + (`g` shl 8) + `b` + NC_BGDEFAULT_MASK.uint32
 
 # L131 - notcurses/notcurses.h
-macro NCCHANNELS_INITIALIZER*(fr, fg, fb, br, bg, bb: cint): culonglong =
+macro NCCHANNELS_INITIALIZER*(fr, fg, fb, br, bg, bb: cuint): uint64 =
   quote do:
     let
-      chan1 = NCCHANNEL_INITIALIZER(`fr`, `fg`, `fb`)
-      chan2 = NCCHANNEL_INITIALIZER(`br`, `bg`, `bb`)
+      chan1 = NCCHANNEL_INITIALIZER(`fr`, `fg`, `fb`).uint64
+      chan2 = NCCHANNEL_INITIALIZER(`br`, `bg`, `bb`).uint64
     (chan1 shl 32) + chan2
 
 # L367 - notcurses/notcurses.h
@@ -90,7 +86,7 @@ type
     margin_r*: cuint
     margin_b*: cuint
     margin_l*: cuint
-    flags*   : culonglong
+    flags*   : uint64
 
 when not ncCore:
   # L1087 - notcurses/notcurses.h
@@ -150,14 +146,14 @@ proc notcurses_stddim_yx*(nc: ptr notcurses, y, x: ptr cuint): ptr ncplane {.nc.
 type
   # L1472 -  notcurses/notcurses.h
   ncplane_options* {.nc_bycopy, importc: "struct ncplane_options".} = object
-    y*:        cint
-    x*:        cint
-    rows*:     cuint
-    cols*:     cuint
-    userptr*:  pointer
-    name*:     cstring
+    y*       : cint
+    x*       : cint
+    rows*    : cuint
+    cols*    : cuint
+    userptr* : pointer
+    name*    : cstring
     resizecb*: proc (n: ptr ncplane): cint {.noconv.}
-    flags*:    uint64
+    flags*   : uint64
     margin_b*: cuint
     margin_r*: cuint
 
@@ -177,7 +173,7 @@ proc notcurses_canopen_images*(nc: ptr notcurses): bool {.nc.}
 proc ncplane_set_base*(n: ptr ncplane, egc: cstring, stylemask: uint16, channels: uint64): cint {.nc.}
 
 # L2264 - notcurses/notcurses.h
-proc ncplane_putstr_yx*(n: ptr ncplane, y, x: cint, gclustarr: cstring): cint {.nc.}
+proc ncplane_putstr_yx*(n: ptr ncplane, y, x: cint, gclusters: cstring): cint {.nc.}
 
 # L2287 - notcurses/notcurses.h
 proc ncplane_putstr*(n: ptr ncplane, gclustarr: cstring): cint {.nc.}
@@ -248,7 +244,7 @@ type
     flags*        : uint64
 
 # L3989 - notcurses/notcurses.h
-proc ncmultiselector_create*(n: ptr ncplane, opts: ptr ncmultiselector_options): ptr ncmultiselector {.nc}
+proc ncmultiselector_create*(n: ptr ncplane, opts: ptr ncmultiselector_options): ptr ncmultiselector {.nc.}
 
 # L4006 - notcurses/notcurses.h
 proc ncmultiselector_offer_input*(n: ptr ncmultiselector, ni: ptr ncinput): bool {.nc.}
@@ -265,10 +261,10 @@ else:
   {.pragma: ncd_init, cdecl, dynlib: nc_init_lib, importc.}
 
 when not ncCore:
-# L59 - notcurses/direct.h
+  # L59 - notcurses/direct.h
   proc ncdirect_init*(termtype: cstring, fp: File, flags: uint64): ptr ncdirect {.ncd_init.}
 else:
-# L63 - notcurses/direct.h
+  # L63 - notcurses/direct.h
   proc ncdirect_core_init*(termtype: cstring, fp: File, flags: uint64): ptr ncdirect {.ncd_init.}
 
 # L92 - notcurses/direct.h

@@ -259,12 +259,16 @@ const
   NCOPTION_SCROLLING*           = 0x0000000000000200.culonglong
   NCOPTION_CLI_MODE*            =
     when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
-      bitor(NCOPTION_NO_ALTERNATE_SCREEN, NCOPTION_NO_CLEAR_BITMAPS,
-        NCOPTION_PRESERVE_CURSOR, NCOPTION_SCROLLING)
+      bitor(NCOPTION_NO_ALTERNATE_SCREEN,
+            NCOPTION_NO_CLEAR_BITMAPS,
+            NCOPTION_PRESERVE_CURSOR,
+            NCOPTION_SCROLLING)
     else:
-      bitor(bitor(bitor(NCOPTION_NO_ALTERNATE_SCREEN,
-        NCOPTION_NO_CLEAR_BITMAPS), NCOPTION_PRESERVE_CURSOR),
-        NCOPTION_SCROLLING)
+      bitor(bitor(bitor(
+            NCOPTION_NO_ALTERNATE_SCREEN,
+            NCOPTION_NO_CLEAR_BITMAPS),
+            NCOPTION_PRESERVE_CURSOR),
+            NCOPTION_SCROLLING)
 
 type
   # L1199 - notcurses/notcurses.h
