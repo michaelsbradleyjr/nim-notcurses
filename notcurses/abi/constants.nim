@@ -215,10 +215,10 @@ type
 
 const
   # L104 - notcurses/notcurses.h
-  NCALPHA_HIGHCONTRAST* = 0x30000000.culonglong
-  NCALPHA_TRANSPARENT*  = 0x20000000.culonglong
-  NCALPHA_BLEND*        = 0x10000000.culonglong
-  NCALPHA_OPAQUE*       = 0x00000000.culonglong
+  NCALPHA_HIGHCONTRAST* = 0x0000000030000000.culonglong
+  NCALPHA_TRANSPARENT*  = 0x0000000020000000.culonglong
+  NCALPHA_BLEND*        = 0x0000000010000000.culonglong
+  NCALPHA_OPAQUE*       = 0x0000000000000000.culonglong
 
   # L117 - notcurses/notcurses.h
   NC_BGDEFAULT_MASK* = 0x0000000040000000.culonglong
@@ -230,7 +230,7 @@ const
   NCSTYLE_UNDERCURL* = 0x00000004.cuint
   NCSTYLE_BOLD*      = 0x00000002.cuint
   NCSTYLE_STRUCK*    = 0x00000001.cuint
-  NCSTYLE_NONE*      = 0.cuint
+  NCSTYLE_NONE*      = 0x00000000.cuint
 
 type
   # L978 - notcurses/notcurses.h
@@ -269,18 +269,18 @@ const
 type
   # L1199 - notcurses/notcurses.h
   ncintype_e* {.pure.} = enum
-    NCTYPE_UNKNOWN = 0.cint
-    NCTYPE_PRESS   = 1.cint
-    NCTYPE_REPEAT  = 2.cint
-    NCTYPE_RELEASE = 3.cint
+    NCTYPE_UNKNOWN
+    NCTYPE_PRESS
+    NCTYPE_REPEAT
+    NCTYPE_RELEASE
 
 const
   # L1332 - notcurses/notcurses.h
-  NCMICE_NO_EVENTS*    = 0x0.cuint
-  NCMICE_MOVE_EVENT*   = 0x1.cuint
-  NCMICE_BUTTON_EVENT* = 0x2.cuint
-  NCMICE_DRAG_EVENT*   = 0x4.cuint
-  NCMICE_ALL_EVENTS*   = 0x7.cuint
+  NCMICE_NO_EVENTS*    = 0x00000000.cuint
+  NCMICE_MOVE_EVENT*   = 0x00000001.cuint
+  NCMICE_BUTTON_EVENT* = 0x00000002.cuint
+  NCMICE_DRAG_EVENT*   = 0x00000004.cuint
+  NCMICE_ALL_EVENTS*   = 0x00000007.cuint
 
 const
   # L29 - notcurses/direct.h
