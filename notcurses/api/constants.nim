@@ -33,7 +33,7 @@ type
     SetScroll    = "ncplane_set_scrolling failed"
     Stop         = "notcurses_stop failed"
 
-  InitOption* = distinct culonglong
+  InitOption* = distinct uint64
 
   InitOptions* {.pure.} = enum
     InhibitSetlocale  = NCOPTION_INHIBIT_SETLOCALE.InitOption
@@ -48,7 +48,7 @@ type
     Scrolling         = NCOPTION_SCROLLING.InitOption
     CliMode           = NCOPTION_CLI_MODE.InitOption
 
-  InputEvent* = distinct cint
+  InputEvent* = distinct int32
 
   InputEvents* {.pure.} = enum
     Unknown = ncintype_e.NCTYPE_UNKNOWN.InputEvent
@@ -206,7 +206,7 @@ const
   Return*       = Keys.Enter
 
 type
-  KeyModifier* = distinct cint
+  KeyModifier* = distinct int32
 
   KeyModifiers* {.pure.} = enum
     Shift    = NCKEY_MOD_SHIFT.KeyModifier
@@ -218,7 +218,7 @@ type
     CapsLock = NCKEY_MOD_CAPSLOCK.KeyModifier
     NumLock  = NCKEY_MOD_NUMLOCK.KeyModifier
 
-  LogLevel* = distinct cint
+  LogLevel* = distinct int32
 
   LogLevels* {.pure.} = enum
     Silent  = ncloglevel_e.NCLOGLEVEL_SILENT.LogLevel
@@ -231,7 +231,7 @@ type
     Debug   = ncloglevel_e.NCLOGLEVEL_DEBUG.LogLevel
     Trace   = ncloglevel_e.NCLOGLEVEL_TRACE.LogLevel
 
-  Style* = distinct cuint
+  Style* = distinct uint32
 
   Styles* {.pure.} = enum
     None      = NCSTYLE_NONE.Style

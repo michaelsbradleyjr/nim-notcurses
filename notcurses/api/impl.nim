@@ -15,25 +15,24 @@ type
   ApiError* = object of CatchableError
 
   ApiError0* = object of ApiError
-    code*: range[low(cint).int..0]
+    code*: range[low(int32)..0'i32]
 
   ApiErrorNeg* = object of ApiError
-    code*: range[low(cint).int..(-1)]
+    code*: range[low(int32)..(-1'i32)]
 
   ApiSuccess* = object of RootObj
 
   ApiSuccess0* = object of ApiSuccess
-    code*: range[0..high(cint).int]
+    code*: range[0'i32..high(int32)]
 
   ApiSuccessPos* = object of ApiSuccess
-    code*: range[1..high(cint).int]
+    code*: range[1'i32..high(int32)]
 
-  Channel* = distinct uint64
+  Channel* = distinct uint32
+
+  ChannelPair* = distinct uint64
 
   Codepoint* = distinct uint32
-
-  # maybe PlaneDimensions if need to disambiguate re: other dimensions types
-  Dimensions* = tuple[y, x: int]
 
   DirectOptions* = object
     flags: uint64
@@ -58,6 +57,10 @@ type
   Plane* = object
     # make this private again
     cPtr*: ptr ncplane
+
+  PlaneDimensions* = tuple[y, x: uint32]
+
+  TerminalDimensions* = tuple[rows, cols: uint32]
 
 const
   NimNotcursesMajor* = nim_notcurses_version.major.int
@@ -94,25 +97,22 @@ func `$`*(options: Options): string = $options.cObj
 
 func codepoint*(input: Input): Codepoint = input.cObj.id.Codepoint
 
-# if writing to y, x is one-shot, i.e. no updates over time (maybe upon
-# resize?) then can use `var int` for the parameters, and in the body have
-# cuint vars, then write to the argument vars (with conversion) after abi call
 proc dimYX*(plane: Plane, y, x: var uint32) =
   plane.cPtr.ncplane_dim_yx(addr y, addr x)
 
-proc dimYX*(plane: Plane): Dimensions =
-  var y, x: cuint
+proc dimYX*(plane: Plane): PlaneDimensions =
+  var y, x: uint32
   plane.dimYX(y, x)
-  (y: y.int, x: x.int)
+  (y, x)
 
 func event*(input: Input): InputEvents = cast[InputEvents](input.cObj.evtype)
 
-proc expect*[T: ApiSuccess | bool, E: ApiError](res: Result[T, E]): T
-    {.discardable.} =
-  expect(res, $FailureNotExpected)
+proc expect*[T: ApiSuccess | bool, E: ApiError](res: Result[T, E],
+    m = $FailureNotExpected): T {.discardable.} =
+  results.expect(res, m)
 
-proc expect*[E: ApiError](res: Result[void, E]) =
-  expect(res, $FailureNotExpected)
+proc expect*[E: ApiError](res: Result[void, E], m = $FailureNotExpected) =
+  results.expect(res, m)
 
 proc get*(T: type Notcurses): T =
   let cPtr = ncPtr.load
@@ -153,10 +153,10 @@ proc get*(T: type NotcursesDirect): T =
 proc getBlocking*(nc: Notcurses, input: var Input) =
   discard nc.cPtr.notcurses_get_blocking(unsafeAddr input.cObj)
 
-func init*(T: type Channel, r, g, b: int32): T =
+func init*(T: type Channel, r, g, b: uint32): T =
   NCCHANNEL_INITIALIZER(r, g, b).T
 
-func init*(T: type Channel, fr, fg, fb, br, bg, bb: int32): T =
+func init*(T: type ChannelPair, fr, fg, fb, br, bg, bb: uint32): T =
   NCCHANNELS_INITIALIZER(fr, fg, fb, br, bg, bb).T
 
 func init*(T: type Margins, top, right, bottom, left = 0'u32): T =
@@ -197,29 +197,28 @@ proc getBlocking*(nc: Notcurses): Input =
 
 func getScrolling*(plane: Plane): bool = plane.cPtr.ncplane_scrolling_p
 
-proc gradient*(plane: Plane, y, x: int, ylen, xlen: uint, ul, ur, ll,
-    lr: Channel, egc = "", styles: varargs[Styles]):
+proc gradient*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
+    lr: ChannelPair, egc = "", styles: varargs[Styles]):
     Result[ApiSuccess0, ApiErrorNeg] =
   var stylebits = 0.cuint
   if styles.len >= 1:
     for s in styles[0..^1]:
       stylebits = bitor(stylebits, s.cuint)
-  let code = plane.cPtr.ncplane_gradient(y.cint, x.cint, ylen.cuint,
-    xlen.cuint, egc.cstring, stylebits.uint16, ul.uint64, ur.uint64, ll.uint64,
-    lr.uint64)
-  if code < 0.cint:
-    err ApiErrorNeg(code: code.int, msg: $Grad)
+  let code = plane.cPtr.ncplane_gradient(y, x, ylen, xlen, egc.cstring,
+    stylebits.uint16, ul.uint64, ur.uint64, ll.uint64, lr.uint64)
+  if code < 0:
+    err ApiErrorNeg(code: code, msg: $Grad)
   else:
-    ok ApiSuccess0(code: code.int)
+    ok ApiSuccess0(code: code)
 
-proc gradient2x1*(plane: Plane, y, x: int, ylen, xlen: uint, ul, ur, ll,
+proc gradient2x1*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
     lr: Channel): Result[ApiSuccess0, ApiErrorNeg] =
-  let code = plane.cPtr.ncplane_gradient2x1(y.cint, x.cint, ylen.cuint,
-    xlen.cuint, ul.uint32, ur.uint32, ll.uint32, lr.uint32)
-  if code < 0.cint:
-    err ApiErrorNeg(code: code.int, msg: $Grad2x1)
+  let code = plane.cPtr.ncplane_gradient2x1(y, x, ylen, xlen, ul.uint32,
+    ur.uint32, ll.uint32, lr.uint32)
+  if code < 0:
+    err ApiErrorNeg(code: code, msg: $Grad2x1)
   else:
-    ok ApiSuccess0(code: code.int)
+    ok ApiSuccess0(code: code)
 
 func isKey*(codepoint: Codepoint): bool =
   let key = codepoint.uint32
@@ -249,25 +248,25 @@ func isUTF8*(input: Input): bool = input.codepoint.isUTF8
 
 proc putStr*(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0] =
   let code = plane.cPtr.ncplane_putstr s.cstring
-  if code <= 0.cint:
-    err ApiError0(code: code.int, msg: $PutStr)
+  if code <= 0:
+    err ApiError0(code: code, msg: $PutStr)
   else:
-    ok ApiSuccessPos(code: code.int)
+    ok ApiSuccessPos(code: code)
 
 proc putStr*(ncd: NotcursesDirect, s: string, channel = 0.Channel):
     Result[ApiSuccess0, ApiErrorNeg] =
   let code = ncd.cPtr.ncdirect_putstr(channel.uint64, s.cstring)
   if code < 0:
-    err ApiErrorNeg(code: code.int, msg: $DirectPutStr)
+    err ApiErrorNeg(code: code, msg: $DirectPutStr)
   else:
-    ok ApiSuccess0(code: code.int)
+    ok ApiSuccess0(code: code)
 
 proc putStrYX*(plane: Plane, s: string, y, x = -1'i32): Result[ApiSuccessPos, ApiError0] =
   let code = plane.cPtr.ncplane_putstr_yx(y, x, s.cstring)
   if code <= 0:
-    err ApiError0(code: code.int, msg: $PutStrYX)
+    err ApiError0(code: code, msg: $PutStrYX)
   else:
-    ok ApiSuccessPos(code: code.int)
+    ok ApiSuccessPos(code: code)
 
 proc putWc*(plane: Plane, wchar: wchar_t): Result[ApiSuccess0, ApiErrorNeg] =
   # wchar_t is implementation dependent but Notcurses seems to assume 32 bits
@@ -275,15 +274,15 @@ proc putWc*(plane: Plane, wchar: wchar_t): Result[ApiSuccess0, ApiErrorNeg] =
   # additional consideration; it's possible to use sizeof to check the size (in
   # bytes) of wchar_t, not sure if that's helpful in this context
   let code = plane.cPtr.ncplane_putwc wchar
-  if code < 0.cint:
-    err ApiErrorNeg(code: code.int, msg: $PutWc)
+  if code < 0:
+    err ApiErrorNeg(code: code, msg: $PutWc)
   else:
-    ok ApiSuccess0(code: code.int)
+    ok ApiSuccess0(code: code)
 
 proc render*(nc: Notcurses): Result[void, ApiErrorNeg] =
   let code = nc.cPtr.notcurses_render
-  if code < 0.cint:
-    err ApiErrorNeg(code: code.int, msg: $Render)
+  if code < 0:
+    err ApiErrorNeg(code: code, msg: $Render)
   else:
     ok()
 
@@ -317,8 +316,8 @@ proc stdPlane*(nc: Notcurses): Plane =
 proc stop*(nc: Notcurses): Result[void, ApiErrorNeg] =
   if ncStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
   let code = nc.cPtr.notcurses_stop
-  if code < 0.cint:
-    err ApiErrorNeg(code: code.int, msg: $Stop)
+  if code < 0:
+    err ApiErrorNeg(code: code, msg: $Stop)
   elif ncStopped.exchange(true):
     raise (ref ApiDefect)(msg: $AlreadyStopped)
   else:
@@ -330,7 +329,7 @@ proc stop*(ncd: NotcursesDirect): Result[void, ApiErrorNeg] =
   if ncStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
   let code = ncd.cPtr.ncdirect_stop
   if code < 0:
-    err ApiErrorNeg(code: code.int, msg: $DirectStop)
+    err ApiErrorNeg(code: code, msg: $DirectStop)
   elif ncStopped.exchange(true):
     raise (ref ApiDefect)(msg: $AlreadyStopped)
   else:
@@ -456,6 +455,7 @@ func toUTF8*(input: Input): Option[string] =
 type
   Nc* = Notcurses
   NcChannel* = Channel
+  NcChannels* = ChannelPair
   NcCodepoint* = Codepoint
   NcInput* = Input
   NcKeys* = Keys
