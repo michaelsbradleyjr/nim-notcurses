@@ -1,6 +1,5 @@
-# line number comments in this and other abi modules re: decls/defs in
-# Notcurses' headers need to be revised w.r.t. the version of Notcurses
-# currently being tracked, presently v3.0.9
+# L[num] comments below pertain to sources for Notcurses v3.0.9
+# https://github.com/dankamongmen/notcurses/tree/v3.0.9/include/notcurses
 
 import std/[macros, strutils, terminal]
 
@@ -83,7 +82,7 @@ proc ncchannels_set_bg_alpha*(channels: ptr uint64, alpha: cuint): cint {.nc.}
 proc ncchannels_set_fg_alpha*(channels: ptr uint64, alpha: cuint): cint {.nc.}
 
 type
-  # L982 - notcurses/notcurses.h
+  # L1060 - notcurses/notcurses.h
   notcurses_options* {.nc_bycopy, importc: "struct notcurses_options".} = object
     termtype*: cstring
     loglevel*: ncloglevel_e
@@ -100,23 +99,23 @@ else:
   # L1091 - notcurses/notcurses.h
   proc notcurses_core_init*(opts: ptr notcurses_options, fp: File): ptr notcurses {.nc_init.}
 
-# L1033 - notcurses/notcurses.h
+# L1094 - notcurses/notcurses.h
 proc notcurses_stop*(nc: ptr notcurses): cint {.nc.}
 
-# L1050 - notcurses/notcurses.h
+# L1111 - notcurses/notcurses.h
 proc notcurses_stdplane*(nc: ptr notcurses): ptr ncplane {.nc.}
 
-# L1077 - notcurses/notcurses.h
+# L1138 - notcurses/notcurses.h
 proc ncpile_render*(n: ptr ncplane): cint {.nc.}
 
-# L1083 - notcurses/notcurses.h
+# L1144 - notcurses/notcurses.h
 proc ncpile_rasterize*(n: ptr ncplane): cint {.nc.}
 
-# L1088 - notcurses/notcurses.h
+# L1149 - notcurses/notcurses.h
 proc notcurses_render*(nc: ptr notcurses): cint {.nc.}
 
 type
-  # L1144 - notcurses/notcurses.h
+  # L1217 - notcurses/notcurses.h
   ncinput* {.nc_bycopy, importc: "struct ncinput".} = object
     id*       : uint32
     y*        : cint
@@ -133,23 +132,23 @@ type
 # L1225 - notcurses/notcurses.h
 proc ncinput_ctrl_p*(ni: ptr ncinput): bool {.nc.}
 
-# L1261 - notcurses/notcurses.h
+# L1322 - notcurses/notcurses.h
 proc notcurses_get_blocking*(n: ptr notcurses, ni: ptr ncinput): uint32 {.nc.}
 
-# L1315 - notcurses/notcurses.h
-proc ncplane_dim_yx*(n: ptr ncplane, y, x: ptr cuint) {.nc.}
-
-# L1326 - notcurses/notcurses.h
-proc notcurses_stddim_yx*(nc: ptr notcurses, y, x: ptr cuint): ptr ncplane {.nc.}
-
-# L1340 - notcurses/notcurses.h
+# L1341 - notcurses/notcurses.h
 proc notcurses_mice_enable*(n: ptr notcurses, eventmask: cuint): cint {.nc.}
 
-# L1345 - notcurses/notcurses.h
+# L1346 - notcurses/notcurses.h
 proc notcurses_mice_disable*(n: ptr notcurses): cint {.nc.}
 
+# L1376 - notcurses/notcurses.h
+proc ncplane_dim_yx*(n: ptr ncplane, y, x: ptr cuint) {.nc.}
+
+# L1387 - notcurses/notcurses.h
+proc notcurses_stddim_yx*(nc: ptr notcurses, y, x: ptr cuint): ptr ncplane {.nc.}
+
 type
-  # L1462 -  notcurses/notcurses.h
+  # L1472 -  notcurses/notcurses.h
   ncplane_options* {.nc_bycopy, importc: "struct ncplane_options".} = object
     y*:        cint
     x*:        cint
@@ -165,37 +164,37 @@ type
 # L1479 - notcurses/notcurses.h
 proc ncplane_create*(n: ptr ncplane, nopts: ptr ncplane_options): ptr ncplane {.nc.}
 
-# L1501 - notcurses/notcurses.h
+# L1562 - notcurses/notcurses.h
 proc ncplane_set_scrolling*(n: ptr ncplane, scrollp: cuint): bool {.nc.}
 
-# L1504 - notcurses/notcurses.h
+# L1565 - notcurses/notcurses.h
 proc ncplane_scrolling_p*(n: ptr ncplane): bool {.nc.}
 
-# L1726 - notcurses/notcurses.h
+# L1727 - notcurses/notcurses.h
 proc notcurses_canopen_images*(nc: ptr notcurses): bool {.nc.}
 
 # L1874 - notcurses/notcurses.h
 proc ncplane_set_base*(n: ptr ncplane, egc: cstring, stylemask: uint16, channels: uint64): cint {.nc.}
 
-# L2225 - notcurses/notcurses.h
-proc ncplane_putstr*(n: ptr ncplane, gclustarr: cstring): cint {.nc.}
-
-# L2265 - notcurses/notcurses.h
+# L2264 - notcurses/notcurses.h
 proc ncplane_putstr_yx*(n: ptr ncplane, y, x: cint, gclustarr: cstring): cint {.nc.}
+
+# L2287 - notcurses/notcurses.h
+proc ncplane_putstr*(n: ptr ncplane, gclustarr: cstring): cint {.nc.}
 
 # L2292 - notcurses/notcurses.h
 proc ncplane_putstr_aligned*(n: ptr ncplane, y: cint, align: ncalign_e, s: cstring): cint {.nc.}
 
-# L2371 - notcurses/notcurses.h
+# L2433 - notcurses/notcurses.h
 proc ncplane_putwc*(n: ptr ncplane, w: wchar_t): cint {.nc.}
 
-# L2618 - notcurses/notcurses.h
+# L2680 - notcurses/notcurses.h
 proc ncplane_gradient*(n: ptr ncplane, y, x: cint, ylen, xlen: cuint, egc: cstring, styles: uint16, ul, ur, ll, lr: uint64): cint {.nc.}
 
-# L2627 - notcurses/notcurses.h
+# L2689 - notcurses/notcurses.h
 proc ncplane_gradient2x1*(n: ptr ncplane, y, x: cint, ylen, xlen: cuint, ul, ur, ll, lr: uint32): cint {.nc.}
 
-# L2850 - notcurses/notcurses.h
+# L2927 - notcurses/notcurses.h
 proc ncplane_set_styles*(n: ptr ncplane, stylebits: cuint) {.nc.}
 
 # L3000 - notcurses/notcurses.h
@@ -204,11 +203,11 @@ proc ncplane_set_fg_rgb*(n: ptr ncplane, channel: uint32): cint {.nc.}
 # L3001 - notcurses/notcurses.h
 proc ncplane_set_bg_rgb*(n: ptr ncplane, channel: uint32): cint {.nc.}
 
-# L3255 - notcurses/notcurses.h
+# L3257 - notcurses/notcurses.h
 proc ncvisual_from_file*(file: cstring): ptr ncvisual {.nc.}
 
 type
-  # L3322 - notcurses/notcurses.h
+  # L3324 - notcurses/notcurses.h
   ncvisual_options* {.nc_bycopy, importc: "struct ncvisual_options".} = object
     n*         : ptr ncplane
     scaling*   : ncscale_e
@@ -228,13 +227,13 @@ type
 proc ncvisual_blit*(nc: ptr notcurses, ncv: ptr ncvisual, vopts: ptr ncvisual_options): ptr ncplane {.nc.}
 
 type
-  # L3870 - notcurses/notcurses.h
+  # L3946 - notcurses/notcurses.h
   ncmselector_item* {.nc_bycopy, importc: "struct ncmselector_item".} = object
     option*  : cstring
     desc*    : cstring
     selected*: bool
 
-  # L3911 - notcurses/notcurses.h
+  # L3987 - notcurses/notcurses.h
   ncmultiselector_options* {.nc_bycopy, importc: "struct ncmultiselector_options".} = object
     title*        : cstring
     secondary*    : cstring

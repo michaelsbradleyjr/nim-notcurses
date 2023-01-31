@@ -1,3 +1,6 @@
+# L[num] comments below pertain to sources for Notcurses v3.0.9
+# https://github.com/dankamongmen/notcurses/tree/v3.0.9/include/notcurses
+
 import std/bitops
 
 const nim_notcurses_version* = (major: 3.cint, minor: 0.cint, patch: 9.cint)
@@ -195,7 +198,7 @@ type
     NCBLIT_4x1
     NCBLIT_8x1
 
-  # L79 - notcurses/notcurses.h
+  # L84 - notcurses/notcurses.h
   ncalign_e* {.pure.} = enum
     NCALIGN_UNALIGNED
     NCALIGN_LEFT
@@ -220,7 +223,7 @@ const
   # L117 - notcurses/notcurses.h
   NC_BGDEFAULT_MASK* = 0x0000000040000000.culonglong
 
-  # L742 - notcurses/notcurses.h
+  # L769 - notcurses/notcurses.h
   NCSTYLE_MASK*      = 0x0000ffff.cuint
   NCSTYLE_ITALIC*    = 0x00000010.cuint
   NCSTYLE_UNDERLINE* = 0x00000008.cuint
@@ -230,7 +233,7 @@ const
   NCSTYLE_NONE*      = 0.cuint
 
 type
-  # L907 - notcurses/notcurses.h
+  # L978 - notcurses/notcurses.h
   ncloglevel_e* {.pure.} = enum
     NCLOGLEVEL_SILENT  = -1.cint
     NCLOGLEVEL_PANIC   =  0.cint
@@ -243,7 +246,7 @@ type
     NCLOGLEVEL_TRACE   =  7.cint
 
 const
-  # L929 - notcurses/notcurses.h
+  # L990 - notcurses/notcurses.h
   NCOPTION_INHIBIT_SETLOCALE*   = 0x0000000000000001.culonglong
   NCOPTION_NO_CLEAR_BITMAPS*    = 0x0000000000000002.culonglong
   NCOPTION_NO_WINCH_SIGHANDLER* = 0x0000000000000004.culonglong
@@ -264,7 +267,7 @@ const
         NCOPTION_SCROLLING)
 
 type
-  # L1133 - notcurses/notcurses.h
+  # L1199 - notcurses/notcurses.h
   ncintype_e* {.pure.} = enum
     NCTYPE_UNKNOWN = 0.cint
     NCTYPE_PRESS   = 1.cint
@@ -272,7 +275,7 @@ type
     NCTYPE_RELEASE = 3.cint
 
 const
-  # L1331 - notcurses/notcurses.h
+  # L1332 - notcurses/notcurses.h
   NCMICE_NO_EVENTS*    = 0x0.cuint
   NCMICE_MOVE_EVENT*   = 0x1.cuint
   NCMICE_BUTTON_EVENT* = 0x2.cuint
