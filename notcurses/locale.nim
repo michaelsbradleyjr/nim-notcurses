@@ -6,10 +6,8 @@ import std/macros
 import pkg/stew/results
 
 type
-  Category* = distinct cint
-
+  Category* = distinct int32
   LocaleError* = object of CatchableError
-
   LocaleSuccess* = string
 
 const FailureNotExpected = "failure not expected"

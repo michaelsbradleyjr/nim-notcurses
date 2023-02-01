@@ -146,9 +146,8 @@ proc get*(T: type NotcursesDirect): T =
       ncdApiObj = T(cPtr: cast[ptr core.ncdirect](cPtr))
   ncdApiObj
 
-# when implementing api for notcurses_get, etc. (i.e. the abi calls that return
-# 0.uint32 on timeout), use Option none for timeout and Option some
-# NotcursesCodepoint otherwise
+# for notcurses_get, etc. (i.e. abi calls that return 0'u32 on timeout), use
+# Option none for timeout and Option some Codepoint otherwise
 
 proc getBlocking*(nc: Notcurses, input: var Input) =
   discard nc.cPtr.notcurses_get_blocking(unsafeAddr input.cObj)
@@ -160,32 +159,25 @@ func init*(T: type ChannelPair, fr, fg, fb, br, bg, bb: uint32): T =
   NCCHANNELS_INITIALIZER(fr, fg, fb, br, bg, bb).T
 
 func init*(T: type Margins, top, right, bottom, left = 0'u32): T =
-  (top: top.uint32, right: right.uint32, bottom: bottom.uint32,
-   left: left.uint32)
+  (top, right, bottom, left)
 
-func init*(T: type Options, initOptions: varargs[InitOptions], term = "",
+func init*(T: type Options, initOptions: openArray[InitOptions] = [], term = "",
     logLevel = LogLevels.Panic, margins = Margins.init): T =
   var flags = baseInitOption.uint64
-  if initOptions.len >= 1:
-    for o in initOptions[0..^1]:
-      flags = bitor(flags, o.uint64)
-  if term == "":
-    T(cObj: notcurses_options(loglevel: cast[ncloglevel_e](logLevel),
-      margin_t: margins.top.cuint, margin_r: margins.right.cuint,
-      margin_b: margins.bottom.cuint, margin_l: margins.left.cuint,
-      flags: flags))
-  else:
-    T(cObj: notcurses_options(termtype: term.cstring,
-      loglevel: cast[ncloglevel_e](logLevel), margin_t: margins.top.cuint,
-      margin_r: margins.right.cuint, margin_b: margins.bottom.cuint,
-      margin_l: margins.left.cuint, flags: flags))
+  for o in initOptions[0..^1]:
+    flags = bitor(flags, o.uint64)
+  var termtype: cstring
+  if term != "": termtype = term.cstring
+  T(cObj: notcurses_options(termtype: termtype,
+    loglevel: cast[ncloglevel_e](logLevel), margin_t: margins.top,
+    margin_r: margins.right, margin_b: margins.bottom, margin_l: margins.left,
+    flags: flags))
 
-func init*(T: type DirectOptions, initOptions: varargs[DirectInitOptions],
-    term = ""): T =
+func init*(T: type DirectOptions,
+    initOptions: openArray[DirectInitOptions] = [], term = ""): T =
   var flags = 0'u64
-  if initOptions.len >= 1:
-    for o in initOptions[0..^1]:
-      flags = bitor(flags, o.uint64)
+  for o in initOptions[0..^1]:
+    flags = bitor(flags, o.uint64)
   T(flags: flags, term: term)
 
 func init*(T: type Input): T = T(cObj: ncinput())
@@ -200,10 +192,9 @@ func getScrolling*(plane: Plane): bool = plane.cPtr.ncplane_scrolling_p
 proc gradient*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
     lr: ChannelPair, egc = "", styles: varargs[Styles]):
     Result[ApiSuccess0, ApiErrorNeg] =
-  var stylebits = 0.cuint
-  if styles.len >= 1:
-    for s in styles[0..^1]:
-      stylebits = bitor(stylebits, s.cuint)
+  var stylebits = 0'u32
+  for s in styles[0..^1]:
+    stylebits = bitor(stylebits, s.uint32)
   let code = plane.cPtr.ncplane_gradient(y, x, ylen, xlen, egc.cstring,
     stylebits.uint16, ul.uint64, ur.uint64, ll.uint64, lr.uint64)
   if code < 0:
@@ -240,8 +231,9 @@ func isKey*(codepoint: Codepoint): bool =
 
 func isKey*(input: Input): bool = input.codepoint.isKey
 
+# could improve this predicate function: https://stackoverflow.com/a/66723102
 func isUTF8*(codepoint: Codepoint): bool =
-  const highestCodepoint = 1114111.uint32
+  const highestCodepoint = 1114111'u32
   codepoint.uint32 <= highestcodePoint
 
 func isUTF8*(input: Input): bool = input.codepoint.isUTF8
@@ -288,7 +280,7 @@ proc render*(nc: Notcurses): Result[void, ApiErrorNeg] =
 
 proc setScrolling*(plane: Plane, enable: bool): Result[bool, ApiError] =
   let
-    wasEnabled = plane.cPtr.ncplane_set_scrolling enable.cuint
+    wasEnabled = plane.cPtr.ncplane_set_scrolling enable.uint32
     isEnabled = plane.getScrolling
   if isEnabled != enable:
     err ApiError(msg: $SetScroll)
@@ -296,15 +288,11 @@ proc setScrolling*(plane: Plane, enable: bool): Result[bool, ApiError] =
     ok wasEnabled
 
 proc setStyles*(plane: Plane, styles: varargs[Styles]) =
-  var stylebits = 0.cuint
-  if styles.len >= 1:
-    for s in styles[0..^1]:
-      stylebits = bitor(stylebits, s.cuint)
+  var stylebits = 0'u32
+  for s in styles[0..^1]:
+    stylebits = bitor(stylebits, s.uint32)
   plane.cPtr.ncplane_set_styles stylebits
 
-# if writing to y, x is one-shot, i.e. no updates over time (maybe upon
-# resize?) then can use `var int` for the parameters, and in the body have
-# cuint vars, then write to the argument vars (with conversion) after abi call
 proc stdDimYX*(nc: Notcurses, y, x: var uint32): Plane =
   let cPtr = nc.cPtr.notcurses_stddim_yx(addr y, addr x)
   Plane(cPtr: cPtr)
@@ -407,15 +395,15 @@ proc init*(T: type NotcursesDirect, options = DirectOptions.init, file = stdout,
       var cPtr: ptr abi.ncdirect
     else:
       var cPtr: ptr core.ncdirect
-    var term: cstring
-    if options.term != "": term = options.term.cstring
+    var termtype: cstring
+    if options.term != "": termtype = options.term.cstring
     when (NimMajor, NimMinor, NimPatch) < (1, 6, 0):
       try:
-        cPtr = ncdInit(term, file, options.flags)
+        cPtr = ncdInit(termtype, file, options.flags)
       except Exception:
         raise (ref ApiDefect)(msg: $FailedToInitialize)
     else:
-      cPtr = ncdInit(term, file, options.flags)
+      cPtr = ncdInit(termtype, file, options.flags)
     if cPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
     ncdApiObj = T(cPtr: cPtr)
     if not ncPtr.exchange(cast[pointer](ncdApiObj.cPtr)).isNil:
@@ -438,6 +426,9 @@ proc init*(T: type NotcursesDirect, options = DirectOptions.init, file = stdout,
 func toKey*(input: Input): Option[Keys] =
   if input.isKey: some(cast[Keys](input.codepoint))
   else: none[Keys]()
+
+# can wrap `API int notcurses_ucs32_to_utf8()` in abi/impl
+# func toUTF8*(input: Codepoint): Option[string] = ...
 
 func toUTF8*(input: Input): Option[string] =
   if input.isUTF8:

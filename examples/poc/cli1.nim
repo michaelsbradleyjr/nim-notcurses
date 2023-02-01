@@ -1,7 +1,7 @@
 import notcurses/cli
 # or: import notcurses/cli/core
 
-let nc = Nc.init NcOptions.init DrainInput
+let nc = Nc.init NcOptions.init [DrainInput]
 
 # there are one/more bugs in Notcurses affecting its CLI mode that result in
 # incorrect scrolling/rendering, especially noticeable when init option
