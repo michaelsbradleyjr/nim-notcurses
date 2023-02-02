@@ -77,6 +77,9 @@ proc ncchannels_set_bg_alpha*(channels: ptr uint64, alpha: cuint): cint {.nc.}
 # L387 - notcurses/notcurses.h
 proc ncchannels_set_fg_alpha*(channels: ptr uint64, alpha: cuint): cint {.nc.}
 
+# L609 - notcurses/notcurses.h
+proc notcurses_ucs32_to_utf8*(ucs32: ptr uint32, ucs32count: cuint, resultbuf: ptr UncheckedArray[cchar], buflen: csize_t): cint {.nc.}
+
 type
   # L1060 - notcurses/notcurses.h
   notcurses_options* {.nc_bycopy, importc: "struct notcurses_options".} = object
