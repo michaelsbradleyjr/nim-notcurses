@@ -114,6 +114,9 @@ proc expect*[T: ApiSuccess | bool, E: ApiError](res: Result[T, E],
 proc expect*[E: ApiError](res: Result[void, E], m = $FailureNotExpected) =
   results.expect(res, m)
 
+# use template/macro for `proc get` when breaking up api layer into
+# included-modules to reduce source code duplication
+
 proc get*(T: type Notcurses): T =
   let cPtr = ncPtr.load
   if cPtr.isNil:
@@ -160,6 +163,11 @@ func init*(T: type ChannelPair, fr, fg, fb, br, bg, bb: uint32): T =
 
 func init*(T: type Margins, top, right, bottom, left = 0'u32): T =
   (top, right, bottom, left)
+
+# when breaking up api layer into included-modules, refactor baseInitOption to
+# be a param with default value, e.g. CliMode; also constants baseInitOption,
+# ncInit, ncdInit in the various init,core/init modules can probably be
+# refactored as params of a template/macro used to generate the init funcs
 
 func init*(T: type Options, initOptions: openArray[InitOptions] = [], term = "",
     logLevel = LogLevels.Panic, margins = Margins.init): T =
@@ -296,6 +304,9 @@ proc stdPlane*(nc: Notcurses): Plane =
   let cPtr = nc.cPtr.notcurses_stdplane
   Plane(cPtr: cPtr)
 
+# use template/macro for `proc stop` when breaking up api layer into
+# included-modules to reduce source code duplication
+
 proc stop*(nc: Notcurses): Result[void, ApiErrorNeg] =
   if ncStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
   let code = nc.cPtr.notcurses_stop
@@ -324,6 +335,9 @@ proc stopNotcurses() {.noconv.} = Notcurses.get.stop.expect
 
 proc stopNotcursesDirect() {.noconv.} = NotcursesDirect.get.stop.expect
 
+# use template/macro for `template addExitProc` when breaking up api layer into
+# included-modules to reduce source code duplication
+
 when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
   import std/exitprocs
   template addExitProc*(T: type Notcurses) =
@@ -335,6 +349,9 @@ else:
     if not ncExitProcAdded.exchange(true): addQuitProc stopNotcurses
   template addExitProc*(T: type NotcursesDirect) =
     if not ncExitProcAdded.exchange(true): addQuitProc stopNotcursesDirect
+
+# use template/macro for `proc init` when breaking up api layer into
+# included-modules to reduce source code duplication
 
 proc init*(T: type Notcurses, options = Options.init, file = stdout,
     addExitProc = true): T =
