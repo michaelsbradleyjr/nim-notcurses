@@ -32,6 +32,6 @@ stdn.setStyles(None)
 
 while true:
   sleep 1
-  stdn.putWc(cast[wchar_t](wc)).expect
+  stdn.putWc(wc.wchar_t).expect
   inc wc
   if wc > last: wc = first

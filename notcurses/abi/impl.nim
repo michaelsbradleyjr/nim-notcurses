@@ -5,7 +5,7 @@ import std/[macros, strutils, terminal]
 
 type
   AbiDefect = object of Defect
-  wchar_t* {.importc.} = object
+  wchar_t* {.header: "<wchar.h>", importc.} = object
 
 const nc_header = "notcurses/notcurses.h"
 

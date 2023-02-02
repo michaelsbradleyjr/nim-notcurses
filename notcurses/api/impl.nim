@@ -7,7 +7,7 @@ import std/[atomics, bitops, options]
 
 import pkg/stew/[byteutils, results]
 
-export byteutils, options, results, wchar_t
+export byteutils, options, results
 
 type
   ApiDefect* = object of Defect
@@ -60,7 +60,7 @@ type
 
   PlaneDimensions* = tuple[y, x: uint32]
 
-  TerminalDimensions* = tuple[rows, cols: uint32]
+  TermDimensions* = tuple[rows, cols: uint32]
 
 const
   NimNotcursesMajor* = nim_notcurses_version.major.int
@@ -140,17 +140,17 @@ proc get*(T: type NotcursesDirect): T =
     # `ptr core.ncdirect` instead of `ptr ncdirect` (latter is used elsewhere
     # in this module); seems like a compiler bug; regardless, happily, the
     # change is compatible with older versions of Nim
-    when compiles(abi.notcurses):
+    when compiles(abi.ncdirect):
       ncdApiObj = T(cPtr: cast[ptr abi.ncdirect](cPtr))
     else:
       ncdApiObj = T(cPtr: cast[ptr core.ncdirect](cPtr))
   ncdApiObj
 
-# for notcurses_get, etc. (i.e. abi calls that return 0'u32 on timeout), use
+# for `notcurses_get`, etc. (i.e. abi calls that return 0'u32 on timeout), use
 # Option none for timeout and Option some Codepoint otherwise
 
 proc getBlocking*(nc: Notcurses, input: var Input) =
-  discard nc.cPtr.notcurses_get_blocking(unsafeAddr input.cObj)
+  discard nc.cPtr.notcurses_get_blocking(addr input.cObj)
 
 func init*(T: type Channel, r, g, b: uint32): T =
   NCCHANNEL_INITIALIZER(r, g, b).T
@@ -261,10 +261,6 @@ proc putStrYX*(plane: Plane, s: string, y, x = -1'i32): Result[ApiSuccessPos, Ap
     ok ApiSuccessPos(code: code)
 
 proc putWc*(plane: Plane, wchar: wchar_t): Result[ApiSuccess0, ApiErrorNeg] =
-  # wchar_t is implementation dependent but Notcurses seems to assume 32 bits
-  # (maybe for good reason); nim-notcurses' api/abi for ncplane_putwc needs
-  # additional consideration; it's possible to use sizeof to check the size (in
-  # bytes) of wchar_t, not sure if that's helpful in this context
   let code = plane.cPtr.ncplane_putwc wchar
   if code < 0:
     err ApiErrorNeg(code: code, msg: $PutWc)
@@ -346,6 +342,7 @@ proc init*(T: type Notcurses, options = Options.init, file = stdout,
   if not ncPtr.load.isNil:
     raise (ref ApiDefect)(msg: $AlreadyInitialized)
   else:
+    var cOpts = options.cObj
     # it became necessary re: recent commits in Nim's version-1-6 and
     # version-2-0 branches to here use `ptr abi.notcurses` or
     # `ptr core.notcurses` instead of `ptr notcurses` (latter is used elsewhere
@@ -357,11 +354,11 @@ proc init*(T: type Notcurses, options = Options.init, file = stdout,
       var cPtr: ptr core.notcurses
     when (NimMajor, NimMinor, NimPatch) < (1, 6, 0):
       try:
-        cPtr = ncInit(unsafeAddr options.cObj, file)
+        cPtr = ncInit(addr cOpts, file)
       except Exception:
         raise (ref ApiDefect)(msg: $FailedToInitialize)
     else:
-      cPtr = ncInit(unsafeAddr options.cObj, file)
+      cPtr = ncInit(addr cOpts, file)
     if cPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
     ncApiObj = T(cPtr: cPtr)
     if not ncPtr.exchange(cast[pointer](ncApiObj.cPtr)).isNil:
@@ -441,6 +438,12 @@ func toUTF8*(input: Input): Option[string] =
     some(string.fromBytes bytes)
   else:
     none[string]()
+
+func wchar_t*(wc: SomeInteger): wchar_t =
+  when compiles(abi.wchar_t):
+    cast[abi.wchar_t](wc)
+  else:
+    cast[core.wchar_t](wc)
 
 # Aliases
 type
