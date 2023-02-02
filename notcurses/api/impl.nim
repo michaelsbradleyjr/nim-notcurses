@@ -231,12 +231,10 @@ func isKey*(codepoint: Codepoint): bool =
 
 func isKey*(input: Input): bool = input.codepoint.isKey
 
-# could improve this predicate function: https://stackoverflow.com/a/66723102
-func isUTF8*(codepoint: Codepoint): bool =
-  const highestCodepoint = 1114111'u32
-  codepoint.uint32 <= highestcodePoint
-
-func isUTF8*(input: Input): bool = input.codepoint.isUTF8
+func isUTF8*(input: Input): bool =
+  # quick check that Input's underlying codepoint is not in Keys
+  const highest = 0x10ffff'u32
+  input.cObj.id <= highest
 
 proc putStr*(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0] =
   let code = plane.cPtr.ncplane_putstr s.cstring
@@ -425,6 +423,15 @@ func toKey*(input: Input): Option[Keys] =
   if input.isKey: some(cast[Keys](input.codepoint))
   else: none[Keys]()
 
+template toUTF8(buf: array[5, char]): string =
+  const nullC = '\x00'.char
+  var bytes: seq[byte]
+  bytes.add buf[0].byte
+  for c in buf[1..3]:
+    if c != nullC: bytes.add c.byte
+    else: break
+  string.fromBytes bytes
+
 func toUTF8*(codepoint: Codepoint): Option[string] =
   var
     buf: array[5, char]
@@ -434,23 +441,20 @@ func toUTF8*(codepoint: Codepoint): Option[string] =
   if code < 0:
     none[string]()
   else:
-    const nullC = '\x00'.char
-    var bytes: seq[byte]
-    bytes.add buf[0].byte
-    for c in buf[1..3]:
-      if c != nullC: bytes.add c.byte
-      else: break
-    some(string.fromBytes bytes)
+    some(buf.toUTF8)
+
+func isUTF8*(codepoint: Codepoint): bool =
+  # test is non-trivial to implement correctly, so rely on
+  # notcurses->libunistring converter to effectively check if codepoint can be
+  # encoded as UTF-8; this predicate function will generally not be too useful
+  # because it's more common to work with codepoints indirectly via inputs
+  codepoint.toUTF8.isSome
 
 func toUTF8*(input: Input): Option[string] =
+  # assumption: if input's underlying codepoint is not in Keys then cObj.utf8
+  # has valid bytes
   if input.isUTF8:
-    const nullC = '\x00'.char
-    var bytes: seq[byte]
-    bytes.add input.cObj.utf8[0].byte
-    for c in input.cObj.utf8[1..3]:
-      if c != nullC: bytes.add c.byte
-      else: break
-    some(string.fromBytes bytes)
+    some(input.cObj.utf8.toUTF8)
   else:
     none[string]()
 
