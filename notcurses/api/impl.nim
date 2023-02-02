@@ -253,7 +253,8 @@ proc putStr*(ncd: NotcursesDirect, s: string, channel = 0.Channel):
   else:
     ok ApiSuccess0(code: code)
 
-proc putStrYX*(plane: Plane, s: string, y, x = -1'i32): Result[ApiSuccessPos, ApiError0] =
+proc putStrYX*(plane: Plane, s: string, y, x = -1'i32):
+    Result[ApiSuccessPos, ApiError0] =
   let code = plane.cPtr.ncplane_putstr_yx(y, x, s.cstring)
   if code <= 0:
     err ApiError0(code: code, msg: $PutStrYX)
