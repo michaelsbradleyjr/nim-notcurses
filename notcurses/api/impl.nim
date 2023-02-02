@@ -213,21 +213,21 @@ proc gradient2x1*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
 
 func isKey*(codepoint: Codepoint): bool =
   let key = codepoint.uint32
+  (key >= Keys.Invalid.uint32 and
+    ((key <= Keys.F60.uint32) or
+     (key >= Keys.Enter.uint32 and
+      key <= Keys.Separator.uint32) or
+     (key >= Keys.CapsLock.uint32 and
+      key <= Keys.Menu.uint32) or
+     (key >= Keys.MediaPlay.uint32 and
+      key <= Keys.L5Shift.uint32) or
+     (key >= Keys.Motion.uint32 and
+      key <= Keys.Button11.uint32) or
+     (key == Keys.Signal.uint32) or
+     (key == Keys.EOF.uint32))) or
   (key == Keys.Tab.uint32) or
   (key == Keys.Esc.uint32) or
-  (key == Keys.Space.uint32) or
-  (key >= Keys.Invalid.uint32 and
-   key <= Keys.F60.uint32) or
-  (key >= Keys.Enter.uint32 and
-   key <= Keys.Separator.uint32) or
-  (key >= Keys.CapsLock.uint32 and
-   key <= Keys.Menu.uint32) or
-  (key >= Keys.MediaPlay.uint32 and
-   key <= Keys.L5Shift.uint32) or
-  (key >= Keys.Motion.uint32 and
-   key <= Keys.Button11.uint32) or
-  (key == Keys.Signal.uint32) or
-  (key == Keys.EOF.uint32)
+  (key == Keys.Space.uint32)
 
 func isKey*(input: Input): bool = input.codepoint.isKey
 
