@@ -48,7 +48,6 @@ while true:
 
   let utf8 = ni.toUTF8
   put "utf8  : "
-
   if utf8.isSome:
     let res = nc.stdPlane.putStr utf8.get & "\n"
     if res.isErr: putLn replacementChar
