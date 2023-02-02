@@ -425,12 +425,26 @@ func toKey*(input: Input): Option[Keys] =
   if input.isKey: some(cast[Keys](input.codepoint))
   else: none[Keys]()
 
-# can wrap `API int notcurses_ucs32_to_utf8()` in abi/impl
-# func toUTF8*(input: Codepoint): Option[string] = ...
+func toUTF8*(codepoint: Codepoint): Option[string] =
+  var
+    buf: array[5, char]
+    c = codepoint.uint32
+  let code = notcurses_ucs32_to_utf8(addr c, 1,
+    cast[ptr UncheckedArray[char]](addr buf), 5)
+  if code < 0:
+    none[string]()
+  else:
+    const nullC = '\x00'.char
+    var bytes: seq[byte]
+    bytes.add buf[0].byte
+    for c in buf[1..3]:
+      if c != nullC: bytes.add c.byte
+      else: break
+    some(string.fromBytes bytes)
 
 func toUTF8*(input: Input): Option[string] =
   if input.isUTF8:
-    const nullC = '\x00'.cchar
+    const nullC = '\x00'.char
     var bytes: seq[byte]
     bytes.add input.cObj.utf8[0].byte
     for c in input.cObj.utf8[1..3]:
