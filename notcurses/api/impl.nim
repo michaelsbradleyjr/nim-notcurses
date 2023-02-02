@@ -68,10 +68,10 @@ const
   NimNotcursesPatch* = nim_notcurses_version.patch.int
 
 var
-  lib_notcurses_major: cint
-  lib_notcurses_minor: cint
-  lib_notcurses_patch: cint
-  lib_notcurses_tweak: cint
+  lib_notcurses_major: int32
+  lib_notcurses_minor: int32
+  lib_notcurses_patch: int32
+  lib_notcurses_tweak: int32
 
 notcurses_version_components(addr lib_notcurses_major, addr lib_notcurses_minor,
   addr lib_notcurses_patch, addr lib_notcurses_tweak)
