@@ -12,8 +12,8 @@ let nc = Nc.init
 proc nop() {.noconv.} = discard
 setControlCHook(nop)
 
-# https://codepoints.net/U+FFFD?lang=en
-const replacementChar = string.fromBytes hexToByteArray("0xEFBFBD", 3)
+# https://codepoints.net/U+FFFD
+const replacementChar = string.fromBytes hexToByteArray("0xefbfbd", 3)
 
 proc put(s = "") = nc.stdPlane.putStr(s).expect
 
