@@ -44,7 +44,6 @@ $ git clone --depth 1 https://github.com/dankamongmen/notcurses.git \
             --branch v3.0.9 \
             "${HOME}/repos/notcurses"
 $ cd "${HOME}/repos/notcurses"
-$ git checkout tags/v3.0.9
 $ mkdir build && cd build
 $ cmake .. -DCMAKE_BUILD_TYPE=Release
 $ make -j16
