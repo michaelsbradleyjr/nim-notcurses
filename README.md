@@ -53,6 +53,8 @@ $ make -j16
 
 ## Installation
 
+[choosenim](https://github.com/dom96/choosenim#readme) is a great way to install the Nim compiler and tools, if you don't have them installed already.
+
 Use the [Nimble](https://github.com/nim-lang/nimble#readme) package manager to add [`notcures`](https://nimble.directory/pkg/notcurses) to an existing project. To the project's `.nimble` file add
 
 <!--
