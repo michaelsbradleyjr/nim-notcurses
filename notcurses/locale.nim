@@ -1,8 +1,10 @@
 # https://en.cppreference.com/w/c/locale/LC_categories
 # https://en.cppreference.com/w/c/locale/setlocale
 
-import std/macros
+# this module uses extra whitespace so that importc directives can be visually
+# scanned more easily
 
+import std/macros
 import pkg/stew/results
 
 type
@@ -20,12 +22,12 @@ var
   LC_NUMERIC_c  {.header: "<locale.h>", importc: "LC_NUMERIC" .}: cint
   LC_TIME_c     {.header: "<locale.h>", importc: "LC_TIME"    .}: cint
 
-  LC_ALL*      = LC_ALL_c.Category
-  LC_COLLATE*  = LC_COLLATE_c.Category
-  LC_CTYPE*    = LC_CTYPE_c.Category
+  LC_ALL* = LC_ALL_c.Category
+  LC_COLLATE* = LC_COLLATE_c.Category
+  LC_CTYPE* = LC_CTYPE_c.Category
   LC_MONETARY* = LC_MONETARY_c.Category
-  LC_NUMERIC*  = LC_NUMERIC_c.Category
-  LC_TIME*     = LC_TIME_c.Category
+  LC_NUMERIC* = LC_NUMERIC_c.Category
+  LC_TIME* = LC_TIME_c.Category
 
 when defined(posix):
   var
@@ -55,7 +57,8 @@ proc setLocale(category: Category, locale: string, name: string):
     Result[LocaleSuccess, LocaleError] =
   let loc = setlocale(category.int32, locale.cstring)
   if loc.isNil:
-    err LocaleError(msg: "setlocale failed to install " & locale & " as " & name)
+    err LocaleError(
+      msg: "setlocale failed to install " & locale & " as " & name)
   else:
     ok $loc
 
