@@ -24,7 +24,7 @@ Same as Notcurses' [requirements](https://github.com/dankamongmen/notcurses#requ
 
 If the headers and compiled libraries are not in locations well known to your system's compiler and linker, you may need to use `--passC` and/or `--passL` with `nim c`.
 
-For example, on macOS, if Notcurses is built in `${HOME}/repos/notcurses/build`, you would use
+For example, on macOS, if your own build of Notcurses is in `${HOME}/repos/notcurses/build`, you would use
 ```text
 $ nim c --passC:"-I${HOME}/repos/notcurses/include" \
         --passL:"-rpath ${HOME}/repos/notcurses/build" \
@@ -80,7 +80,7 @@ Or import its minimal core
 import notcurses/core
 ```
 
-:bulb: The *"minimal core"* does not link against Notcurses' multimedia stack, as explained in its [FAQs](https://github.com/dankamongmen/notcurses#faqs).
+:bulb: The *minimal core* does not link against Notcurses' multimedia stack, as explained in its [FAQs](https://github.com/dankamongmen/notcurses#faqs).
 
 #### CLI mode
 
@@ -148,7 +148,7 @@ The high-level wrapper is referred to as a *Nim API* elsewhere in this document 
 
 In the future, it may be desirable to split this project into two packages: `notcurses` and `notcurses_abi`. The latter would be a dependency of the former. At present, it makes sense to develop the wrappers together as a single package.
 
-**Non-goals:** provide an extensible widgets library, a text-based windowing system, or other advanced facilities that could be built with nim-notcurses. Such things can be explored in projects that have nim-notcurses as a dependency.
+**Non-goals:** provide an extensible widgets library, a text-based windowing system, or other advanced facilities that could be built with nim-notcurses. Such things can be explored in projects that have this package as a dependency.
 
 ## Versioning
 
@@ -156,9 +156,9 @@ This package follows the [version number](https://github.com/dankamongmen/notcur
 * currently [`v3.TBD`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/TBD) (upstream: [`v3.TBD`](https://github.com/dankamongmen/notcurses/releases/tag/TBD))
 * beginning with [`v2.3.13`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/v2.3.13) (upstream: [`v2.3.13`](https://github.com/dankamongmen/notcurses/releases/tag/v2.3.13)).
 
-:bulb: It's recommended to only use version `>= 3.TBD` of *this package*. Earlier versions of nim-notcurses were too raw and unproven.
+:bulb: It's recommended to only use version `>= 3.TBD` of *this package*. Earlier versions of *nim-notcurses* were too raw and unproven.
 
-Starting with [`v3.TBD`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/TBD) the implementation was overhauled, with Notcurses' examples and demo ported to the Nim API and tested to compile and run correctly on various platforms.
+Starting with [`v3.TBD`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/TBD) the implementation of nim-notcurses was overhauled, with Notcurses' examples and demo ported to the Nim API and tested to compile and run correctly on various platforms.
 
 ## Stability
 
