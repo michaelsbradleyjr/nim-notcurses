@@ -33,9 +33,9 @@ stdn.putStr("\nThis program is *not* indicative of real scrolling speed.\n\n").e
 stdn.setStyles(None)
 
 while true:
-  sleep 1
+  sleep 10
   stdn.putWc(wc.wchar_t).expect
-  # rendering after each putWc() isn't necessary but it makes the auto-scroll
+  # rendering after each putWc() isn't necessary but it makes auto-scroll
   # behavior of Notcurses' CLI mode visually more apparent
   nc.render.expect
   inc wc
