@@ -27,7 +27,6 @@ const
 var wc = first
 
 # see comment in ./cli1.nim re: scrolling/rendering bugs
-
 stdn.setStyles(Bold)
 stdn.putStr("\nThis program is *not* indicative of real scrolling speed.\n\n").expect
 stdn.setStyles(None)
