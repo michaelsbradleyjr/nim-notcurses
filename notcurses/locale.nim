@@ -1,8 +1,7 @@
 # https://en.cppreference.com/w/c/locale/LC_categories
 # https://en.cppreference.com/w/c/locale/setlocale
 
-# this module uses extra whitespace so that importc directives can be visually
-# scanned more easily
+# this module uses extra whitespace so it can be visually scanned more easily
 
 import std/macros
 import pkg/stew/results

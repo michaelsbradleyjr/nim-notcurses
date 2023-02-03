@@ -1,6 +1,8 @@
 # L[num] comments below pertain to sources for Notcurses v3.0.9
 # https://github.com/dankamongmen/notcurses/tree/v3.0.9/include/notcurses
 
+# this module uses extra whitespace so it can be visually scanned more easily
+
 import std/[macros, strutils, terminal]
 
 type
