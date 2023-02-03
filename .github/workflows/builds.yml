@@ -101,8 +101,7 @@ jobs:
           clone1b () {
             echo "$1_commit=$( \
               git clone --depth 1 $2 $1 \
-                        --branch $3 \
-                        --single-branch 2>/dev/null && \
+                        --branch $3 2>/dev/null && \
               cd $1 && git rev-parse HEAD \
               | cut -c1-7)" >> ${GITHUB_OUTPUT}
           }
@@ -157,8 +156,7 @@ jobs:
           fi
           mkdir -p "${HOME}/repos" && cd "${HOME}/repos"
           git clone --depth 1 https://github.com/dankamongmen/notcurses.git \
-                    --branch v${{ steps.cache-key.outputs.notcurses_version }} \
-                    --single-branch
+                    --branch v${{ steps.cache-key.outputs.notcurses_version }}
           cd notcurses
           mkdir build && cd build
           if [[ ${{ matrix.platform.os }} != windows ]]; then

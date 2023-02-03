@@ -40,7 +40,9 @@ Building Notcurses is simple, but make sure to have its [requirements](https://g
 For example, on Linux or macOS, you could do it like this, taking advantage of multiple cores when running `make`
 
 ```text
-$ git clone https://github.com/dankamongmen/notcurses.git "${HOME}/repos/notcurses"
+$ git clone --depth 1 https://github.com/dankamongmen/notcurses.git \
+            --branch v3.0.9 \
+            "${HOME}/repos/notcurses"
 $ cd "${HOME}/repos/notcurses"
 $ git checkout tags/v3.0.9
 $ mkdir build && cd build
