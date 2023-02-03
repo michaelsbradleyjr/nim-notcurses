@@ -32,35 +32,34 @@ when defined(posix):
     LC_MESSAGES_c {.header: "<locale.h>", importc: "LC_MESSAGES".}: cint
     LC_MESSAGES* = LC_MESSAGES_c.Category
 
-proc expect*[T: LocaleSuccess, E: LocaleError](res: Result[T, E]): T
-    {.discardable.} =
-  expect(res, FailureNotExpected)
+proc expect*[T: LocaleSuccess, E: LocaleError](res: Result[T, E],
+    m = FailureNotExpected): T {.discardable.} =
+  results.expect(res, m)
 
 proc setlocale(category: cint, locale: cstring): cstring
-  {.importc: "setlocale", header: "<locale.h>".}
+  {.header: "<locale.h>", importc: "setlocale".}
 
-proc getLocale(category: Category, categoryName: string):
+proc getLocale(category: Category, name: string):
     Result[LocaleSuccess, LocaleError] =
-  let loc = setlocale(category.cint, nil)
+  let loc = setlocale(category.int32, nil)
   if loc.isNil:
-    err LocaleError(msg: "setlocale failed to query " & categoryName)
+    err LocaleError(msg: "setlocale failed to query " & name)
   else:
     ok $loc
 
 macro getLocale*(category: Category): Result[LocaleSuccess, LocaleError] =
-  let categoryName = category.strVal
-  quote do: getLocale(`category`, `categoryName`)
+  let name = category.strVal
+  quote do: getLocale(`category`, `name`)
 
-proc setLocale(category: Category, locale: string, categoryName: string):
+proc setLocale(category: Category, locale: string, name: string):
     Result[LocaleSuccess, LocaleError] =
-  let loc = setlocale(category.cint, locale.cstring)
+  let loc = setlocale(category.int32, locale.cstring)
   if loc.isNil:
-    err LocaleError(msg: "setlocale failed to install " & locale & " as " &
-      categoryName)
+    err LocaleError(msg: "setlocale failed to install " & locale & " as " & name)
   else:
     ok $loc
 
 macro setLocale*(category: Category, locale: string):
     Result[LocaleSuccess, LocaleError] =
-  let categoryName = category.strVal
-  quote do: setLocale(`category`, `locale`, `categoryName`)
+  let name = category.strVal
+  quote do: setLocale(`category`, `locale`, `name`)
