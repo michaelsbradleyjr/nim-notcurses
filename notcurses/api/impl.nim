@@ -240,8 +240,8 @@ func isKey*(codepoint: Codepoint): bool =
 func isKey*(input: Input): bool = input.codepoint.isKey
 
 func isUTF8*(input: Input): bool =
-  # quick check that Input's underlying codepoint is not in Keys
-  const highest = 0x10ffff'u32
+  # quick test that Input's underlying codepoint is not in Keys
+  const highest = 0x0010ffff'u32
   input.cObj.id <= highest
 
 proc putStr*(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0] =
@@ -461,10 +461,8 @@ func toUTF8*(codepoint: Codepoint): Option[string] =
     some(buf.toUTF8)
 
 func isUTF8*(codepoint: Codepoint): bool =
-  # test is non-trivial to implement correctly, so rely on
-  # notcurses->libunistring converter to effectively check if codepoint can be
-  # encoded as UTF-8; this predicate function will generally not be too useful
-  # because it's more common to work with codepoints indirectly via inputs
+  # test is non-trivial to implement correctly so rely on libunistring
+  # converter to effectively test if codepoint can be encoded as UTF-8
   codepoint.toUTF8.isSome
 
 func toUTF8*(input: Input): Option[string] =
