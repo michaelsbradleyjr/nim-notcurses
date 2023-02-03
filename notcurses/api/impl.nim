@@ -468,8 +468,9 @@ func isUTF8*(codepoint: Codepoint): bool =
   codepoint.toUTF8.isSome
 
 func toUTF8*(input: Input): Option[string] =
-  # assumption: if input's underlying codepoint is not in Keys then cObj.utf8
-  # has valid bytes
+  # assumptions: if input's underlying codepoint is not in Keys then (1) it can
+  # be validly encoded in UTF-8 and (2) Notcurses has populated `cObj.utf8`
+  # with 1-4 bytes for that encoding
   if input.isUTF8:
     some(input.cObj.utf8.toUTF8)
   else:
