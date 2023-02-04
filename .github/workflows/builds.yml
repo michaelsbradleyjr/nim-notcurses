@@ -144,13 +144,15 @@ jobs:
                 +notcurses_commit:${{ steps.cache-key.outputs.notcurses_commit }}\
                 +cache_marker:${{ matrix.cache_marker }}"
 
+      # see: https://github.com/actions/runner-images/issues/6384
       # macOS runners in GitHub Actions are going through a gradual rollout to
       # a newer version, which can cause problems with cached Notcurses builds,
       # so on macOS always re-clone and rebuild Notcurses
       - name: Checkout Notcurses sources and compile
+        # remove this macos test when the rollout of newer macOS in GHA settles down
         if: steps.artifacts-cache.outputs.cache-hit != 'true' || matrix.platform.os == 'macos'
         run: |
-          # get rid of this macos check when the rollout of newer macOS in GHA settles down
+          # remove this macos test when the rollout of newer macOS in GHA settles down
           if [[ ${{ matrix.platform.os }} = macos ]]; then
             rm -rf "${HOME}/repos/notcurses"
           fi
