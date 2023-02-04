@@ -275,6 +275,12 @@ else:
 # L92 - notcurses/direct.h
 proc ncdirect_putstr*(nc: ptr ncdirect, channels: uint64, utf8: cstring): cint {.ncd.}
 
+# L142 - notcurses/direct.h
+proc ncdirect_supported_styles*(nc: ptr ncdirect): uint16 {.ncd.}
+
+# L146 - notcurses/direct.h
+proc ncdirect_set_styles*(n: ptr ncdirect, stylebits: cuint): cint {.ncd.}
+
 # L279 - notcurses/direct.h
 proc ncdirect_stop*(nc: ptr ncdirect): cint {.ncd.}
 
