@@ -23,6 +23,7 @@ type
 
   ErrorMessages {.pure.} = enum
     DirectPutStr = "ncdirect_putstr failed"
+    DirectSetStyles = "ncdirect_set_styles failed"
     DirectStop = "ncdirect_stop failed"
     Grad = "ncplane_gradient failed"
     Grad2x1 = "ncplane_gradient2x1 failed"

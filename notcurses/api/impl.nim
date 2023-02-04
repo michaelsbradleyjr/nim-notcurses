@@ -7,7 +7,7 @@ import std/[atomics, bitops, options]
 
 import pkg/stew/[byteutils, results]
 
-export byteutils, options, results
+export bitops, byteutils, options, results
 
 type
   ApiDefect* = object of Defect
@@ -20,10 +20,17 @@ type
   ApiErrorNeg* = object of ApiError
     code*: range[low(int32)..(-1'i32)]
 
+  ApiErrorNot0* = object of ApiError
+    # user must discriminate zero
+    code*: range[low(int32)..high(int32)]
+
   ApiSuccess* = object of RootObj
 
   ApiSuccess0* = object of ApiSuccess
     code*: range[0'i32..high(int32)]
+
+  ApiSuccessOnly0* = object of ApiSuccess
+    code*: range[0'i32..0'i32]
 
   ApiSuccessPos* = object of ApiSuccess
     code*: range[1'i32..high(int32)]
@@ -296,6 +303,17 @@ proc setStyles*(plane: Plane, styles: varargs[Styles]) =
     stylebits = bitor(stylebits, s.uint32)
   plane.cPtr.ncplane_set_styles stylebits
 
+proc setStyles*(ncd: NotcursesDirect, styles: varargs[Styles]):
+    Result[ApiSuccessOnly0, ApiErrorNot0] =
+  var stylebits = 0'u32
+  for s in styles[0..^1]:
+    stylebits = bitor(stylebits, s.uint32)
+  let code = ncd.cPtr.ncdirect_set_styles stylebits
+  if code != 0:
+    err ApiErrorNot0(code: code, msg: $DirectSetStyles)
+  else:
+    ok ApiSuccessOnly0(code: code)
+
 proc stdDimYX*(nc: Notcurses, y, x: var uint32): Plane =
   let cPtr = nc.cPtr.notcurses_stddim_yx(addr y, addr x)
   Plane(cPtr: cPtr)
@@ -435,6 +453,9 @@ proc init*(T: type NotcursesDirect, options = DirectOptions.init, file = stdout,
         {.warning[BareExcept]: on.}
     ncStopped.store(false)
     ncdApiObj
+
+func supportedStyles*(ncd: NotcursesDirect): uint16 =
+  ncd.cPtr.ncdirect_supported_styles
 
 func toKey*(input: Input): Option[Keys] =
   if input.isKey: some(cast[Keys](input.codepoint))
