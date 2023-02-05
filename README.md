@@ -53,7 +53,7 @@ $ make -j16
 
 ## Installation
 
-[choosenim](https://github.com/dom96/choosenim#readme) is a great way to install the Nim compiler and tools, if you don't have them installed already.
+[choosenim](https://github.com/dom96/choosenim#readme) is a convenient way to install the Nim compiler and tools, if you don't have them installed already.
 
 Use the [Nimble](https://github.com/nim-lang/nimble#readme) package manager to add [`notcures`](https://nimble.directory/pkg/notcurses) to an existing project. To the project's `.nimble` file add
 
@@ -165,7 +165,7 @@ Starting with [`v3.TBD`](https://github.com/michaelsbradleyjr/nim-notcurses/rele
 
 ## Stability
 
-Notcurses' ABI is stable per major version, and this package's low-level wrapper is likewise stable.
+Notcurses' ABI is stable per major version, and this package's low-level wrapper is likewise stable as of version `>= 3.TBD`, cf. [Versioning](#versioning).
 
 The Nim API (high-level wrapper) provided by this package is currently marked as experimental. Until it is marked as stable, it may be subject to breaking changes across patch and minor versions.
 
