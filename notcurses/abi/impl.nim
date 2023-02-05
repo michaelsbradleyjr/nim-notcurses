@@ -10,14 +10,7 @@ type
   wchar_t* {.header: "<wchar.h>", importc.} = object
 
 const nc_header = "notcurses/notcurses.h"
-
-when ncStatic:
-  {.pragma: nc, cdecl, header: nc_header, importc.}
-  {.pragma: nc_init, cdecl, header: nc_header, importc.}
-else:
-  {.pragma: nc, cdecl, dynlib: nc_lib, importc.}
-  {.pragma: nc_init, cdecl, dynlib: nc_init_lib, importc.}
-
+{.pragma: nc, cdecl, header: nc_header, importc.}
 {.pragma: nc_bycopy, bycopy, header: nc_header.}
 {.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
 
@@ -93,12 +86,11 @@ type
     margin_l*: cuint
     flags*   : uint64
 
-when not ncCore:
-  # L1087 - notcurses/notcurses.h
-  proc notcurses_init*(opts: ptr notcurses_options, fp: File): ptr notcurses {.nc_init.}
-else:
-  # L1091 - notcurses/notcurses.h
-  proc notcurses_core_init*(opts: ptr notcurses_options, fp: File): ptr notcurses {.nc_init.}
+# L1087 - notcurses/notcurses.h
+proc notcurses_init*(opts: ptr notcurses_options, fp: File): ptr notcurses {.nc.}
+
+# L1091 - notcurses/notcurses.h
+proc notcurses_core_init*(opts: ptr notcurses_options, fp: File): ptr notcurses {.nc.}
 
 # L1094 - notcurses/notcurses.h
 proc notcurses_stop*(nc: ptr notcurses): cint {.nc.}
@@ -257,20 +249,14 @@ proc ncmultiselector_offer_input*(n: ptr ncmultiselector, ni: ptr ncinput): bool
 # L4010 - notcurses/notcurses.h
 proc ncmultiselector_destroy*(n: ptr ncmultiselector) {.nc.}
 
-when ncStatic:
-  const ncd_header = "notcurses/direct.h"
-  {.pragma: ncd, cdecl, header: ncd_header, importc.}
-  {.pragma: ncd_init, cdecl, header: ncd_header, importc.}
-else:
-  {.pragma: ncd, cdecl, dynlib: nc_lib, importc.}
-  {.pragma: ncd_init, cdecl, dynlib: nc_init_lib, importc.}
+const ncd_header = "notcurses/direct.h"
+{.pragma: ncd, cdecl, header: ncd_header, importc.}
 
-when not ncCore:
-  # L59 - notcurses/direct.h
-  proc ncdirect_init*(termtype: cstring, fp: File, flags: uint64): ptr ncdirect {.ncd_init.}
-else:
-  # L63 - notcurses/direct.h
-  proc ncdirect_core_init*(termtype: cstring, fp: File, flags: uint64): ptr ncdirect {.ncd_init.}
+# L59 - notcurses/direct.h
+proc ncdirect_init*(termtype: cstring, fp: File, flags: uint64): ptr ncdirect {.ncd.}
+
+# L63 - notcurses/direct.h
+proc ncdirect_core_init*(termtype: cstring, fp: File, flags: uint64): ptr ncdirect {.ncd.}
 
 # L92 - notcurses/direct.h
 proc ncdirect_putstr*(nc: ptr ncdirect, channels: uint64, utf8: cstring): cint {.ncd.}

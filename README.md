@@ -27,7 +27,7 @@ If the headers and compiled libraries are not in locations well known to your sy
 For example, on macOS, if your own build of Notcurses is in `${HOME}/repos/notcurses/build`, you would use
 ```text
 $ nim c --passC:"-I${HOME}/repos/notcurses/include" \
-        --passL:"-rpath ${HOME}/repos/notcurses/build" \
+        --passL:"-L${HOME}/repos/notcurses/build -rpath ${HOME}/repos/notcurses/build" \
         ...
 ```
 
@@ -137,7 +137,7 @@ You can use additional options, cf. [Requirements](#requirements).
 
 ```text
 $ nim c --passC:"-I${HOME}/repos/notcurses/include" \
-        --passL:"-rpath ${HOME}/repos/notcurses/build" \
+        --passL:"-L${HOME}/repos/notcurses/build -rpath ${HOME}/repos/notcurses/build" \
         -r \
         examples/cli1.nim
 ```
