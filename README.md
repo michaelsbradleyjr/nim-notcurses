@@ -127,10 +127,10 @@ import notcurses/abi/core
 
 ## Examples
 
-See the modules in [`examples/poc`](examples/poc). To build and run the [`cli1`](examples/poc/cli1.nim) example do
+See the modules in [`examples`](examples). To build and run the [`cli1`](examples/cli1.nim) example do
 
 ```text
-$ nim c -r examples/poc/cli1.nim
+$ nim c -r examples/cli1.nim
 ```
 
 You can use additional options, cf. [Requirements](#requirements).
@@ -139,7 +139,7 @@ You can use additional options, cf. [Requirements](#requirements).
 $ nim c --passC:"-I${HOME}/repos/notcurses/include" \
         --passL:"-rpath ${HOME}/repos/notcurses/build" \
         -r \
-        examples/poc/cli1.nim
+        examples/cli1.nim
 ```
 
 ## Goals

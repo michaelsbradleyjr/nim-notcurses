@@ -5,7 +5,7 @@ import notcurses
 # delete me when nim-notcurses api supports ncmselector
 import notcurses/abi
 
-# selection with mouse in `multiselect` PoC is not working
+# selection with mouse in `multiselect` is not working
 # https://github.com/dankamongmen/notcurses/issues/2699
 
 let
@@ -60,7 +60,7 @@ discard ncchannels_set_fg_alpha(addr bgchannels, NCALPHA_BLEND.cuint)
 discard ncchannels_set_bg_alpha(addr bgchannels, NCALPHA_BLEND.cuint)
 
 if notcurses_canopen_images(nc.cPtr):
-  let ncv = ncvisual_from_file(joinPath(currentSourcePath.parentDir.parentDir,
+  let ncv = ncvisual_from_file(joinPath(currentSourcePath.parentDir,
     "data/covid19.jpg").cstring)
   var vopts = ncvisual_options(n: stdn.cPtr, scaling: NCSCALE_STRETCH)
   discard ncvisual_blit(nc.cPtr, ncv, addr vopts)

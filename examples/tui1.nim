@@ -11,7 +11,7 @@ setControlCHook(nop)
 # run; the most practical workaround is to redirect stderr to a log file and
 # then tail that file in another terminal:
 # `$ tail -F tui1.log`
-# `$ examples/poc/tui1 2> tui1.log`
+# `$ examples/tui1 2> tui1.log`
 
 # in Notcurses' TUI mode \n in a string causes putStr/YX to fail
 nc.stdPlane.putStr("Hello").expect # cursor advanced in x with y=0

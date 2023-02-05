@@ -251,10 +251,10 @@ jobs:
             tui1
           )
           for module in ${modules[@]}; do
-            nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/poc/${module}.nim
+            nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/${module}.nim
           done
           if [[ ${{ matrix.platform.os }} != windows ]]; then
-            ls -ladh examples/poc/* | grep -v '\..*$'
+            ls -ladh examples/* | grep -v '\..*$'
           else
-            ls -ladh examples/poc/*.exe
+            ls -ladh examples/*.exe
           fi
