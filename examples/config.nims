@@ -40,7 +40,7 @@ when defined(release):
   --opt:size
   --passC:"-flto"
   --passL:"-flto"
-  # macOS' Xcode's `ld` will report:
+  # with `--passL:"-s"` macOS' Xcode's `ld` will report:
   # "ld: warning: option -s is obsolete and being ignored"
   # however, the resulting binary will still be about 15K smaller; supplying
   # `--define:strip` or `switch("define", "strip")` in config.nims does not
