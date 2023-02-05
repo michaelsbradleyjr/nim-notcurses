@@ -16,8 +16,8 @@ setControlCHook(nop)
 # in Notcurses' TUI mode \n in a string causes putStr/YX to fail
 nc.stdPlane.putStr("Hello").expect # cursor advanced in x with y=0
 nc.stdPlane.putStr(", Notcurses!").expect # cursor advanced in x but still y=0
-nc.stdPlane.putStrYX("press q", 2, 0).expect # cursor moved/advanced, now y=2
-nc.stdPlane.putStr(" to quit").expect # cursor advanced in x but still y=2
+nc.stdPlane.putStrYX("press q", 2, 0).expect # cursor advanced in y/x, now y=2
+nc.stdPlane.putStr(" to quit").expect # cursor advanced in x with y=2
 nc.render.expect
 while true:
   if nc.getBlocking.toUTF8.get("") == "q": break
