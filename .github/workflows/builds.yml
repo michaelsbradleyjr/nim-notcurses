@@ -252,8 +252,10 @@ jobs:
           for module in ${modules[@]}; do
             nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/${module}.nim
           done
-          if [[ ${{ matrix.platform.os }} != windows ]]; then
-            ls -ladh examples/* | grep -v '\..*$'
+          if [[ ${{ matrix.platform.os }} = macos ]]; then
+            gfind examples/ -maxdepth 1 -type f | grep -v '\..*$' | xargs ls -ladh
+          elif [[ ${{ matrix.platform.os }} = ubuntu ]]; then
+            find examples/ -maxdepth 1 -type f | grep -v '\..*$' | xargs ls -ladh
           else
             ls -ladh examples/*.exe
           fi
