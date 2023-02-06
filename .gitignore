@@ -4,6 +4,7 @@
 /examples/**
 !/examples/**/
 !/examples/**/*.nim
+!/examples/README.md
 !/examples/config.nims
 !/examples/data/**
 /nimcache/
