@@ -165,14 +165,13 @@ jobs:
             cmake .. -DCMAKE_BUILD_TYPE=Release \
                      -DUSE_DOCTEST=off \
                      -DUSE_PANDOC=off
-            make -j${NPROC}
           else
             cmake .. -G"MSYS Makefiles" \
                      -DCMAKE_BUILD_TYPE=Release \
                      -DUSE_DOCTEST=off \
                      -DUSE_PANDOC=off
-            make
           fi
+          make -j${NPROC}
 
       - name: Install Notcurses
         run: |
