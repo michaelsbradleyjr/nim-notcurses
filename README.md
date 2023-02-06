@@ -31,6 +31,8 @@ $ nim c --passC:"-I${HOME}/repos/notcurses/include" \
         ...
 ```
 
+On Linux and Windows, drop the `-rpath` option.
+
 :bulb: Be careful to not have a system-wide installation of Notcurses while attempting to link against your own *non-installed* build of it, else you may experience mysterious and hard to debug problems.
 
 ### 🍻 BYO Notcurses
@@ -48,6 +50,8 @@ $ mkdir build && cd build
 $ cmake .. -DCMAKE_BUILD_TYPE=Release
 $ make -j16
 ```
+
+On Windows + [MSYS2](https://www.msys2.org/), add `-G"MSYS Makefiles"` to the `cmake` command.
 
 :bulb: `make install` should not be run after `make` *unless* you want to install your own build system-wide.
 
@@ -152,6 +156,17 @@ The high-level wrapper is referred to as a *Nim API* elsewhere in this document 
 In the future, it may be desirable to split this project into two packages: `notcurses` and `notcurses_abi`. The latter would be a dependency of the former. At present, it makes sense to develop the wrappers together as a single package.
 
 **Non-goals:** provide an extensible widgets library, a text-based windowing system, or other advanced facilities that could be built with nim-notcurses. Such things can be explored in projects that have this package as a dependency.
+
+## Windows
+
+Support for Microsoft Windows is a bit anemic at present, but that has nothing to do with Nim, rather [Windows Terminal](https://github.com/microsoft/terminal#readme) is a work in progress.
+
+All of the examples can be built and run on Windows + [MSYS2](https://www.msys2.org/), but
+* Executables should be built in an MSYS2 shell and run in [Windows Terminal](https://github.com/microsoft/terminal#readme) in an MSYS2 shell.
+* DLLs for Notcurses must be in your MSYS2 shell's path at runtime, e.g. `export PATH="${HOME}/repos/notcurses/build:${PATH}"`.
+* Expect performance to be lackluster.
+
+:bulb: Executables using nim-notcurses build correctly in GitHub Actions on Windows + MSYS2, but are known to *not* run successfully in that CI environment.
 
 ## Versioning
 
