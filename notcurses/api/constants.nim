@@ -14,12 +14,12 @@ type
   DirectInitOption* = distinct uint64
 
   DirectInitOptions* {.pure.} = enum
-    DirectInhibitSetlocale = NCDIRECT_OPTION_INHIBIT_SETLOCALE
-    DirectInhibitCbreak = NCDIRECT_OPTION_INHIBIT_CBREAK
-    DirectDrainInput = NCDIRECT_OPTION_DRAIN_INPUT
-    DirectNoQuitSighandlers = NCDIRECT_OPTION_NO_QUIT_SIGHANDLERS
-    DirectVerbose = NCDIRECT_OPTION_VERBOSE
-    DirectVeryVerbose = NCDIRECT_OPTION_VERY_VERBOSE
+    DirectInhibitSetlocale = NCDIRECT_OPTION_INHIBIT_SETLOCALE.DirectInitOption
+    DirectInhibitCbreak = NCDIRECT_OPTION_INHIBIT_CBREAK.DirectInitOption
+    DirectDrainInput = NCDIRECT_OPTION_DRAIN_INPUT.DirectInitOption
+    DirectNoQuitSighandlers = NCDIRECT_OPTION_NO_QUIT_SIGHANDLERS.DirectInitOption
+    DirectVerbose = NCDIRECT_OPTION_VERBOSE.DirectInitOption
+    DirectVeryVerbose = NCDIRECT_OPTION_VERY_VERBOSE.DirectInitOption
 
   ErrorMessages {.pure.} = enum
     DirectPutStr = "ncdirect_putstr failed"
