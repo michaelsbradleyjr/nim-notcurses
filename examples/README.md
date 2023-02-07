@@ -1,12 +1,12 @@
 # Examples
 
-Nim modules in this directory were closely derived from sources in [Notcurses `v3.0.9`](https://github.com/dankamongmen/notcurses/tree/v3.0.9) and should therefore be considered subject to the terms and conditions of its [license](https://github.com/dankamongmen/notcurses/blob/v3.0.9/COPYRIGHT).
+Nim modules in this directory were closely derived from sources in [Notcurses](https://github.com/dankamongmen/notcurses#readme) [`v3.0.9`](https://github.com/dankamongmen/notcurses/tree/v3.0.9) and should therefore be considered subject to the terms and conditions of its [license](https://github.com/dankamongmen/notcurses/blob/v3.0.9/COPYRIGHT).
 
 ## Motivation
 
 Translating Notcurses' example C sources was not an end in itself; instead, the goal was twofold and the process was iterative:
 * Wrap Notcurses' raw C API to an extent that one/more upstream examples could be ported from `.c` to `.nim`.
-* Allow that experience to inform the design of a higher-level *Nim API* built atop the lower-level wrapper.
+* Allow those experiences to inform the design of a higher-level *Nim API* built atop the lower-level wrapper.
 
 Rather than rework texts embedded in the upstream examples to make these `.nim` modules unique, this author preferred to leave them unmodified: they are illustrations of lessons the original author desired to teach.
 
@@ -14,7 +14,7 @@ Rather than rework texts embedded in the upstream examples to make these `.nim` 
 
 Differences reflect how a `.nim` example behaves differently from its `.c` counterpart.
 
-| Nim                                  | C                            |  Differences                              |
+| Nim                                  | C                            | Differences                               |
 | ------------------------------------ | ---------------------------- | ----------------------------------------- |
 | [`cjkscroll.nim`](cjkscroll.nim)     | [`src/poc/cjkscroll.c`][1]   | renders per character instead of per line |
 | [`cli1.nim`](cli1.nim)               | [`src/poc/cli2.c`][2]        | renders *"Hello..."*                      |
