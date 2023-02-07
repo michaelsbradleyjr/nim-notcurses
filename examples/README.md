@@ -12,27 +12,26 @@ Rather than rework texts embedded in the upstream examples to make these `.nim` 
 
 ## Summary
 
-  Differences reflect what `.nim` sources demonstrate relative to upstream `.c` sources, and may be the same.
+Differences reflect what `.nim` sources demonstrate relative to upstream `.c` sources, if there are any.
 
-| Nim                                  | C                          | Differences             |
-| ------------------------------------ | -------------------------- | ----------------------- |
-| [`cjkscroll.nim`](cjkscroll.nim)     | [`src/poc/cjkscroll.c`][1] | renders more frequently |
-| [`cli1.nim`](cli1.nim)               | [`src/poc/cli2.c`][2]      | |
-| [`cli2.nim`](cli2.nim)               | [`src/poc/cli1.c`][3]      | ...                     |
-| [`direct1.nim`](direct1.nim)         | n/a                        | n/a                     |
-| [`direct_sgr.nim`](direct_sg.nim)    | [`src/poc/cli1.c`][5]      | ...                     |
-| [`gradients.nim`](gradients.nim)     | [`src/poc/cli1.c`][6]      | ...                     |
-| [`multiselect.nim`](multiselect.nim) | [`src/poc/cli1.c`][7]      | ...                     |
-| [`tui1.nim`](tui1.nim)               | [`src/poc/cli1.c`][8]      | ...                     |
+| Nim                                  | C                            |  Differences                      |
+| ------------------------------------ | ---------------------------- | --------------------------------- |
+| [`cjkscroll.nim`](cjkscroll.nim)     | [`src/poc/cjkscroll.c`][1]   | renders/sleeps at different rates |
+| [`cli1.nim`](cli1.nim)               | [`src/poc/cli2.c`][2]        | n/a                               |
+| [`cli2.nim`](cli2.nim)               | [`src/poc/cli1.c`][3]        | differentiates inputs             |
+| [`direct1.nim`](direct1.nim)         | n/a                          | renders *"Hello..."*              |
+| [`direct_sgr.nim`](direct_sg.nim)    | [`src/poc/sgr-direct.c`][4]  | n/a                               |
+| [`gradients.nim`](gradients.nim)     | [`src/poc/gradients.c`][5]   | n/a                               |
+| [`multiselect.nim`](multiselect.nim) | [`src/poc/multiselect.c`][6] | n/a                               |
+| [`tui1.nim`](tui1.nim)               | [`src/poc/cli3.c`][7]        | renders *"Hello..."*              |
 
 [1]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/cjkscroll.c
 [2]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/cli2.c
 [3]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/cli1.c
-[4]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/...
-[5]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/...
-[6]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/...
-[7]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/...
-[8]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/...
+[4]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/sgr-direct.c
+[5]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/gradients.c
+[6]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/multiselect.c
+[7]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/cli3.c
 
 ## Upstream license
 
