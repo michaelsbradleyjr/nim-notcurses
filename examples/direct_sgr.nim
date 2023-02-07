@@ -7,8 +7,7 @@ let ncd = Ncd.init NcdOptions.init [DirectDrainInput]
 # https://en.wikipedia.org/wiki/ANSI_escape_code#SGR
 var e, i = 0'u32
 while true:
-  if bitand(ncd.supportedStyles.uint32, i) == i:
-    ncd.setStyles(cast[NcStyles](i)).expect
+  if bitand(ncd.supportedStyles.uint32, i) == i: ncd.setStyles(cast[NcStyles](i)).expect
   ncd.putStr(i.toHex.toLower & " ").expect
   ncd.setStyles(NcStyles.None).expect
   inc e
