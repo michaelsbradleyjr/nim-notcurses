@@ -1,29 +1,29 @@
 # Examples
 
-Nim modules in this directory were closely derived from the original sources in [Notcurses `v3.0.9`](https://github.com/dankamongmen/notcurses/tree/v3.0.9) and should therefore be considered subject to the terms and conditions of its [license](https://github.com/dankamongmen/notcurses/blob/v3.0.9/COPYRIGHT).
+Nim modules in this directory were closely derived from sources in [Notcurses `v3.0.9`](https://github.com/dankamongmen/notcurses/tree/v3.0.9) and should therefore be considered subject to the terms and conditions of its [license](https://github.com/dankamongmen/notcurses/blob/v3.0.9/COPYRIGHT).
 
 ## Motivatiovn
 
-Translating Notcurses' example C sources was not an end in itself; instead, the goal was twofold and an iterative process:
+Translating Notcurses' example C sources was not an end in itself; instead, the goal was twofold and the process was iterative:
 * Wrap Notcurses' raw C API to an extent that one/more upstream examples could be ported from `.c` to `.nim`.
 * Allow that experience to inform the design of a higher-level *Nim API* built atop the lower-level wrapper.
 
-Rather than rework texts embedded in the upstream examples to make these `.nim` modules unique, this author preferred to leave them as they were: they profess to be but illustrations of lessons the original author desired to teach.
+Rather than rework texts embedded in the upstream examples to make these `.nim` modules unique, this author preferred to leave them unmodified: they are illustrations of lessons the original author desired to teach.
 
 ## Summary
 
-Differences reflect what `.nim` sources demonstrate relative to upstream `.c` sources, if there are any.
+Differences reflect how a `.nim` example behaves differently from its `.c` counterpart.
 
-| Nim                                  | C                            |  Differences                      |
-| ------------------------------------ | ---------------------------- | --------------------------------- |
-| [`cjkscroll.nim`](cjkscroll.nim)     | [`src/poc/cjkscroll.c`][1]   | renders/sleeps at different rates |
-| [`cli1.nim`](cli1.nim)               | [`src/poc/cli2.c`][2]        | n/a                               |
-| [`cli2.nim`](cli2.nim)               | [`src/poc/cli1.c`][3]        | differentiates inputs             |
-| [`direct1.nim`](direct1.nim)         | n/a                          | renders *"Hello..."*              |
-| [`direct_sgr.nim`](direct_sgr.nim)   | [`src/poc/sgr-direct.c`][4]  | n/a                               |
-| [`gradients.nim`](gradients.nim)     | [`src/poc/gradients.c`][5]   | n/a                               |
-| [`multiselect.nim`](multiselect.nim) | [`src/poc/multiselect.c`][6] | n/a                               |
-| [`tui1.nim`](tui1.nim)               | [`src/poc/cli3.c`][7]        | renders *"Hello..."*              |
+| Nim                                  | C                            |  Differences                              |
+| ------------------------------------ | ---------------------------- | ----------------------------------------- |
+| [`cjkscroll.nim`](cjkscroll.nim)     | [`src/poc/cjkscroll.c`][1]   | renders per character instead of per line |
+| [`cli1.nim`](cli1.nim)               | [`src/poc/cli2.c`][2]        | renders *"Hello..."*                      |
+| [`cli2.nim`](cli2.nim)               | [`src/poc/cli1.c`][3]        | reports inputs                            |
+| [`direct1.nim`](direct1.nim)         | n/a                          |                                           |
+| [`direct_sgr.nim`](direct_sgr.nim)   | [`src/poc/sgr-direct.c`][4]  |                                           |
+| [`gradients.nim`](gradients.nim)     | [`src/poc/gradients.c`][5]   |                                           |
+| [`multiselect.nim`](multiselect.nim) | [`src/poc/multiselect.c`][6] |                                           |
+| [`tui1.nim`](tui1.nim)               | [`src/poc/cli3.c`][7]        | renders *"Hello..."*                      |
 
 [1]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/cjkscroll.c
 [2]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/cli2.c
