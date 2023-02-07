@@ -104,6 +104,8 @@ func `$`*(options: Options): string = $options.cObj
 
 func codepoint*(input: Input): Codepoint = input.cObj.id.Codepoint
 
+func cursorY*(plane: Plane): uint32 = plane.cPtr.ncplane_cursor_y
+
 proc dimYX*(plane: Plane, y, x: var uint32) =
   plane.cPtr.ncplane_dim_yx(addr y, addr x)
 
@@ -265,6 +267,15 @@ proc putStr*(ncd: NotcursesDirect, s: string, channel = 0.Channel):
     err ApiErrorNeg(code: code, msg: $DirectPutStr)
   else:
     ok ApiSuccess0(code: code)
+
+proc putStrAligned*(plane: Plane, s: string, alignment: Align, y = -1'i32):
+    Result[ApiSuccessPos, ApiError0] =
+  let code = plane.cPtr.ncplane_putstr_aligned(y, cast[ncalign_e](alignment),
+    s.cstring)
+  if code <= 0:
+    err ApiError0(code: code, msg: $PutStrYX)
+  else:
+    ok ApiSuccessPos(code: code)
 
 proc putStrYX*(plane: Plane, s: string, y, x = -1'i32):
     Result[ApiSuccessPos, ApiError0] =
