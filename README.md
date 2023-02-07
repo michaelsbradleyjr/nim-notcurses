@@ -162,11 +162,12 @@ In the future, it may be desirable to split this project into two packages: `not
 Support for Microsoft Windows is a bit anemic at present, but that has nothing to do with Nim, rather [Windows Terminal](https://github.com/microsoft/terminal#readme) is a work in progress.
 
 All of the examples can be built and run on Windows + [MSYS2](https://www.msys2.org/), but
-* Executables should be built in an MSYS2 shell and run in [Windows Terminal](https://github.com/microsoft/terminal#readme) in an MSYS2 shell.
+* Programs should be built in an MSYS2 shell and run in [Windows Terminal](https://github.com/microsoft/terminal#readme) in an MSYS2 shell.
 * DLLs for Notcurses must be in your MSYS2 shell's path at runtime, e.g. `export PATH="${HOME}/repos/notcurses/build:${PATH}"`.
+* Windows system locale needs to be set to UTF-8: *Language settings -> Administrative language settings -> Change system locale -> Beta: Use Unicode UTF-8 for worldwide language support*.
 * Expect performance to be lackluster.
 
-:bulb: Executables using nim-notcurses build correctly in GitHub Actions on Windows + MSYS2, but are known to *not* run successfully in that CI environment.
+:bulb: Programs using nim-notcurses build correctly in GitHub Actions on Windows + MSYS2, but are known to *not* run successfully in that CI environment.
 
 ## Versioning
 
