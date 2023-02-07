@@ -8,8 +8,8 @@ setControlCHook(nop)
 
 # in Notcurses' TUI mode (its default mode, i.e. *not* CLI mode or Direct mode)
 # Nim's stack traces can be swallowed if printed to stderr before `nc.stop` has
-# run; the most practical workaround is to redirect stderr to a log file and
-# then tail that file in another terminal:
+# run; the most practical workaround for debugging purposes is to redirect
+# stderr to a log file and then tail that file in another terminal:
 # `$ tail -F tui1.log`
 # `$ examples/tui1 2> tui1.log`
 
