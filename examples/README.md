@@ -2,7 +2,7 @@
 
 Nim modules in this directory were closely derived from sources in [Notcurses `v3.0.9`](https://github.com/dankamongmen/notcurses/tree/v3.0.9) and should therefore be considered subject to the terms and conditions of its [license](https://github.com/dankamongmen/notcurses/blob/v3.0.9/COPYRIGHT).
 
-## Motivatiovn
+## Motivation
 
 Translating Notcurses' example C sources was not an end in itself; instead, the goal was twofold and the process was iterative:
 * Wrap Notcurses' raw C API to an extent that one/more upstream examples could be ported from `.c` to `.nim`.
