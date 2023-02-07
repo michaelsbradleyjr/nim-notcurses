@@ -35,7 +35,7 @@ Differences reflect how a `.nim` example behaves differently from its `.c` count
 [7]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/cli3.c
 [8]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/zalgo.c
 
-## Upstream license
+## Notcurses license
 
 ```text
 Copyright 2019-2022 Nick Black
