@@ -1,12 +1,22 @@
 type
   Alignment* = distinct int32
 
-  Alignments* {.pure.} = enum
-    Unaligned = NCALIGN_UNALIGNED.Alignment
-    Left = NCALIGN_LEFT.Alignment
-    Center = NCALIGN_CENTER.Alignment
-    Right = NCALIGN_RIGHT.Alignment
+when (NimMajor, NimMinor) < (1, 6):
+  type
+    Alignments* {.pure.} = enum
+      Unaligned = ncalign_e.NCALIGN_UNALIGNED.Alignment
+      Left = ncalign_e.NCALIGN_LEFT.Alignment
+      Center = ncalign_e.NCALIGN_CENTER.Alignment
+      Right = ncalign_e.NCALIGN_RIGHT.Alignment
+else:
+  type
+    Alignments* {.pure.} = enum
+      Unaligned = NCALIGN_UNALIGNED.Alignment
+      Left = NCALIGN_LEFT.Alignment
+      Center = NCALIGN_CENTER.Alignment
+      Right = NCALIGN_RIGHT.Alignment
 
+type
   DefectMessages {.pure.} = enum
     AddExitProcFailed =
       when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
