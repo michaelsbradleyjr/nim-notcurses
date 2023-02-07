@@ -169,6 +169,9 @@ proc notcurses_canopen_images*(nc: ptr notcurses): bool {.nc.}
 # L1874 - notcurses/notcurses.h
 proc ncplane_set_base*(n: ptr ncplane, egc: cstring, stylemask: uint16, channels: uint64): cint {.nc.}
 
+# L2133 - notcurses/notcurses.h
+proc ncplane_cursor_y*(n: ptr ncplane): cuint {.nc.}
+
 # L2264 - notcurses/notcurses.h
 proc ncplane_putstr_yx*(n: ptr ncplane, y, x: cint, gclusters: cstring): cint {.nc.}
 
