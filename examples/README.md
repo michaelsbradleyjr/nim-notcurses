@@ -20,7 +20,7 @@ Differences reflect what `.nim` sources demonstrate relative to upstream `.c` so
 | [`cli1.nim`](cli1.nim)               | [`src/poc/cli2.c`][2]        | n/a                               |
 | [`cli2.nim`](cli2.nim)               | [`src/poc/cli1.c`][3]        | differentiates inputs             |
 | [`direct1.nim`](direct1.nim)         | n/a                          | renders *"Hello..."*              |
-| [`direct_sgr.nim`](direct_sg.nim)    | [`src/poc/sgr-direct.c`][4]  | n/a                               |
+| [`direct_sgr.nim`](direct_sgr.nim)   | [`src/poc/sgr-direct.c`][4]  | n/a                               |
 | [`gradients.nim`](gradients.nim)     | [`src/poc/gradients.c`][5]   | n/a                               |
 | [`multiselect.nim`](multiselect.nim) | [`src/poc/multiselect.c`][6] | n/a                               |
 | [`tui1.nim`](tui1.nim)               | [`src/poc/cli3.c`][7]        | renders *"Hello..."*              |
