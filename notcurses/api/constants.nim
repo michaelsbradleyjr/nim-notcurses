@@ -3,14 +3,14 @@ type
 
 when (NimMajor, NimMinor) < (1, 6):
   type
-    Alignments* {.pure.} = enum
+    Align* {.pure.} = enum
       Unaligned = ncalign_e.NCALIGN_UNALIGNED.Alignment
       Left = ncalign_e.NCALIGN_LEFT.Alignment
       Center = ncalign_e.NCALIGN_CENTER.Alignment
       Right = ncalign_e.NCALIGN_RIGHT.Alignment
 else:
   type
-    Alignments* {.pure.} = enum
+    Align* {.pure.} = enum
       Unaligned = NCALIGN_UNALIGNED.Alignment
       Left = NCALIGN_LEFT.Alignment
       Center = NCALIGN_CENTER.Alignment
