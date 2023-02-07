@@ -248,6 +248,7 @@ jobs:
             gradients
             multiselect
             tui1
+            zalgo
           )
           for module in ${modules[@]}; do
             nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/${module}.nim

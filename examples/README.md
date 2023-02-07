@@ -24,6 +24,7 @@ Differences reflect how a `.nim` example behaves differently from its `.c` count
 | [`gradients.nim`](gradients.nim)     | [`src/poc/gradients.c`][5]   |                                           |
 | [`multiselect.nim`](multiselect.nim) | [`src/poc/multiselect.c`][6] |                                           |
 | [`tui1.nim`](tui1.nim)               | [`src/poc/cli3.c`][7]        | renders *"Hello..."*                      |
+| [`zalgo.nim`](zalgo.nim)             | [`src/poc/zalgo.c`][8]       |                                           |
 
 [1]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/cjkscroll.c
 [2]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/cli2.c
@@ -32,6 +33,7 @@ Differences reflect how a `.nim` example behaves differently from its `.c` count
 [5]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/gradients.c
 [6]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/multiselect.c
 [7]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/cli3.c
+[8]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/zalgo.c
 
 ## Upstream license
 
