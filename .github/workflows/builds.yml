@@ -208,14 +208,14 @@ jobs:
           echo 'export NIMBLE_DIR="${HOME}/.nimble"' >> "${HOME}/.bash_env"
           echo 'export PATH="${NIMBLE_DIR}/bin:${PATH}"' >> "${HOME}/.bash_env"
 
-      # maybe can be reworked (along with caching logic) re: nimble
-      # corresponding to Nim v2, with conditional logic for older Nim/nimble
-      - name: Install project dependencies per nimble
+      # maybe can be reworked (along with caching logic) re: Nimble
+      # corresponding to Nim v2, with conditional logic for older Nim/Nimble
+      - name: Install project dependencies per Nimble
         run: |
           # delete broken symlinks, which can arise because e.g. the cache
           # restored a symlink that points to an executable within
           # ../pkgs/foo-1.2.3/ but the project's .nimble file has been updated
-          # to install foo-#head. In the case of a broken symlink, nimble's
+          # to install foo-#head. In the case of a broken symlink, Nimble's
           # auto-overwrite fails (only sometimes? only on macOS?)
           cd "${NIMBLE_DIR}/bin"
           if [[ ${{ matrix.platform.os }} = macos ]]; then
@@ -232,7 +232,7 @@ jobs:
       # https://github.com/nim-lang/nimble/issues/1061
       # https://github.com/nim-lang/Nim/blob/version-2-0/compiler/commands.nim#L613
       # it's harmless to set an additional --nimblePath that isn't relevant
-      # (doesn't exist) for a particular version of Nim/nimble
+      # (doesn't exist) for a particular version of Nim/Nimble
       - name: Build examples
         env:
           COLORTERM: 24bit
