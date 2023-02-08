@@ -3,11 +3,10 @@ import notcurses/cli/core
 
 let
   nc = Nc.init NcOptions.init [DrainInput]
-  n = nc.stdPlane
-  y = n.cursorY
+  y = nc.stdPlane.cursorY
 
-proc putCentered(s: string, yy: int32) =
-  discard n.putStrAligned(s & "\n", Align.Center, y.int32 + yy)
+proc putCentered(s: string, yy: uint32) =
+  discard nc.stdPlane.putStrAligned(s & "\n", Align.Center, (y + yy).int32)
 
 putCentered("Pack my box with five dozen liquor jugs",           00)
 putCentered("sɓnɾ ɹonbıl uǝzop ǝʌıɟ ɥʇıʍ xoq ʎɯ ʞɔɐԀ",           01)
