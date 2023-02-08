@@ -12,7 +12,7 @@ Rather than rework texts embedded in the upstream examples to make these `.nim` 
 
 ## Summary
 
-Differences reflect how a `.nim` example behaves differently from its `.c` counterpart.
+*Differences* reflect how a `.nim` example behaves differently from its `.c` counterpart.
 
 | Nim                                  | C                            | Differences                               |
 | ------------------------------------ | ---------------------------- | ----------------------------------------- |
