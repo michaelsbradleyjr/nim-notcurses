@@ -20,26 +20,19 @@ This package provides a Nim API and a low-level wrapper for Notcurses' raw C API
 
 Same as Notcurses' [requirements](https://github.com/dankamongmen/notcurses#requirements).
 
-:package: Notcurses v3 needs to be installed with your package manager, or you can compile it from source.
+Notcurses needs to be installed with your package manager :package:, or you can compile it from source.
 
-If the headers and compiled libraries are not in locations well known to your system's compiler and linker, you may need to use `--passC` and/or `--passL` with `nim c`.
+For example, on macOS, you could install it with [`brew`](https://brew.sh/)
 
-For example, on macOS, if your own build of Notcurses is in `${HOME}/repos/notcurses/build`, you would use
 ```text
-$ nim c --passC:"-I${HOME}/repos/notcurses/include" \
-        --passL:"-L${HOME}/repos/notcurses/build -rpath ${HOME}/repos/notcurses/build" \
-        ...
+$ brew install notcurses
 ```
-
-On Linux and Windows, drop the `-rpath` option.
-
-:bulb: Be careful to not have a system-wide installation of Notcurses while attempting to link against your own *non-installed* build of it, else you may experience mysterious and hard to debug problems.
 
 ### 🍻 BYO Notcurses
 
 Building Notcurses is simple, but make sure to have its [requirements](https://github.com/dankamongmen/notcurses#requirements) installed.
 
-For example, on Linux or macOS, you could do it like this, taking advantage of multiple cores when running `make`
+For example, on Linux or macOS, you could do it like this
 
 ```text
 $ git clone --depth 1 https://github.com/dankamongmen/notcurses.git \
@@ -54,6 +47,22 @@ $ make -j16
 On Windows + [MSYS2](https://www.msys2.org/), add `-G"MSYS Makefiles"` to the `cmake` command.
 
 :bulb: `make install` should not be run after `make` *unless* you want to install your own build system-wide.
+
+### 👑 Compiler options
+
+If you build Notcurses yourself and don't install it system-wide, then its headers and libraries will probably not be in locations well known to your compiler and linker. In that case, you should use `--passC` and `--passL` with `nim c`.
+
+For example, on macOS, if your own build of Notcurses is in `${HOME}/repos/notcurses/build`, you would use
+
+```text
+$ nim c --passC:"-I${HOME}/repos/notcurses/include" \
+        --passL:"-L${HOME}/repos/notcurses/build -rpath ${HOME}/repos/notcurses/build" \
+        ...
+```
+
+On Linux and Windows, drop the `-rpath` option.
+
+:bulb: Be careful to not have a system-wide installation of Notcurses while attempting to link against your own *non-installed* build of it, else you may experience mysterious problems and frustrations. 😵
 
 ## Installation
 
@@ -113,7 +122,7 @@ Or import its minimal core
 import notcurses/direct/core
 ```
 
-:bulb: It is generally recommended to use [CLI mode](#cli-mode) instead of Direct mode. See Notcurses' [FAQs](https://github.com/dankamongmen/notcurses#faqs), and for more context see [dankamongmen/notcurses#1853](https://github.com/dankamongmen/notcurses/discussions/1853) and [dankamongmen/notcurses#1834](https://github.com/dankamongmen/notcurses/issues/1834).
+:bulb: It's generally recommended to use [CLI mode](#cli-mode) instead of Direct mode. See Notcurses' [FAQs](https://github.com/dankamongmen/notcurses#faqs), and for more context see [dankamongmen/notcurses#1853](https://github.com/dankamongmen/notcurses/discussions/1853) and [dankamongmen/notcurses#1834](https://github.com/dankamongmen/notcurses/issues/1834).
 
 ### ABI wrapper
 
@@ -159,12 +168,12 @@ In the future, it may be desirable to split this project into two packages: `not
 
 ## Windows
 
-Support for Microsoft Windows is a bit anemic at present, but that has nothing to do with Nim, rather [Windows Terminal](https://github.com/microsoft/terminal#readme) is a work in progress.
+Support for Microsoft Windows is a bit anemic at present, but that has nothing to do with Nim, rather [Windows Terminal](https://github.com/microsoft/terminal#readme) and Notcurses' support for it are works in progress.
 
 All of the examples can be built and run on Windows + [MSYS2](https://www.msys2.org/), but:
-* Programs should be built in an MSYS2 shell and run in [Windows Terminal](https://github.com/microsoft/terminal#readme) in an MSYS2 shell.
-* DLLs for Notcurses must be in your MSYS2 shell's path at runtime, e.g. `export PATH="${HOME}/repos/notcurses/build:${PATH}"`.
-* Windows' system locale needs to be set to UTF-8: *Language settings -> Administrative language settings -> Change system locale -> Beta: Use Unicode UTF-8 for worldwide language support*.
+* Programs should be built in an MSYS2 shell and run in [Windows Terminal](https://github.com/microsoft/terminal#readme) in an MSYS2 shell; they will not run successfully in [Mintty](https://mintty.github.io/). It's easy to configure Windows Terminal to launch an MSYS2 shell, see [these instructions](https://www.msys2.org/docs/terminals/).
+* DLLs for Notcurses must be in your MSYS2 shell's path at runtime, e.g.<br />`export PATH="${HOME}/repos/notcurses/build:${PATH}"`
+* Windows' system locale needs to be set to [UTF-8](https://en.wikipedia.org/wiki/UTF-8):<br />*Language settings -> Administrative language settings -> Change system locale -> Beta: Use Unicode UTF-8 for worldwide language support*
 * Expect to encounter rendering bugs and for performance to be lackluster.
 
 :bulb: Programs using nim-notcurses build correctly in GitHub Actions on Windows + MSYS2, but are known to *not* run successfully in that CI environment.

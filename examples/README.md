@@ -1,6 +1,6 @@
 # Examples
 
-Nim modules in this directory were closely derived from sources in [Notcurses](https://github.com/dankamongmen/notcurses#readme) [`v3.0.9`](https://github.com/dankamongmen/notcurses/tree/v3.0.9) and should therefore be considered subject to the terms and conditions of its [license](https://github.com/dankamongmen/notcurses/blob/v3.0.9/COPYRIGHT).
+Nim modules in this directory were closely derived from sources in [Notcurses](https://github.com/dankamongmen/notcurses#readme) [`v3.0.9`](https://github.com/dankamongmen/notcurses/tree/v3.0.9) and should be considered subject to the terms and conditions of its [license](https://github.com/dankamongmen/notcurses/blob/v3.0.9/COPYRIGHT).
 
 ## Motivation
 
