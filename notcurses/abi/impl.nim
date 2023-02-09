@@ -1,5 +1,5 @@
 # L[num] comments below pertain to sources for Notcurses v3.0.9
-# https://github.com/dankamongmen/notcurses/tree/v3.0.9/include/notcurses
+# https://github.com/dankamongmen/notcurses/tree/v3.0.9/include
 
 import std/[macros, strutils, terminal]
 
