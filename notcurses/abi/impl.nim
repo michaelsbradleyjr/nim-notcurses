@@ -80,7 +80,7 @@ proc ncchannel_set_rgb8*(channel: ptr uint32, r, g, b: cuint): cint {.nc.}
 proc ncchannel_set*(channel: ptr uint32, rgb: uint32): cint {.nc.}
 
 # L276 - notcurses/notcurses.h
-proc ncchannel_set_rgb8_clipped(channel: ptr uint32, r, g, b: cint) {.nc.}
+proc ncchannel_set_rgb8_clipped*(channel: ptr uint32, r, g, b: cint) {.nc.}
 
 # L302 - notcurses/notcurses.h
 proc ncchannels_bchannel*(channels: uint64): uint32 {.nc.}
@@ -104,7 +104,7 @@ proc ncchannels_bg_alpha*(channels: uint64): cuint {.nc.}
 proc ncchannels_set_bchannel*(channels: ptr uint64, channel: uint32): uint64 {.nc.}
 
 # L350 - notcurses/notcurses.h
-proc ncchannels_set_fchannel(channels: ptr uint64, channel: uint32): uint64 {.nc.}
+proc ncchannels_set_fchannel*(channels: ptr uint64, channel: uint32): uint64 {.nc.}
 
 # L359 - notcurses/notcurses.h
 proc ncchannels_set_channels*(dst: ptr uint64, channels: uint64): uint64 {.nc.}
