@@ -261,6 +261,9 @@ const
   NC_BG_PALETTE*        = 0x0000000008000000'u64
   NC_BG_ALPHA_MASK*     = 0x0000000030000000'u64
 
+  # L594 - notcurses/notcurses.h
+  WCHAR_MAX_UTF8BYTES = 4'i32
+
   # L769 - notcurses/notcurses.h
   NCSTYLE_MASK*      = 0x0000ffff'u32
   NCSTYLE_ITALIC*    = 0x00000010'u32

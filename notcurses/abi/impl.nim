@@ -148,6 +148,45 @@ proc ncchannels_set_fg_rgb8*(channels: uint64, r, g, b: ptr cuint): cint {.nc.}
 # L479 - notcurses/notcurses.h
 proc ncchannels_set_fg_rgb8_clipped*(channels: ptr uint64, r, g, b: cint) {.nc.}
 
+# L486 - notcurses/notcurses.h
+proc ncchannels_set_fg_palindex*(channels: ptr uint64, idx: cuint): cint {.nc.}
+
+# L497 - notcurses/notcurses.h
+proc ncchannels_set_fg_rgb*(channels: ptr uint64, rgb: cuint): cint {.nc.}
+
+# L509 - notcurses/notcurses.h
+proc ncchannels_set_bg_rgb8*(channels: ptr uint64, r, g, b: cuint): cint {.nc.}
+
+# L520 - notcurses/notcurses.h
+proc ncchannels_set_bg_rgb8_clipped*(channels: ptr uint64, r, g, b: cint) {.nc.}
+
+# L529 - notcurses/notcurses.h
+proc ncchannels_set_bg_palindex*(channels: ptr uint64, idx: cuint): cint {.nc.}
+
+# L540 - notcurses/notcurses.h
+proc ncchannels_set_bg_rgb*(channels: ptr uint64, rgb: cuint): cint {.nc.}
+
+# L551 - notcurses/notcurses.h
+proc ncchannels_fg_default_p*(channels: uint64): bool {.nc.}
+
+# L557 - notcurses/notcurses.h
+proc ncchannels_fg_palindex_p*(channels: uint64): bool {.nc.}
+
+# L565 - notcurses/notcurses.h
+proc ncchannels_bg_default_p*(channels: uint64): bool {.nc.}
+
+# L571 - notcurses/notcurses.h
+proc ncchannels_bg_palindex_p*(channels: uint64): bool {.nc.}
+
+# L577 - notcurses/notcurses.h
+proc ncchannels_set_fg_default*(channels: ptr uint64): uint64 {.nc.}
+
+# L586 - notcurses/notcurses.h
+proc ncchannels_set_bg_default*(channels: ptr uint64): uint64 {.nc.}
+
+# L601 - notcurses/notcurses.h
+proc ncstrwidth*(egcs: cstring, validbytes, validwidth: ptr cint): cint {.nc.}
+
 # L609 - notcurses/notcurses.h
 proc notcurses_ucs32_to_utf8*(ucs32: ptr uint32, ucs32count: cuint, resultbuf: ptr UncheckedArray[cchar], buflen: csize_t): cint {.nc.}
 
