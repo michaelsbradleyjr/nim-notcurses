@@ -205,4 +205,4 @@ at your option. The contents of this repository may not be copied, modified, or 
 
 ### Dependency license
 
-Notcurses is [licensed](https://github.com/dankamongmen/notcurses/blob/master/COPYRIGHT) under the Apache License, Version 2.0.
+Notcurses is [licensed](https://github.com/dankamongmen/notcurses/blob/master/COPYRIGHT) under the Apache License, Version 2.0: [LICENSE-NOTCURSES](LICENSE-NOTCURSES).
