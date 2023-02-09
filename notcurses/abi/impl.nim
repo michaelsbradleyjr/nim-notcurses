@@ -9,11 +9,6 @@ type
   AbiDefect = object of Defect
   wchar_t* {.header: "<wchar.h>", importc.} = object
 
-const nc_header = "notcurses/notcurses.h"
-{.pragma: nc, cdecl, header: nc_header, importc.}
-{.pragma: nc_bycopy, bycopy, header: nc_header.}
-{.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
-
 # L187 notcurses/nckeys.h
 func nckey_synthesized_p*(w: uint32): bool =
   w >= PRETERUNICODEBASE and w <= NCKEY_EOF
@@ -26,6 +21,11 @@ func nckey_supppuaa_p*(w: uint32): bool = w >= 0x000f0000 and w <= 0x000ffffd
 
 # L213 notcurses/nckeys.h
 func nckey_supppuab_p*(w: uint32): bool = w >= 0x00100000 and w <= 0x0010fffd
+
+const nc_header = "notcurses/notcurses.h"
+{.pragma: nc, cdecl, header: nc_header, importc.}
+{.pragma: nc_bycopy, bycopy, header: nc_header.}
+{.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
 
 # L39 - notcurses/notcurses.h
 proc notcurses_version*(): cstring {.nc.}
