@@ -118,6 +118,36 @@ proc ncchannels_fg_alpha*(channels: uint64): cuint {.nc.}
 # L387 - notcurses/notcurses.h
 proc ncchannels_set_fg_alpha*(channels: ptr uint64, alpha: cuint): cint {.nc.}
 
+# L401 - notcurses/notcurses.h
+proc ncchannels_reverse*(channels: uint64): uint64 {.nc.}
+
+# L424 - notcurses/notcurses.h
+proc ncchannels_combine*(fchan: uint32, bchan: uint32): uint64 {.nc.}
+
+# L432 - notcurses/notcurses.h
+proc ncchannels_fg_palindex*(channels: uint64): cuint {.nc.}
+
+# L437 - notcurses/notcurses.h
+proc ncchannels_bg_palindex*(channels: uint64): cuint {.nc.}
+
+# L443 - notcurses/notcurses.h
+proc ncchannels_fg_rgb*(channels: uint64): uint32 {.nc.}
+
+# L449 - notcurses/notcurses.h
+proc ncchannels_bg_rgb*(channels: uint64): uint32 {.nc.}
+
+# L455 - notcurses/notcurses.h
+proc ncchannels_fg_rgb8*(channels: uint64, r, g, b: ptr cuint): uint32 {.nc.}
+
+# L461 - notcurses/notcurses.h
+proc ncchannels_bg_rgb8*(channels: uint64, r, g, b: ptr cuint): uint32 {.nc.}
+
+# L468 - notcurses/notcurses.h
+proc ncchannels_set_fg_rgb8*(channels: uint64, r, g, b: ptr cuint): cint {.nc.}
+
+# L479 - notcurses/notcurses.h
+proc ncchannels_set_fg_rgb8_clipped*(channels: ptr uint64, r, g, b: cint) {.nc.}
+
 # L609 - notcurses/notcurses.h
 proc notcurses_ucs32_to_utf8*(ucs32: ptr uint32, ucs32count: cuint, resultbuf: ptr UncheckedArray[cchar], buflen: csize_t): cint {.nc.}
 
