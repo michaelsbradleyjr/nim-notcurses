@@ -5,7 +5,12 @@
 
 import std/bitops
 
+type wchar_t* {.header: "<wchar.h>", importc.} = object
+
 const nim_notcurses_version* = (major: 3'i32, minor: 0'i32, patch: 9'i32)
+
+const nc_keys_header = "notcurses/nckeys.h"
+{.pragma: nc_keys, cdecl, header: nc_keys_header, importc.}
 
 # L31 - notcurses/nckeys.h
 const PRETERUNICODEBASE* = 1115000'u32
@@ -187,7 +192,31 @@ const
   NCKEY_MOD_CAPSLOCK* =  64'i32
   NCKEY_MOD_NUMLOCK*  = 128'i32
 
+const nc_header = "notcurses/notcurses.h"
+{.pragma: nc, cdecl, header: nc_header, importc.}
+{.pragma: nc_bycopy, bycopy, header: nc_header.}
+{.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
+
 type
+  # L44 - notcurses/notcurses.h
+  notcurses*       {.nc_incomplete, importc: "struct notcurses"      .} = object
+  ncplane*         {.nc_incomplete, importc: "struct ncplane"        .} = object
+  ncvisual*        {.nc_incomplete, importc: "struct ncvisual"       .} = object
+  ncuplot*         {.nc_incomplete, importc: "struct ncuplot"        .} = object
+  ncdplot*         {.nc_incomplete, importc: "struct ncdplot"        .} = object
+  ncprogbar*       {.nc_incomplete, importc: "struct ncprogbar"      .} = object
+  ncfdplane*       {.nc_incomplete, importc: "struct ncfdplane"      .} = object
+  ncsubproc*       {.nc_incomplete, importc: "struct ncsubproc"      .} = object
+  ncselector*      {.nc_incomplete, importc: "struct ncselector"     .} = object
+  ncmultiselector* {.nc_incomplete, importc: "struct ncmultiselector".} = object
+  ncreader*        {.nc_incomplete, importc: "struct ncreader"       .} = object
+  ncfadectx*       {.nc_incomplete, importc: "struct ncfadectx"      .} = object
+  nctablet*        {.nc_incomplete, importc: "struct nctablet"       .} = object
+  ncreel*          {.nc_incomplete, importc: "struct ncreel"         .} = object
+  nctab*           {.nc_incomplete, importc: "struct nctab"          .} = object
+  nctabbed*        {.nc_incomplete, importc: "struct nctabbed"       .} = object
+  ncdirect*        {.nc_incomplete, importc: "struct ncdirect"       .} = object
+
   # L76 - notcurses/notcurses.h
   ncblitter_e* {.pure.} = enum
     NCBLIT_DEFAULT
@@ -280,12 +309,36 @@ const
             NCOPTION_SCROLLING)
 
 type
+  # L1060 - notcurses/notcurses.h
+  notcurses_options* {.nc_bycopy, importc: "struct notcurses_options".} = object
+    termtype*: cstring
+    loglevel*: ncloglevel_e
+    margin_t*: uint32
+    margin_r*: uint32
+    margin_b*: uint32
+    margin_l*: uint32
+    flags*   : uint64
+
   # L1199 - notcurses/notcurses.h
   ncintype_e* {.pure.} = enum
     NCTYPE_UNKNOWN
     NCTYPE_PRESS
     NCTYPE_REPEAT
     NCTYPE_RELEASE
+
+  # L1217 - notcurses/notcurses.h
+  ncinput* {.nc_bycopy, importc: "struct ncinput".} = object
+    id*       : uint32
+    y*        : int32
+    x*        : int32
+    utf8*     : array[5, char]
+    alt*      : bool
+    shift*    : bool
+    ctrl*     : bool
+    evtype*   : ncintype_e
+    modifiers*: uint32
+    ypx*      : int32
+    xpx*      : int32
 
 const
   # L1332 - notcurses/notcurses.h
@@ -294,6 +347,59 @@ const
   NCMICE_BUTTON_EVENT* = 0x00000002'u32
   NCMICE_DRAG_EVENT*   = 0x00000004'u32
   NCMICE_ALL_EVENTS*   = 0x00000007'u32
+
+type
+  # L1472 -  notcurses/notcurses.h
+  ncplane_options* {.nc_bycopy, importc: "struct ncplane_options".} = object
+    y*       : int32
+    x*       : int32
+    rows*    : uint32
+    cols*    : uint32
+    userptr* : pointer
+    name*    : cstring
+    resizecb*: proc (n: ptr ncplane): int32 {.noconv.}
+    flags*   : uint64
+    margin_b*: uint32
+    margin_r*: uint32
+
+  # L3324 - notcurses/notcurses.h
+  ncvisual_options* {.nc_bycopy, importc: "struct ncvisual_options".} = object
+    n*         : ptr ncplane
+    scaling*   : ncscale_e
+    y*         : int32
+    x*         : int32
+    begy*      : uint32
+    begx*      : uint32
+    leny*      : uint32
+    lenx*      : uint32
+    blitter*   : ncblitter_e
+    flags*     : uint64
+    transcolor*: uint32
+    pxoffy*    : uint32
+    pxoffx*    : uint32
+
+  # L3946 - notcurses/notcurses.h
+  ncmselector_item* {.nc_bycopy, importc: "struct ncmselector_item".} = object
+    option*  : cstring
+    desc*    : cstring
+    selected*: bool
+
+  # L3987 - notcurses/notcurses.h
+  ncmultiselector_options* {.nc_bycopy, importc: "struct ncmultiselector_options".} = object
+    title*        : cstring
+    secondary*    : cstring
+    footer*       : cstring
+    items*        : ptr UncheckedArray[ncmselector_item]
+    maxdisplay*   : uint32
+    opchannels*   : uint64
+    descchannels* : uint64
+    titlechannels*: uint64
+    footchannels* : uint64
+    boxchannels*  : uint64
+    flags*        : uint64
+
+const ncd_header = "notcurses/direct.h"
+{.pragma: ncd, cdecl, header: ncd_header, importc.}
 
 const
   # L29 - notcurses/direct.h
