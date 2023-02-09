@@ -8,10 +8,10 @@ import std/bitops
 const nim_notcurses_version* = (major: 3'i32, minor: 0'i32, patch: 9'i32)
 
 # L31 - notcurses/nckeys.h
-const PRETERUNICODEBASE = 1115000'u32
+const PRETERUNICODEBASE* = 1115000'u32
 
 # L32 - notcurses/nckeys.h
-func preterunicode(w: uint32): uint32 = w + PRETERUNICODEBASE
+func preterunicode*(w: uint32): uint32 = w + PRETERUNICODEBASE
 
 const
   # L195 - notcurses/nckeys.h
@@ -222,8 +222,15 @@ const
   NCALPHA_BLEND*        = 0x0000000010000000'u64
   NCALPHA_OPAQUE*       = 0x0000000000000000'u64
 
-  # L117 - notcurses/notcurses.h
-  NC_BGDEFAULT_MASK* = 0x0000000040000000'u64
+  # L110 - notcurses/notcurses.h
+  NCPALETTESIZE* = 256'i32
+
+  # L115 - notcurses/notcurses.h
+  NC_NOBACKGROUND_MASK* = 0x8700000000000000'u64
+  NC_BGDEFAULT_MASK*    = 0x0000000040000000'u64
+  NC_BG_RGB_MASK*       = 0x0000000000ffffff'u64
+  NC_BG_PALETTE*        = 0x0000000008000000'u64
+  NC_BG_ALPHA_MASK*     = 0x0000000030000000'u64
 
   # L769 - notcurses/notcurses.h
   NCSTYLE_MASK*      = 0x0000ffff'u32

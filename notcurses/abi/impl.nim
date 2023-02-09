@@ -9,18 +9,20 @@ type
   AbiDefect = object of Defect
   wchar_t* {.header: "<wchar.h>", importc.} = object
 
+const nc_keys_header = "notcurses/nckeys.h"
+{.pragma: nc_keys, cdecl, header: nc_keys_header, importc.}
+
 # L187 notcurses/nckeys.h
-func nckey_synthesized_p*(w: uint32): bool =
-  w >= PRETERUNICODEBASE and w <= NCKEY_EOF
+proc nckey_synthesized_p*(w: uint32): bool {.nc_keys.}
 
 # L201 notcurses/nckeys.h
-func nckey_pua_p*     (w: uint32): bool = w >= 0x0000e000 and w <= 0x0000f8ff
+proc nckey_pua_p*(w: uint32): bool {.nc_keys.}
 
 # L207 notcurses/nckeys.h
-func nckey_supppuaa_p*(w: uint32): bool = w >= 0x000f0000 and w <= 0x000ffffd
+proc nckey_supppuaa_p*(w: uint32): bool {.nc_keys.}
 
 # L213 notcurses/nckeys.h
-func nckey_supppuab_p*(w: uint32): bool = w >= 0x00100000 and w <= 0x0010fffd
+proc nckey_supppuab_p*(w: uint32): bool {.nc_keys.}
 
 const nc_header = "notcurses/notcurses.h"
 {.pragma: nc, cdecl, header: nc_header, importc.}
@@ -66,8 +68,86 @@ macro NCCHANNELS_INITIALIZER*(fr, fg, fb, br, bg, bb: cuint): uint64 =
       chan2 = NCCHANNEL_INITIALIZER(`br`, `bg`, `bb`).uint64
     (chan1 shl 32) + chan2
 
+# L142 - notcurses/notcurses.h
+proc ncchannel_alpha*(channel: uint32): cuint {.nc.}
+
+# L150 - notcurses/notcurses.h
+proc ncchannel_set_alpha*(channel: uint32, alpha: cuint): cint {.nc.}
+
+# L163 - notcurses/notcurses.h
+proc ncchannel_default_p*(channel: uint32): bool {.nc.}
+
+# L169 - notcurses/notcurses.h
+proc ncchannel_set_default*(channel: uint32): uint32 {.nc.}
+
+# L177 - notcurses/notcurses.h
+proc ncchannel_palindex_p*(channel: uint32): bool {.nc.}
+
+# L184 - notcurses/notcurses.h
+proc ncchannel_palindex*(channel: uint32): cuint {.nc.}
+
+# L191 - notcurses/notcurses.h
+proc ncchannel_set_palindex*(channel: ptr uint32, idx: cuint): cint {.nc.}
+
+# L203 - notcurses/notcurses.h
+proc ncchannel_rgb_p*(channel: uint32): bool {.nc.}
+
+# L211 - notcurses/notcurses.h
+proc ncchannel_r*(channel: uint32): cuint {.nc.}
+
+# L218 - notcurses/notcurses.h
+proc ncchannel_g*(channel: uint32): cuint {.nc.}
+
+# L225 - notcurses/notcurses.h
+proc ncchannel_b*(channel: uint32): cuint {.nc.}
+
+# L232 - notcurses/notcurses.h
+proc ncchannel_rgb*(channel: uint32): uint32 {.nc.}
+
+# L239 - notcurses/notcurses.h
+proc ncchannel_rgb8*(channel: uint32, r, g, b: ptr cuint): uint32 {.nc.}
+
+# L251 - notcurses/notcurses.h
+proc ncchannel_set_rgb8*(channel: ptr uint32, r, g, b: cuint): cint {.nc.}
+
+# L264 - notcurses/notcurses.h
+proc ncchannel_set*(channel: ptr uint32, rgb: uint32): cint {.nc.}
+
+# L276 - notcurses/notcurses.h
+proc ncchannel_set_rgb8_clipped(channel: ptr uint32, r, g, b: cint) {.nc.}
+
+# L302 - notcurses/notcurses.h
+proc ncchannels_bchannel*(channels: uint64): uint32 {.nc.}
+
+# L310 - notcurses/notcurses.h
+proc ncchannels_fchannel*(channels: uint64): uint32 {.nc.}
+
+# L316 - notcurses/notcurses.h
+proc ncchannels_channels*(channels: uint64): uint64 {.nc.}
+
+# L322 - notcurses/notcurses.h
+proc ncchannels_bg_rgb_p*(channels: uint64): bool {.nc.}
+
+# L327 - notcurses/notcurses.h
+proc ncchannels_fg_rgb_p*(channels: uint64): bool {.nc.}
+
+# L333 - notcurses/notcurses.h
+proc ncchannels_bg_alpha*(channels: uint64): cuint {.nc.}
+
+# L340 - notcurses/notcurses.h
+proc ncchannels_set_bchannel*(channels: ptr uint64, channel: uint32): uint64 {.nc.}
+
+# L350 - notcurses/notcurses.h
+proc ncchannels_set_fchannel(channels: ptr uint64, channel: uint32): uint64 {.nc.}
+
+# L359 - notcurses/notcurses.h
+proc ncchannels_set_channels*(dst: ptr uint64, channels: uint64): uint64 {.nc.}
+
 # L367 - notcurses/notcurses.h
 proc ncchannels_set_bg_alpha*(channels: ptr uint64, alpha: cuint): cint {.nc.}
+
+# L381 - notcurses/notcurses.h
+proc ncchannels_fg_alpha*(channels: uint64): cuint {.nc.}
 
 # L387 - notcurses/notcurses.h
 proc ncchannels_set_fg_alpha*(channels: ptr uint64, alpha: cuint): cint {.nc.}
