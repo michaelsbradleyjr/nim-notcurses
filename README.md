@@ -199,7 +199,7 @@ The Nim API (high-level wrapper) provided by this package is currently marked as
 nim-notcurses is licensed and distributed under either of:
 
 * Apache License, Version 2.0: [LICENSE-APACHEv2](LICENSE-APACHEv2) or [https://opensource.org/licenses/Apache-2.0](https://opensource.org/licenses/Apache-2.0)
-* MIT license: [LICENSE-MIT](LICENSE-MIT) or [https://opensource.org/licenses/MIT](https://opensource.org/licenses/MIT)
+* MIT License: [LICENSE-MIT](LICENSE-MIT) or [https://opensource.org/licenses/MIT](https://opensource.org/licenses/MIT)
 
 at your option. The contents of this repository may not be copied, modified, or distributed except according to those terms.
 
