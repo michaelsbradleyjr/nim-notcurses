@@ -50,7 +50,7 @@ On Windows + [MSYS2](https://www.msys2.org/), add `-G"MSYS Makefiles"` to the `c
 
 ### 👑 Compiler options
 
-If you build Notcurses yourself and don't install it system-wide, then its headers and libraries will probably not be in locations well known to your compiler and linker. In that case, you should use `--passC` and `--passL` with `nim c`.
+If you build Notcurses yourself and don't install it system-wide, then its headers and libraries will probably not be in locations well known to your compiler and linker. In that case, use `--passC` and `--passL` with `nim c`.
 
 For example, on macOS, if your own build of Notcurses is in `${HOME}/repos/notcurses/build`, you would use
 
