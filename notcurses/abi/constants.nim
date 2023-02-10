@@ -262,8 +262,18 @@ const
   NC_BG_ALPHA_MASK*     = 0x0000000030000000'u64
 
   # L594 - notcurses/notcurses.h
-  WCHAR_MAX_UTF8BYTES = 4'i32
+  WCHAR_MAX_UTF8BYTES* = 4'i32
 
+type
+  # L724 - notcurses/notcurses.h
+  nccell* {.nc_bycopy, importc: "struct nccell".} = object
+    gcluster*         : uint32
+    gcluster_backstop*: uint8
+    width*            : uint8
+    stylemask*        : uint16
+    channels*         : uint64
+
+const
   # L769 - notcurses/notcurses.h
   NCSTYLE_MASK*      = 0x0000ffff'u32
   NCSTYLE_ITALIC*    = 0x00000010'u32
