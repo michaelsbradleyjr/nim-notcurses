@@ -39,6 +39,8 @@ type
 
   ChannelPair* = distinct uint64
 
+  # should this be a range from low(uint32)..1114111'u32' ?
+  # and if so, can distinct work together with range?
   Codepoint* = distinct uint32
 
   DirectOptions* = object
@@ -473,6 +475,8 @@ func toKey*(input: Input): Option[Keys] =
   else: none[Keys]()
 
 template toUTF8(buf: array[5, char]): string =
+  # assumption: `buf` has been populated with 1-4 chars (bytes) of a valid
+  # UTF-8 encoding
   const nullC = '\x00'.char
   var bytes: seq[byte]
   bytes.add buf[0].byte
@@ -500,7 +504,7 @@ func isUTF8*(codepoint: Codepoint): bool =
 func toUTF8*(input: Input): Option[string] =
   # assumptions: if input's underlying codepoint is not in Keys then (1) it can
   # be validly encoded in UTF-8 and (2) Notcurses has populated `cObj.utf8`
-  # with 1-4 bytes for that encoding
+  # with 1-4 bytes for that valid encoding
   if input.isUTF8:
     some(input.cObj.utf8.toUTF8)
   else:
