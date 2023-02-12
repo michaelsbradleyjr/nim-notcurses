@@ -46,6 +46,8 @@ type
     flags: uint64
     term: string
 
+  Gcluster* = distinct uint32
+
   Input* = object
     # make this private again
     cObj*: ncinput
@@ -99,11 +101,15 @@ var
 
 func `$`*(codepoint: Codepoint): string = $codepoint.uint32
 
+func `$`*(gcluster: Gcluster): string = $gcluster.uint32
+
 func `$`*(input: Input): string = $input.cObj
 
 func `$`*(options: Options): string = $options.cObj
 
 func codepoint*(input: Input): Codepoint = input.cObj.id.Codepoint
+
+func codepoint*(u: uint8 | uint16 | uint32): Codepoint = u.int32.Codepoint
 
 func cursorY*(plane: Plane): uint32 = plane.cPtr.ncplane_cursor_y
 
