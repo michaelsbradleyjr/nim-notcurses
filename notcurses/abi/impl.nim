@@ -192,7 +192,7 @@ proc ncstrwidth*(egcs: cstring, validbytes, validwidth: ptr cint): cint {.nc.}
 proc notcurses_ucs32_to_utf8*(ucs32: ptr uint32, ucs32count: cuint, resultbuf: ptr UncheckedArray[cchar], buflen: csize_t): cint {.nc.}
 
 # L731 - notcurses/notcurses.h
-macro NCCELL_INITIALIZER*(c: uint8|uint16|uint32, s: uint16, chan: uint64): nccell =
+macro NCCELL_INITIALIZER*(c: uint8 | uint16 | uint32, s: uint16, chan: uint64): nccell =
   quote do:
     let
       gcluster = c.toLE.uint32
