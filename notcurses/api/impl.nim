@@ -20,8 +20,9 @@ type
   ApiErrorNeg* = object of ApiError
     code*: range[low(int32)..(-1'i32)]
 
+  # Nim's ranges are contiguous, so when instantiating values of this type take
+  # care to ensure `code != 0` to avoid confusion
   ApiErrorNot0* = object of ApiError
-    # user must discriminate zero
     code*: range[low(int32)..high(int32)]
 
   ApiSuccess* = object of RootObj
@@ -39,8 +40,6 @@ type
 
   ChannelPair* = distinct uint64
 
-  # should this be a range from low(uint32)..1114111'u32' ?
-  # and if so, can distinct work together with range?
   Codepoint* = distinct uint32
 
   DirectOptions* = object
