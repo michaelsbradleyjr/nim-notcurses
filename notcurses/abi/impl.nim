@@ -195,7 +195,7 @@ proc notcurses_ucs32_to_utf8*(ucs32: ptr uint32, ucs32count: cuint, resultbuf: p
 macro NCCELL_INITIALIZER*(c: uint8 | uint16 | uint32, s: uint16, chan: uint64): nccell =
   quote do:
     let
-      gcluster = c.toLE.uint32
+      gcluster = c.uint32.toLE
       width = 0 # FIX ME!
     nccell(gcluster: gcluster, gcluster_backstop: 0, width: width, stylemask: s,
       channels: chan)
@@ -209,7 +209,7 @@ macro NCCELL_INITIALIZER*(c: uint8 | uint16 | uint32, s: uint16, chan: uint64): 
 macro NCCELL_CHAR_INITIALIZER*(c: cchar): nccell =
   quote do:
     let
-      gcluster = c.uint8.toLE.uint32
+      gcluster = c.uint32.toLE
       width = 0 # FIX ME!
     nccell(gcluster: gcluster, gcluster_backstop: 0, width: width, stylemask: 0,
       channels: 0)
