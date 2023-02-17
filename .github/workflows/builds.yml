@@ -71,7 +71,8 @@ jobs:
             findutils \
             libdeflate \
             libunistring \
-            ncurses
+            ncurses \
+            pkg-config
 
       - name: Install tools and libraries via MSYS2 (Windows)
         if: matrix.platform.os == 'windows'
