@@ -13,7 +13,7 @@ proc supported(i: uint32): bool = bitand(ncd.supportedStyles.uint32, i) == i
 var e, i = 0'u32
 while i < (Styles.Italic.uint32 shl 1):
   if i.supported: ncd.setStyles(i.style).expect
-  ncd.putStr(i.toHex.toLower & " ").expect
+  ncd.putStr(i.uint64.toHex(8).toLower & " ").expect
   ncd.setStyles(Styles.None).expect
   inc e
   if e mod 8 == 0: ncd.putStr("\n").expect

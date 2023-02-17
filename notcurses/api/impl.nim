@@ -119,7 +119,8 @@ var
   ncStopped: Atomic[bool]
 
 func fmtPoint(point: uint32): string =
-  let hex = point.toHex.strip(chars = {'0'}, trailing = false).toUpperAscii
+  let hex = point.uint64.toHex.strip(
+    chars = {'0'}, trailing = false).toUpperAscii
   try:
     fmt"{hex:0>4}"
   except ValueError as e:

@@ -23,7 +23,7 @@ proc blankLn() = putLn()
 func fmtHex(x: seq[byte]): string =
   var hex = ""
   for b in x:
-    let f = b.toHex.toUpperAscii
+    let f = b.uint64.toHex(2).toUpperAscii
     hex &= " " & f
   hex.strip
 
