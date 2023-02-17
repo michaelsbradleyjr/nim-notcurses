@@ -162,13 +162,18 @@ jobs:
                     --branch v${{ steps.cache-key.outputs.notcurses_version }}
           cd notcurses
           mkdir build && cd build
-          if [[ ${{ matrix.platform.os }} != windows ]]; then
+          if [[ ${{ matrix.platform.os }} = windows ]]; then
+            cmake .. -G"MSYS Makefiles" \
+                     -DCMAKE_BUILD_TYPE=Release \
+                     -DUSE_DOCTEST=off \
+                     -DUSE_PANDOC=off
+          elif [[ ${{ matrix.platform.os }} = macos ]]; then
             cmake .. -DCMAKE_BUILD_TYPE=Release \
+                     -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
                      -DUSE_DOCTEST=off \
                      -DUSE_PANDOC=off
           else
-            cmake .. -G"MSYS Makefiles" \
-                     -DCMAKE_BUILD_TYPE=Release \
+            cmake .. -DCMAKE_BUILD_TYPE=Release \
                      -DUSE_DOCTEST=off \
                      -DUSE_PANDOC=off
           fi
