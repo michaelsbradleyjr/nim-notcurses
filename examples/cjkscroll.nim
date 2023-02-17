@@ -6,8 +6,8 @@ import notcurses/[cli, locale]
 # attempts to do it automatically; this is just an example of using setLocale
 setLocale(LC_ALL, "").expect
 
+# if locale was set manually then pass InhibitSetLocale option to init
 let
-  # if locale was set manually then pass InhibitSetLocale option to init
   opts = [DrainInput, InhibitSetLocale]
   nc = Nc.init(NcOptions.init opts, addExitProc = false)
   stdn = nc.stdPlane
@@ -20,6 +20,7 @@ proc stop() {.noconv.} =
 setControlCHook(stop)
 
 # see comment in ./cli1.nim re: scrolling/rendering bugs
+
 stdn.setStyles(Bold)
 stdn.putStr("\nThis program is *not* indicative of real scrolling speed.\n\n").expect
 stdn.setStyles(None)
@@ -33,8 +34,9 @@ var wc = first
 while true:
   sleep 10
   stdn.putWc(wc.wchar_t).expect
-  # rendering after each putWc() isn't necessary but it makes the auto-scroll
-  # behavior of Notcurses' CLI mode visually more apparent
   nc.render.expect
   inc wc
   if wc > last: wc = first
+
+# rendering after each putWc() isn't necessary but it makes the auto-scroll
+# behavior of Notcurses' CLI mode more apparent

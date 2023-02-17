@@ -13,15 +13,15 @@ const
   lr = NcChannels.init(0xff, 0xff, 0xff, 0x00, 0x00, 0x00)
 
 proc gradA() =
-  stdn.gradient(0, 0, 0, 0, ul, ur, ll, lr, "A", NcStyles.None).expect
+  stdn.gradient(0, 0, 0, 0, ul, ur, ll, lr, "A", None).expect
   nc.render.expect
   sleep 1000
 
 proc gradStriations() =
-  stdn.gradient(0, 0, 0, 0, ul, ur, ll, lr, "▄", NcStyles.None).expect
+  stdn.gradient(0, 0, 0, 0, ul, ur, ll, lr, "▄", None).expect
   nc.render.expect
   sleep 1000
-  stdn.gradient(0, 0, 0, 0, ul, ur, ll, lr, "▀", NcStyles.None).expect
+  stdn.gradient(0, 0, 0, 0, ul, ur, ll, lr, "▀", None).expect
   nc.render.expect
   sleep 1000
 

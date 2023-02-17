@@ -1,61 +1,66 @@
+import std/strutils
 import notcurses/cli/core
 # or: import notcurses/cli
 
-let nc = Nc.init
+let
+  nc = Nc.init
+  stdn = nc.stdPlane
 
 # there are one/more bugs in Notcurses whereby, in some terminals, capability
-# query data is leaking into user input at the start of the program; also,
-# seemingly related, in some terminals keypresses are spuriously being reported
-# when e.g. focus is switched from the OS window for the terminal to some other
-# window, or to the OS menu bar, etc.
+# query data is sometimes leaking into user input at the start of the program;
+# and in some terminals keypresses are spuriously being reported when
+# e.g. focus is switched away from the OS window for the terminal
 
 proc nop() {.noconv.} = discard
 setControlCHook(nop)
 
-# https://codepoints.net/U+FFFD
-const replacementChar = string.fromBytes hexToByteArray("0xefbfbd", 3)
-
-proc put(s = "") = nc.stdPlane.putStr(s).expect
-
-proc put[T](v: Option[T]) =
-  var s: string
-  if v.isSome: s = $v.get
-  else: s = $v
-  put s
+proc put(s = "") = stdn.putStr(s).expect
 
 proc putLn(s = "") = put s & "\n"
 
-proc putLn[T](v: Option[T]) =
-  var s: string
-  if v.isSome: s = $v.get
-  else: s = $v
-  putLn s
-
 proc blankLn() = putLn()
+
+func fmtHex(x: seq[byte]): string =
+  var hex = ""
+  for b in x:
+    let f = b.toHex.toUpperAscii
+    hex &= " " & f
+  hex.strip
 
 while true:
   blankLn()
-  putLn "press any key, q to quit"
+  putLn "paste input or press any key, q to quit"
+  blankLn()
 
   let ni = nc.getBlocking
-  blankLn()
   putLn "event : " & $ni.event
   putLn "point : " & $ni.codepoint
 
-  let key = ni.toKey
-  put "key   : "
-  putLn key
+  let key = ni.key
+  if key.isNone: stdn.setStyles(Struck)
+  put "key   : " & (if key.isSome: $key.get else: "")
+  stdn.setStyles(None)
+  put "\n"
 
-  let utf8 = ni.toUTF8
-  put "utf8  : "
+  var prefix = "utf8  : "
+  let utf8 = ni.utf8
   if utf8.isSome:
-    let res = nc.stdPlane.putStr utf8.get & "\n"
-    if res.isErr: putLn replacementChar
+    put prefix
+    let res = stdn.putStr utf8.get
+    if res.isErr: put ReplacementChar
   else:
-    putLn $utf8
+    stdn.setStyles(Struck)
+    put prefix
+    stdn.setStyles(None)
+  put "\n"
 
-  putLn "input : " & $ni
+  prefix = "bytes : "
+  if utf8.isSome:
+    put prefix & ni.bytes.get.fmtHex
+  else:
+    stdn.setStyles(Struck)
+    put prefix
+    stdn.setStyles(None)
+  put "\n"
 
   if utf8.get("") == "q": break
-
-blankLn()

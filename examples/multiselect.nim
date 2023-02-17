@@ -82,9 +82,9 @@ proc run_mselect() =
     var ni = nc.getBlocking
     if ni.event == Release: continue
     if not ncmultiselector_offer_input(ns, addr ni.cObj):
-      let key = ni.toKey
+      let key = ni.key
       if key.isSome and key.get == Enter: break
-      let utf8 = ni.toUTF8
+      let utf8 = ni.utf8
       if utf8.isSome:
         case utf8.get:
           of "M", "J":

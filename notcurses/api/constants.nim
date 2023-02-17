@@ -1,3 +1,5 @@
+import std/[sets, sequtils]
+
 type
   Alignment* = distinct int32
 
@@ -27,6 +29,8 @@ type
     AlreadyStopped = "Notcurses is already stopped"
     FailedToInitialize = "Notcurses failed to initialize"
     FailureNotExpected = "failure not expected"
+    InvalidCodepoint = "invalid Notcurses codepoint"
+    InvalidUcs32 = "invalid UCS32 codepoint"
     NotInitialized = "Notcurses is not initialized"
 
   DirectInitOption* = distinct uint64
@@ -47,7 +51,7 @@ type
     Grad2x1 = "ncplane_gradient2x1 failed"
     PutStr = "ncplane_putstr failed"
     PutStrAligned = "ncplane_putstr_aligned failed"
-    PutStrYX = "ncplane_putstr_yx failed"
+    PutStrYx = "ncplane_putstr_yx failed"
     PutWc = "ncplane_putwc failed"
     Render = "notcurses_render failed"
     SetScroll = "ncplane_set_scrolling failed"
@@ -224,6 +228,17 @@ const
   ScrollUp* = Keys.Button4
   ScrollDown* = Keys.Button5
   Return* = Keys.Enter
+
+const AllKeys =
+  toHashSet([Tab.uint32, Esc.uint32, Space.uint32]) +
+  toHashSet(toSeq((Invalid.uint32)..(EOF.uint32)).filterIt(
+    (it <= F60.uint32) or
+    (it >= Enter.uint32 and it <= Separator.uint32) or
+    (it >= CapsLock.uint32 and it <= Menu.uint32) or
+    (it >= MediaPlay.uint32 and it <= L5Shift.uint32) or
+    (it >= Motion.uint32 and it <= Button11.uint32) or
+    (it == Signal.uint32) or
+    (it == EOF.uint32)))
 
 type
   KeyModifier* = distinct int32
