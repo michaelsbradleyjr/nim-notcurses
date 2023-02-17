@@ -3,22 +3,12 @@ import std/[sets, sequtils]
 type
   Alignment* = distinct int32
 
-when (NimMajor, NimMinor) < (1, 6):
-  type
-    Align* {.pure.} = enum
-      Unaligned = ncalign_e.NCALIGN_UNALIGNED.Alignment
-      Left = ncalign_e.NCALIGN_LEFT.Alignment
-      Center = ncalign_e.NCALIGN_CENTER.Alignment
-      Right = ncalign_e.NCALIGN_RIGHT.Alignment
-else:
-  type
-    Align* {.pure.} = enum
-      Unaligned = NCALIGN_UNALIGNED.Alignment
-      Left = NCALIGN_LEFT.Alignment
-      Center = NCALIGN_CENTER.Alignment
-      Right = NCALIGN_RIGHT.Alignment
+  Align* {.pure.} = enum
+    Unaligned = ncalign_e.NCALIGN_UNALIGNED.Alignment
+    Left = ncalign_e.NCALIGN_LEFT.Alignment
+    Center = ncalign_e.NCALIGN_CENTER.Alignment
+    Right = ncalign_e.NCALIGN_RIGHT.Alignment
 
-type
   DefectMessages {.pure.} = enum
     AddExitProcFailed =
       when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
@@ -230,15 +220,15 @@ const
   Return* = Keys.Enter
 
 const AllKeys =
-  toHashSet([Tab.uint32, Esc.uint32, Space.uint32]) +
-  toHashSet(toSeq((Invalid.uint32)..(EOF.uint32)).filterIt(
-    (it <= F60.uint32) or
-    (it >= Enter.uint32 and it <= Separator.uint32) or
-    (it >= CapsLock.uint32 and it <= Menu.uint32) or
-    (it >= MediaPlay.uint32 and it <= L5Shift.uint32) or
-    (it >= Motion.uint32 and it <= Button11.uint32) or
-    (it == Signal.uint32) or
-    (it == EOF.uint32)))
+  toHashSet([Keys.Tab.uint32, Keys.Esc.uint32, Keys.Space.uint32]) +
+  toHashSet(toSeq((Keys.Invalid.uint32)..(Keys.EOF.uint32)).filterIt(
+    (it <= Keys.F60.uint32) or
+    (it >= Keys.Enter.uint32 and it <= Keys.Separator.uint32) or
+    (it >= Keys.CapsLock.uint32 and it <= Keys.Menu.uint32) or
+    (it >= Keys.MediaPlay.uint32 and it <= Keys.L5Shift.uint32) or
+    (it >= Keys.Motion.uint32 and it <= Keys.Button11.uint32) or
+    (it == Keys.Signal.uint32) or
+    (it == Keys.EOF.uint32)))
 
 type
   KeyModifier* = distinct int32
