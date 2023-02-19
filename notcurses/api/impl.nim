@@ -511,7 +511,17 @@ func utf8*(input: Input): Option[string] =
   else:
     none[string]()
 
-func wchar_t*(wc: SomeInteger): abi.wchar_t = cast[abi.wchar_t](wc)
+# wchar_t and wint_t are implementation-defined so what follows is an
+# approximation; even if WCHAR_MAX is consulted at compile-time or runtime,
+# it's difficult to know if the implementation is using a signed or unsigned
+# integer type, i.e. the following converter func may produce incorrect
+# results on some platforms
+when defined(windows):
+  func wchar_t*(wc: uint8 | uint16): abi.wchar_t =
+    cast[abi.wchar_t](wc.uint16)
+else:
+  func wchar_t*(wc: uint8 | uint16 | uint32): abi.wchar_t =
+    cast[abi.wchar_t](wc.uint32)
 
 # Aliases
 type

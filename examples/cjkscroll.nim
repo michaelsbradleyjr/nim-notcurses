@@ -27,8 +27,8 @@ stdn.setStyles(None)
 
 # https://codepoints.net/cjk_unified_ideographs
 const
-  first = 0x4e00
-  last = 0x9fff
+  first = 0x4e00'u16
+  last = 0x9fff'u16
 
 var wc = first
 while true:
