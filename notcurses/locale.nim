@@ -21,12 +21,12 @@ var
   LC_NUMERIC_c  {.header: "<locale.h>", importc: "LC_NUMERIC" .}: cint
   LC_TIME_c     {.header: "<locale.h>", importc: "LC_TIME"    .}: cint
 
-  LC_ALL* = LC_ALL_c.Category
-  LC_COLLATE* = LC_COLLATE_c.Category
-  LC_CTYPE* = LC_CTYPE_c.Category
+  LC_ALL*      = LC_ALL_c.Category
+  LC_COLLATE*  = LC_COLLATE_c.Category
+  LC_CTYPE*    = LC_CTYPE_c.Category
   LC_MONETARY* = LC_MONETARY_c.Category
-  LC_NUMERIC* = LC_NUMERIC_c.Category
-  LC_TIME* = LC_TIME_c.Category
+  LC_NUMERIC*  = LC_NUMERIC_c.Category
+  LC_TIME*     = LC_TIME_c.Category
 
 when defined(posix):
   var
