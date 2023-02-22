@@ -5,10 +5,10 @@ Nim modules in this directory were closely derived from sources in [Notcurses](h
 ## Motivation
 
 Translating Notcurses' example C sources was not an end in itself; instead, the goal was twofold and the process was iterative:
-* Wrap Notcurses' raw C API to an extent that one/more upstream examples could be ported from `.c` to `.nim`.
-* Allow those experiences to inform the design of a higher-level *Nim API* built atop the lower-level wrapper.
-
-Rather than rework texts embedded in the upstream examples to make these `.nim` modules unique, this author preferred to leave them unmodified: they are illustrations of lessons the original author desired to teach.
+* Wrap Notcurses' raw C API to an extent that one or more upstream examples could be ported from `.c` to `.nim`.
+* Informed by the porting experience, implement a higher-level *Nim API* built atop the lower-level wrapper.
+* Refactor examples to use the high-level API.
+* Wrap &hellip;
 
 ## Summary
 
