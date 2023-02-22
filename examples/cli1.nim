@@ -11,5 +11,5 @@ let nc = Nc.init NcOptions.init [DrainInput]
 
 nc.stdPlane.putStr("Hello, Notcurses!\n").expect
 
-# in Notcurses' CLI mode \n in a string triggers a render+scroll, one or more
+# in Notcurses' CLI mode '\n' in a string triggers a render+scroll, one or more
 # times depending on the number of times it's included

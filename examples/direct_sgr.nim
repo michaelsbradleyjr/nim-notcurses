@@ -2,9 +2,9 @@ import std/strutils
 import notcurses/direct/core
 # or: import notcurses/direct
 
-let ncd = Ncd.init NcdOptions.init [DirectDrainInput]
-
 # https://en.wikipedia.org/wiki/ANSI_escape_code#SGR
+
+let ncd = Ncd.init NcdOptions.init [DirectDrainInput]
 
 func style(i: uint32): Styles = cast[Styles](i)
 

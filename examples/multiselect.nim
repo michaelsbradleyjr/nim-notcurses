@@ -1,6 +1,6 @@
 import std/os
 import notcurses
-# this example uses Notcurses' multimedia stack so can't do `import notcurses/core`
+# this example uses Notcurses' multimedia stack so can't `import notcurses/core`
 
 # delete me when nim-notcurses api supports ncmselector
 import notcurses/abi
