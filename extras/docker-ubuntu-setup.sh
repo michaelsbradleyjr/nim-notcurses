@@ -1,9 +1,9 @@
 # paste into shell prompt provided by `docker run -it --rm ubuntu`
 # this script should be / will be converted into a Dockerfile
 
-# when using emacs in the container, Docker's default binding (ctrl-p) for the
-# detach keys is annoying, but it can be configured in ~/.docker/config.json on
-# the host machine: "detachKeys": "ctrl-z,z"
+# when using emacs in the container, Docker's default binding for the detach
+# keys (ctrl-p,q) is annoying, but it can be configured in
+# ~/.docker/config.json on the host machine, e.g. `"detachKeys": "ctrl-z,z"`
 
 echo "export TERM=xterm-256color" >> "${HOME}/.bashrc"
 export TERM=xterm-256color
