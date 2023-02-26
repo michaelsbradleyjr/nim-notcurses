@@ -4,10 +4,9 @@
 # this module uses extra whitespace so it can be visually scanned more easily
 
 import std/bitops
+include ./version
 
 type wchar_t* {.header: "<wchar.h>", importc.} = object
-
-const nim_notcurses_version* = (major: 3'i32, minor: 0'i32, patch: 9'i32)
 
 const nc_keys_header = "notcurses/nckeys.h"
 {.pragma: nc_keys, cdecl, header: nc_keys_header, importc.}

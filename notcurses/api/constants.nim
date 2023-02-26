@@ -1,4 +1,5 @@
 import std/[sets, sequtils]
+include ../abi/version
 
 type
   Alignment* = distinct int32
