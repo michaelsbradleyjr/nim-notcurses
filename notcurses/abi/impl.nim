@@ -215,7 +215,7 @@ macro NCCELL_CHAR_INITIALIZER*(c: cchar): nccell =
       channels: 0)
 
 # L737 - notcurses/notcurses.h
-macro NCCELL_TRIVIAL_INITIALIZER*(c: wchar_t): nccell =
+macro NCCELL_TRIVIAL_INITIALIZER*(): nccell =
   quote do:
     nccell(gcluster: 0, gcluster_backstop: 0, width: 1, stylemask: 0,
       channels: 0)
