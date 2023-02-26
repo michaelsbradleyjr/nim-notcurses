@@ -191,6 +191,11 @@ proc ncstrwidth*(egcs: cstring, validbytes, validwidth: ptr cint): cint {.nc.}
 # L609 - notcurses/notcurses.h
 proc notcurses_ucs32_to_utf8*(ucs32: ptr uint32, ucs32count: cuint, resultbuf: ptr UncheckedArray[cchar], buflen: csize_t): cint {.nc.}
 
+# for the following initializers should research facilities available in
+# libunistring and consider their usage vs. other approaches; depending on
+# research conclusions, file an issue in upstream Notcurses asking if
+# libunistring facilities could be a replacement wcwidth in ncport.h
+
 # L731 - notcurses/notcurses.h
 macro NCCELL_INITIALIZER*(c: uint8 | uint16 | uint32, s: uint16, chan: uint64): nccell =
   quote do:
@@ -199,11 +204,6 @@ macro NCCELL_INITIALIZER*(c: uint8 | uint16 | uint32, s: uint16, chan: uint64): 
       width = 0 # FIX ME!
     nccell(gcluster: gcluster, gcluster_backstop: 0, width: width, stylemask: s,
       channels: chan)
-
-# for the following initializers research facilities available in libunistring
-# and consider their usage vs. other approaches; depending on research
-# conclusions, file an issue in upstream Notcurses asking if libunistring
-# facilities could be a replacement for htole, wcwidth, etc. in ncport.h
 
 # L734 - notcurses/notcurses.h
 macro NCCELL_CHAR_INITIALIZER*(c: cchar): nccell =
