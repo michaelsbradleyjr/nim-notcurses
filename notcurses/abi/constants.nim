@@ -422,6 +422,9 @@ const
   NCDIRECT_OPTION_VERBOSE*             = 0x0000000000000010'u64
   NCDIRECT_OPTION_VERY_VERBOSE*        = 0x0000000000000020'u64
 
+# consider creating a template `L` that defines the following constants as wide
+# strings, same as they're defined in notcurses/ncseqs.h
+
 const
   # L9 - notcurses/ncseqs.h
   NCBOXLIGHTW*  = "┌┐└┘─│".cstring
