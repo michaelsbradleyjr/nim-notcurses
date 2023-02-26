@@ -4,7 +4,6 @@
 # this module uses extra whitespace so it can be visually scanned more easily
 
 import std/bitops
-include ./version
 
 type wchar_t* {.header: "<wchar.h>", importc.} = object
 
