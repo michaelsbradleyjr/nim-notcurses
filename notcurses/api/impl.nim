@@ -7,7 +7,7 @@ import std/[atomics, bitops, options, strformat, strutils]
 
 import pkg/stew/[byteutils, results]
 
-export bitops, byteutils, options, results
+export options, results
 
 # should consider moving some of the types and constants here into
 # api/constants, as done with abi/constants re: abi/impl, but there will be

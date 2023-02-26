@@ -1,4 +1,4 @@
-import std/strutils
+import std/[bitops, strutils]
 import notcurses/direct/core
 # or: import notcurses/direct
 
