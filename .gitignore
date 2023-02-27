@@ -9,3 +9,7 @@
 !/examples/data/**
 /nimcache/
 /notcurses.nims
+/tests/**
+!/tests/**/
+!/tests/**/*.nim
+!/tests/config.nims
