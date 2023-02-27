@@ -271,6 +271,7 @@ type
     stylemask*        : uint16
     channels*         : uint64
 
+# consider changing these to uint16
 const
   # L769 - notcurses/notcurses.h
   NCSTYLE_MASK*      = 0x0000ffff'u32
