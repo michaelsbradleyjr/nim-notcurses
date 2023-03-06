@@ -191,12 +191,8 @@ proc ncstrwidth*(egcs: cstring, validbytes, validwidth: ptr cint): cint {.nc.}
 # L609 - notcurses/notcurses.h
 proc notcurses_ucs32_to_utf8*(ucs32: ptr uint32, ucs32count: cuint, resultbuf: ptr UncheckedArray[cchar], buflen: csize_t): cint {.nc.}
 
-# for the following initializers should research facilities available in
-# libunistring and consider their usage vs. other approaches; depending on
-# research conclusions, file an issue in upstream Notcurses asking if
-# libunistring facilities could be a replacement wcwidth in ncport.h
 {.passL:"-lunistring".}
-proc u32_width(s: ptr uint32, n: csize_t, encoding: cstring): cint {.cdecl, importc.}
+proc u32_width(s: ptr uint32): cint {.cdecl, importc, varargs.}
 
 # L731 - notcurses/notcurses.h
 macro NCCELL_INITIALIZER*(c: uint8 | uint16 | uint32, s: uint16, chan: uint64): nccell =
@@ -204,10 +200,9 @@ macro NCCELL_INITIALIZER*(c: uint8 | uint16 | uint32, s: uint16, chan: uint64): 
     var cc = `c`.uint32
     let
       gcluster = toLE(cc)
-      uwidth = u32_width(addr cc, 1, "UTF-8".cstring)
+      uwidth = u32_width(addr cc)
       width = (if uwidth <= 0: 1 else: uwidth).uint8
-    nccell(gcluster: gcluster, gcluster_backstop: 0, width: width,
-      stylemask: `s`, channels: `chan`)
+    nccell(gcluster: gcluster, gcluster_backstop: 0, width: width, stylemask: `s`, channels: `chan`)
 
 # L734 - notcurses/notcurses.h
 macro NCCELL_CHAR_INITIALIZER*(c: cchar): nccell =
@@ -215,16 +210,13 @@ macro NCCELL_CHAR_INITIALIZER*(c: cchar): nccell =
     var cc = `c`.uint32
     let
       gcluster = toLE(cc)
-      uwidth = u32_width(addr cc, 1, "UTF-8".cstring)
+      uwidth = u32_width(addr cc)
       width = (if uwidth <= 0: 1 else: uwidth).uint8
-    nccell(gcluster: gcluster, gcluster_backstop: 0, width: width, stylemask: 0,
-      channels: 0)
+    nccell(gcluster: gcluster, gcluster_backstop: 0, width: width, stylemask: 0, channels: 0)
 
 # L737 - notcurses/notcurses.h
-macro NCCELL_TRIVIAL_INITIALIZER*(): nccell =
-  quote do:
-    nccell(gcluster: 0, gcluster_backstop: 0, width: 1, stylemask: 0,
-      channels: 0)
+template NCCELL_TRIVIAL_INITIALIZER*(): nccell =
+  nccell(gcluster: 0, gcluster_backstop: 0, width: 1, stylemask: 0, channels: 0)
 
 # L1087 - notcurses/notcurses.h
 proc notcurses_init*(opts: ptr notcurses_options, fp: File): ptr notcurses {.nc.}
