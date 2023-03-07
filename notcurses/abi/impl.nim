@@ -4,6 +4,8 @@
 import std/[macros, strutils, terminal]
 import pkg/stew/endians2
 
+export endians2
+
 # L187 notcurses/nckeys.h
 proc nckey_synthesized_p*(w: uint32): bool {.nc_keys.}
 
@@ -191,27 +193,22 @@ proc ncstrwidth*(egcs: cstring, validbytes, validwidth: ptr cint): cint {.nc.}
 # L609 - notcurses/notcurses.h
 proc notcurses_ucs32_to_utf8*(ucs32: ptr uint32, ucs32count: cuint, resultbuf: ptr UncheckedArray[cchar], buflen: csize_t): cint {.nc.}
 
-{.passL:"-lunistring".}
-proc u32_width(s: ptr uint32): cint {.cdecl, importc, varargs.}
-
 # L731 - notcurses/notcurses.h
-macro NCCELL_INITIALIZER*(c: uint8 | uint16 | uint32, s: uint16, chan: uint64): nccell =
+macro NCCELL_INITIALIZER*(c: wchar_t, s: uint16, chan: uint64): nccell =
   quote do:
-    var cc = `c`.uint32
     let
-      gcluster = toLE(cc)
-      uwidth = u32_width(addr cc)
-      width = (if uwidth <= 0: 1 else: uwidth).uint8
+      gcluster = `c`.uint32.toLE
+      wcw = `c`.wcwidth
+      width = (if wcw <= 0: 1 else: wcw).uint8
     nccell(gcluster: gcluster, gcluster_backstop: 0, width: width, stylemask: `s`, channels: `chan`)
 
 # L734 - notcurses/notcurses.h
 macro NCCELL_CHAR_INITIALIZER*(c: cchar): nccell =
   quote do:
-    var cc = `c`.uint32
     let
-      gcluster = toLE(cc)
-      uwidth = u32_width(addr cc)
-      width = (if uwidth <= 0: 1 else: uwidth).uint8
+      gcluster = `c`.uint32.toLE
+      wcw = `c`.wchar_t.wcwidth
+      width = (if wcw <= 0: 1 else: wcw).uint8
     nccell(gcluster: gcluster, gcluster_backstop: 0, width: width, stylemask: 0, channels: 0)
 
 # L737 - notcurses/notcurses.h

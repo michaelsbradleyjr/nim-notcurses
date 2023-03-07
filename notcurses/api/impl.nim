@@ -7,7 +7,8 @@ import std/[atomics, bitops, options, strformat, strutils]
 
 import pkg/stew/[byteutils, results]
 
-export options, results
+export options, results, to_uint32, to_wchar_t, wchar_t, wcwidth
+# when it's implemented export macro `L`
 
 # should consider moving some of the types and constants here into
 # api/constants, as done with abi/constants re: abi/impl, but there will be
@@ -299,8 +300,8 @@ proc putStrYx*(plane: Plane, s: string, y, x = -1'i32):
   else:
     ok ApiSuccessPos(code: code)
 
-proc putWc*(plane: Plane, wchar: wchar_t): Result[ApiSuccess0, ApiErrorNeg] =
-  let code = plane.cPtr.ncplane_putwc wchar
+proc putWc*(plane: Plane, wc: wchar_t): Result[ApiSuccess0, ApiErrorNeg] =
+  let code = plane.cPtr.ncplane_putwc wc
   if code < 0:
     err ApiErrorNeg(code: code, msg: $PutWc)
   else:
@@ -510,18 +511,6 @@ func utf8*(input: Input): Option[string] =
     some string.fromBytes(input.bytes(skipHigh = true).get)
   else:
     none[string]()
-
-# wchar_t and wint_t are implementation-defined so what follows is an
-# approximation; even if WCHAR_MAX is consulted at compile-time or runtime,
-# it's difficult to know if the implementation is using a signed or unsigned
-# integer type, i.e. the following converter func may produce incorrect
-# results on some platforms
-when defined(windows):
-  func wchar_t*(wc: uint8 | uint16): abi.wchar_t =
-    cast[abi.wchar_t](wc.uint16)
-else:
-  func wchar_t*(wc: uint8 | uint16 | uint32): abi.wchar_t =
-    cast[abi.wchar_t](wc.uint32)
 
 # Aliases
 type

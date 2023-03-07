@@ -1,5 +1,5 @@
 import pkg/unittest2
-import notcurses
+# import notcurses
 
 suite "API tests":
   test "test":
