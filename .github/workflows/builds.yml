@@ -19,6 +19,7 @@ jobs:
   build:
     env:
       COLORTERM: 24bit
+      LANG: en_US.UTF-8
       NPROC: 2
       TERM: xterm-256color
     strategy:
