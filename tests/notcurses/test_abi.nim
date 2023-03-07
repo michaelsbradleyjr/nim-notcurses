@@ -46,6 +46,9 @@ suite "ABI tests":
     for i, p in xyz.pairs:
       wca_out[i] = p
 
+    # nothing appears in GHA output in Linux, but does work as expected in
+    # macOS, and it partially works on Windows (replacement characters in place
+    # of multibyte characters)
     discard fputws(cast[ptr UncheckedArray[ptr wchar_t]](addr wca_out), stdout)
     echo ""
 

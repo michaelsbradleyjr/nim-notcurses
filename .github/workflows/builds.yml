@@ -260,5 +260,9 @@ jobs:
 
       - name: Build and run tests
         run: |
+          if [[ ${{ matrix.platform.os }} = windows ]]; then
+            # set code page to UTF-8
+            cmd //c chcp 65001
+          fi
           source "${HOME}/.bash_env"
           nimble test
