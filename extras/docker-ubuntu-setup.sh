@@ -38,7 +38,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j16
 cd "${HOME}"
 curl -sSf -O https://nim-lang.org/choosenim/init.sh
-CHOOSENIM_NO_ANALYTICS=1 sh init.sh -y
+CHOOSENIM_CHOOSE_VERSION=\#version-1-6 CHOOSENIM_NO_ANALYTICS=1 sh init.sh -y
 rm init.sh
 echo 'export PATH="${HOME}/.nimble/bin:${PATH}"' >> "${HOME}/.bashrc"
 export PATH="${HOME}/.nimble/bin:${PATH}"
