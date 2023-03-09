@@ -23,6 +23,7 @@ export LANG=en_US.UTF-8
 yes | unminimize
 curl -L https://git.io/epre | sh
 echo "(require 'prelude-ivy) (require 'prelude-company) (require 'prelude-c) (require 'prelude-emacs-lisp) (require 'prelude-lisp) (require 'prelude-lsp) (require 'prelude-shell) (provide 'prelude-modules)" > "${HOME}/.emacs.d/personal/prelude-modules.el"
+emacs -batch --eval '(progn (package-refresh-contents))'
 emacs -batch -l ~/.emacs.d/init.el
 emacs -batch --eval '(progn (package-initialize) (byte-recompile-directory (expand-file-name "~/.emacs.d/core") 0))'
 echo \(require \'package\) \(add-to-list \'package-archives \'\(\"melpa\" . \"https://melpa.org/packages/\"\) t\) \(package-initialize\) \(mapcar \(lambda \(package\) \(unless \(package-installed-p package\) \(package-install package\)\)\) \'\(yasnippet nim-mode use-package\)\) > "${HOME}/install.el"
