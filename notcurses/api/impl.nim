@@ -7,8 +7,7 @@ import std/[atomics, bitops, options, strformat, strutils]
 
 import pkg/stew/[byteutils, results]
 
-export options, results, to_uint32, to_wchar_t, wchar_t, wcwidth
-# when it's implemented export macro `L`
+export options, results, wchar_t
 
 # should consider moving some of the types and constants here into
 # api/constants, as done with abi/constants re: abi/impl, but there will be

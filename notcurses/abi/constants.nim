@@ -4,26 +4,14 @@
 # this module uses extra whitespace so it can be visually scanned more easily
 
 import std/bitops
-# will need std/macros when `macro L` is defined in this module
-# import std/[bitops, macros]
 
-type wchar_t* {.header: "<wchar.h>", importc.} = object
-
-# wchar_t and wint_t are implementation-defined so what follows is an
-# approximation; even if WCHAR_MAX is consulted at compile-time or runtime,
-# it's difficult to know if the implementation is using a signed or unsigned
-# integer type, i.e. the following converter func may produce incorrect results
-# on some platforms
-converter to_uint32*(wc: wchar_t): uint32 = cast[uint32](wc)
-
+# wchar_t is implementation-defined so use of that type as defined below may
+# produce incorrect results on some platforms
 when defined(windows):
-  converter to_wchar_t*(u: char | uint8 | uint16): wchar_t =
-    cast[wchar_t](u.uint16)
+  # https://learn.microsoft.com/en-us/windows/win32/midl/wchar-t
+  type wchar_t* {.header: "<wchar.h>", importc.} = uint16
 else:
-  converter to_wchar_t*(u: char | uint8 | uint16 | uint32): wchar_t =
-    cast[wchar_t](u.uint32)
-
-proc wcwidth*(wc: wchar_t): cint {.cdecl, header: "<wchar.h>", importc.}
+  type wchar_t* {.header: "<wchar.h>", importc.} = uint32
 
 const nc_keys_header = "notcurses/nckeys.h"
 {.pragma: nc_keys, cdecl, header: nc_keys_header, importc.}

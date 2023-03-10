@@ -193,12 +193,14 @@ proc ncstrwidth*(egcs: cstring, validbytes, validwidth: ptr cint): cint {.nc.}
 # L609 - notcurses/notcurses.h
 proc notcurses_ucs32_to_utf8*(ucs32: ptr uint32, ucs32count: cuint, resultbuf: ptr UncheckedArray[cchar], buflen: csize_t): cint {.nc.}
 
+proc wcwidth(wc: wchar_t): cint {.cdecl, header: "<wchar.h>", importc.}
+
 # L731 - notcurses/notcurses.h
-macro NCCELL_INITIALIZER*(c: wchar_t, s: uint16, chan: uint64): nccell =
+macro NCCELL_INITIALIZER*(c: uint32, s: uint16, chan: uint64): nccell =
   quote do:
     let
-      gcluster = `c`.uint32.toLE
-      wcw = `c`.wcwidth
+      gcluster = `c`.toLE
+      wcw = `c`.wchar_t.wcwidth
       width = (if wcw <= 0: 1 else: wcw).uint8
     nccell(gcluster: gcluster, gcluster_backstop: 0, width: width, stylemask: `s`, channels: `chan`)
 
