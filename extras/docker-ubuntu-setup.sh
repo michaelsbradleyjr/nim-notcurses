@@ -41,13 +41,14 @@ cd "${HOME}"
 curl -sSf -O https://nim-lang.org/choosenim/init.sh
 CHOOSENIM_CHOOSE_VERSION=\#version-1-6 CHOOSENIM_NO_ANALYTICS=1 sh init.sh -y
 rm init.sh
-echo 'export PATH="${HOME}/.nimble/bin:${PATH}"' >> "${HOME}/.bashrc"
-export PATH="${HOME}/.nimble/bin:${PATH}"
+echo 'export PATH="${HOME}/.nimble/bin${PATH:+:${PATH}}"' >> "${HOME}/.bashrc"
+export PATH="${HOME}/.nimble/bin${PATH:+:${PATH}}"
 nimble --accept install nimlangserver
 git clone https://github.com/michaelsbradleyjr/nim-notcurses.git "${HOME}/repos/nim-notcurses"
 cd "${HOME}/repos/nim-notcurses"
 git switch version_3_revamp
 nimble --accept develop
-export LD_LIBRARY_PATH="$(echo "${HOME}/repos/notcurses/build:${LD_LIBRARY_PATH}" | sed -n 's/[ :].*//; /^lo$/t; /./p')"
+echo 'export LD_LIBRARY_PATH="${HOME}/repos/notcurses/build${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"' >> "${HOME}/.bashrc"
+export LD_LIBRARY_PATH="${HOME}/repos/notcurses/build${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
 echo && echo nim c --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build" -r examples/cli1.nim && echo
 nim c --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build" -r examples/cli1.nim || true
