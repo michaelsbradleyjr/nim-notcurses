@@ -1,11 +1,10 @@
-import std/bitops
 import pkg/unittest2
 import notcurses/abi
 
 suite "ABI tests":
   setup:
-    let flags = bitor(NCOPTION_CLI_MODE, NCOPTION_DRAIN_INPUT,
-      NCOPTION_SUPPRESS_BANNERS)
+    let flags = NCOPTION_CLI_MODE or NCOPTION_DRAIN_INPUT or
+      NCOPTION_SUPPRESS_BANNERS
     var
       opts = notcurses_options(termtype: nil, loglevel: NCLOGLEVEL_PANIC,
         margin_t: 0, margin_r: 0, margin_b: 0, margin_l: 0, flags: flags)
