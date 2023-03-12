@@ -14,7 +14,7 @@ apt-get update -qq
 DEBIAN_FRONTEND=noninteractive apt-get install -yq software-properties-common
 add-apt-repository -y ppa:apt-fast/stable
 DEBIAN_FRONTEND=noninteractive apt-get install -yq apt-fast
-DEBIAN_FRONTEND=noninteractive apt-fast install --no-install-recommends -yq aspell bash-completion build-essential cmake curl doctest doctest-dev emacs-nox ffmpeg git less libavcodec-dev libavformat-dev libdeflate-dev libswscale-dev libtinfo-dev libunistring-dev locales man-db nano pandoc pkg-config vim wget
+DEBIAN_FRONTEND=noninteractive apt-fast install --no-install-recommends -yq aspell aspell-en bash-completion build-essential cmake curl doctest doctest-dev emacs-nox ffmpeg git less libavcodec-dev libavformat-dev libdeflate-dev libswscale-dev libtinfo-dev libunistring-dev locales man-db nano pandoc pkg-config vim wget
 echo ". /etc/profile.d/bash_completion.sh" >> "${HOME}/.bashrc"
 . /etc/profile.d/bash_completion.sh
 sed -i -e "s/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/" /etc/locale.gen
@@ -33,12 +33,9 @@ export BASH_IT="${HOME}/.bash_it"
 export BASH_IT_THEME=nodez
 . "${BASH_IT}/bash_it.sh"
 curl -L https://git.io/epre | sh
-emacs -batch --eval "(progn (require 'package) (add-to-list 'package-archives '(\"melpa\" . \"https://melpa.org/packages/\") t) (package-refresh-contents))"
+emacs -batch --eval "(progn (require 'package) (add-to-list 'package-archives '(\"melpa\" . \"https://melpa.org/packages/\") t) (package-refresh-contents) (package-initialize) (mapcar (lambda (package) (unless (package-installed-p package) (package-install package))) '(yasnippet nim-mode)))"
 echo "(require 'prelude-ivy) (require 'prelude-company) (require 'prelude-c) (require 'prelude-emacs-lisp) (require 'prelude-lisp) (require 'prelude-lsp) (require 'prelude-shell) (provide 'prelude-modules)" > "${HOME}/.emacs.d/personal/prelude-modules.el"
 emacs -batch -l ~/.emacs.d/init.el
-echo "(require 'package) (add-to-list 'package-archives '(\"melpa\" . \"https://melpa.org/packages/\") t) (package-initialize) (mapcar (lambda (package) (unless (package-installed-p package) (package-install package))) '(yasnippet nim-mode))" > "${HOME}/install.el"
-emacs --script "${HOME}/install.el"
-rm "${HOME}/install.el"
 echo "(setq prelude-minimalistic-ui t)" > "${HOME}/.emacs.d/personal/preload/minimalistic.el"
 echo "(use-package nim-mode :ensure t :hook (nim-mode . lsp))" > "${HOME}/.emacs.d/personal/nim.el"
 git clone https://github.com/dankamongmen/notcurses.git "${HOME}/repos/notcurses"
