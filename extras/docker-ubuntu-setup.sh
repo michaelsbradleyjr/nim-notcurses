@@ -5,6 +5,7 @@
 # keys (ctrl-p,q) is annoying, but it can be configured in
 # ~/.docker/config.json on the host machine, e.g. `"detachKeys": "ctrl-z,z"`
 
+cd "${HOME}"
 echo "export TERM=xterm-256color" >> "${HOME}/.bashrc"
 export TERM=xterm-256color
 echo "export COLORTERM=24bit" >> "${HOME}/.bashrc"
@@ -16,17 +17,26 @@ DEBIAN_FRONTEND=noninteractive apt-get install -yq apt-fast
 DEBIAN_FRONTEND=noninteractive apt-fast install --no-install-recommends -yq aspell bash-completion build-essential cmake curl doctest doctest-dev emacs-nox ffmpeg git less libavcodec-dev libavformat-dev libdeflate-dev libswscale-dev libtinfo-dev libunistring-dev locales man-db nano pandoc pkg-config vim wget
 echo ". /etc/profile.d/bash_completion.sh" >> "${HOME}/.bashrc"
 . /etc/profile.d/bash_completion.sh
-sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
+sed -i -e "s/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/" /etc/locale.gen
 dpkg-reconfigure --frontend=noninteractive locales
 echo "export LANG=en_US.UTF-8" >> "${HOME}/.bashrc"
 export LANG=en_US.UTF-8
 yes | unminimize
+git clone https://github.com/michaelsbradleyjr/bash-it.git "${HOME}/.bash_it"
+cd "${HOME}/.bash_it"
+git checkout origin/custom
+cd "${HOME}"
+echo 'export BASH_IT="${HOME}/.bash_it"' >> "${HOME}/.bashrc"
+echo 'export BASH_IT_THEME=nodez' >> "${HOME}/.bashrc"
+echo '. ${BASH_IT}/bash_it.sh' >> "${HOME}/.bashrc"
+export BASH_IT="${HOME}/.bash_it"
+export BASH_IT_THEME=nodez
+. "${BASH_IT}/bash_it.sh"
 curl -L https://git.io/epre | sh
+emacs -batch --eval "(progn (require 'package) (add-to-list 'package-archives '(\"melpa\" . \"https://melpa.org/packages/\") t) (package-refresh-contents))"
 echo "(require 'prelude-ivy) (require 'prelude-company) (require 'prelude-c) (require 'prelude-emacs-lisp) (require 'prelude-lisp) (require 'prelude-lsp) (require 'prelude-shell) (provide 'prelude-modules)" > "${HOME}/.emacs.d/personal/prelude-modules.el"
-emacs -batch --eval '(progn (package-refresh-contents))'
 emacs -batch -l ~/.emacs.d/init.el
-emacs -batch --eval '(progn (package-initialize) (byte-recompile-directory (expand-file-name "~/.emacs.d/core") 0))'
-echo \(require \'package\) \(add-to-list \'package-archives \'\(\"melpa\" . \"https://melpa.org/packages/\"\) t\) \(package-initialize\) \(mapcar \(lambda \(package\) \(unless \(package-installed-p package\) \(package-install package\)\)\) \'\(yasnippet nim-mode use-package\)\) > "${HOME}/install.el"
+echo "(require 'package) (add-to-list 'package-archives '(\"melpa\" . \"https://melpa.org/packages/\") t) (package-initialize) (mapcar (lambda (package) (unless (package-installed-p package) (package-install package))) '(yasnippet nim-mode))" > "${HOME}/install.el"
 emacs --script "${HOME}/install.el"
 rm "${HOME}/install.el"
 echo "(setq prelude-minimalistic-ui t)" > "${HOME}/.emacs.d/personal/preload/minimalistic.el"
