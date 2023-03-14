@@ -7,5 +7,5 @@ installDirs  = @["notcurses"]
 installFiles = @["LICENSE", "LICENSE-APACHEv2", "LICENSE-MIT", "LICENSE-NOTCURSES", "notcurses.nim"]
 
 requires "nim >= 1.2.0",
-         "stew#head",
+         "stew",
          "unittest2"
