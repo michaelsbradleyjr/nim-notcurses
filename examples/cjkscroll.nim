@@ -19,8 +19,6 @@ proc stop() {.noconv.} =
 
 setControlCHook(stop)
 
-# see comment in ./cli1.nim re: scrolling/rendering bugs
-
 stdn.setStyles(Bold)
 stdn.putStr("\nThis program is *not* indicative of real scrolling speed.\n\n").expect
 stdn.setStyles(None)
@@ -28,7 +26,7 @@ stdn.setStyles(None)
 # https://codepoints.net/cjk_unified_ideographs
 const
   first = 0x4e00'u16
-  last = 0x9fff'u16
+  last  = 0x9fff'u16
 
 var wc = first
 while true:
@@ -39,4 +37,7 @@ while true:
   if wc > last: wc = first
 
 # rendering after each putWc() isn't necessary but it makes the auto-scroll
-# behavior of Notcurses' CLI mode more apparent
+# behavior of Notcurses' CLI mode visually more apparent in the compiled
+# program's output
+
+# see comment in ./cli1.nim re: scrolling/rendering bugs

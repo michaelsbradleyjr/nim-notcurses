@@ -6,11 +6,6 @@ let
   nc = Nc.init
   stdn = nc.stdPlane
 
-# there are one/more bugs in Notcurses whereby, in some terminals, capability
-# query data is sometimes leaking into user input at the start of the program;
-# and in some terminals keypresses are spuriously being reported when
-# e.g. focus is switched away from the OS window for the terminal
-
 proc nop() {.noconv.} = discard
 setControlCHook(nop)
 
@@ -64,3 +59,8 @@ while true:
   put "\n"
 
   if utf8.get("") == "q": break
+
+# there are one/more bugs in Notcurses whereby, in some terminals, capability
+# query data is sometimes leaking into user input at the start of the program;
+# and in some terminals keypresses are spuriously being reported when
+# e.g. focus is switched away from the OS window for the terminal
