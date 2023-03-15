@@ -3,8 +3,6 @@
 
 # this module uses extra whitespace so it can be visually scanned more easily
 
-import std/bitops
-
 # wchar_t is implementation-defined so use of that type as defined below may
 # produce incorrect results on some platforms
 when defined(windows):
@@ -313,18 +311,7 @@ const
   NCOPTION_NO_FONT_CHANGES*     = 0x0000000000000080'u64
   NCOPTION_DRAIN_INPUT*         = 0x0000000000000100'u64
   NCOPTION_SCROLLING*           = 0x0000000000000200'u64
-  NCOPTION_CLI_MODE*            =
-    when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
-      bitor(NCOPTION_NO_ALTERNATE_SCREEN,
-            NCOPTION_NO_CLEAR_BITMAPS,
-            NCOPTION_PRESERVE_CURSOR,
-            NCOPTION_SCROLLING)
-    else:
-      bitor(bitor(bitor(
-            NCOPTION_NO_ALTERNATE_SCREEN,
-            NCOPTION_NO_CLEAR_BITMAPS),
-            NCOPTION_PRESERVE_CURSOR),
-            NCOPTION_SCROLLING)
+  NCOPTION_CLI_MODE*            = NCOPTION_NO_ALTERNATE_SCREEN or NCOPTION_NO_CLEAR_BITMAPS or NCOPTION_PRESERVE_CURSOR or NCOPTION_SCROLLING
 
 type
   # L1060 - notcurses/notcurses.h

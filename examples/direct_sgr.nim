@@ -1,4 +1,4 @@
-import std/[bitops, strutils]
+import std/strutils
 import notcurses/direct/core
 # or: import notcurses/direct
 
@@ -8,7 +8,7 @@ let ncd = Ncd.init NcdOptions.init [DirectDrainInput]
 
 func style(i: uint32): Styles = cast[Styles](i)
 
-proc supported(i: uint32): bool = bitand(ncd.supportedStyles.uint32, i) == i
+proc supported(i: uint32): bool = (ncd.supportedStyles.uint32 and i) == i
 
 var e, i = 0'u32
 while i < (Styles.Italic.uint32 shl 1):
