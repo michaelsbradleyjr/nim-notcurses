@@ -1,5 +1,5 @@
 # paste into shell prompt provided by `docker run -it --rm ubuntu`
-# this script should be / will be converted into a Dockerfile
+# this script should be converted into a Dockerfile
 
 # when using emacs in the container, Docker's default binding for the detach
 # keys (ctrl-p,q) is annoying, but it can be configured in
@@ -35,9 +35,9 @@ export BASH_IT_THEME=nodez
 curl -L https://git.io/epre | sh
 emacs -batch --eval "(progn (require 'package) (add-to-list 'package-archives '(\"melpa\" . \"https://melpa.org/packages/\") t) (package-refresh-contents) (package-initialize) (mapcar (lambda (package) (unless (package-installed-p package) (package-install package))) '(yasnippet nim-mode)))"
 echo "(require 'prelude-ivy) (require 'prelude-company) (require 'prelude-c) (require 'prelude-emacs-lisp) (require 'prelude-lisp) (require 'prelude-lsp) (require 'prelude-shell) (provide 'prelude-modules)" > "${HOME}/.emacs.d/personal/prelude-modules.el"
-emacs -batch -l ~/.emacs.d/init.el
 echo "(setq prelude-minimalistic-ui t)" > "${HOME}/.emacs.d/personal/preload/minimalistic.el"
 echo "(use-package nim-mode :ensure t :hook (nim-mode . lsp))" > "${HOME}/.emacs.d/personal/nim.el"
+emacs -batch -l ~/.emacs.d/init.el
 git clone https://github.com/dankamongmen/notcurses.git "${HOME}/repos/notcurses"
 cd "${HOME}/repos/notcurses"
 git checkout tags/v3.0.9
