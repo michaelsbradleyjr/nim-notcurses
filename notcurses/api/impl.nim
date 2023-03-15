@@ -350,33 +350,31 @@ proc stdPlane*(nc: Notcurses): Plane =
 # use template/macro for `proc stop` when breaking up api layer into
 # included-modules to reduce source code duplication
 
-proc stop*(nc: Notcurses): Result[void, ApiErrorNeg] =
+proc stop*(nc: Notcurses) =
   if ncStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
   let code = nc.cPtr.notcurses_stop
   if code < 0:
-    err ApiErrorNeg(code: code, msg: $Stop)
+    raise (ref ApiDefect)(msg: $FailedToStop)
   elif ncStopped.exchange(true):
     raise (ref ApiDefect)(msg: $AlreadyStopped)
   else:
     ncPtr.store(nil)
     ncApiObj = Notcurses()
-    ok()
 
-proc stop*(ncd: NotcursesDirect): Result[void, ApiErrorNeg] =
+proc stop*(ncd: NotcursesDirect) =
   if ncStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
   let code = ncd.cPtr.ncdirect_stop
   if code < 0:
-    err ApiErrorNeg(code: code, msg: $DirectStop)
+    raise (ref ApiDefect)(msg: $FailedToStop)
   elif ncStopped.exchange(true):
     raise (ref ApiDefect)(msg: $AlreadyStopped)
   else:
     ncPtr.store(nil)
     ncdApiObj = NotcursesDirect()
-    ok()
 
-proc stopNotcurses() {.noconv.} = Notcurses.get.stop.expect
+proc stopNotcurses() {.noconv.} = Notcurses.get.stop
 
-proc stopNotcursesDirect() {.noconv.} = NotcursesDirect.get.stop.expect
+proc stopNotcursesDirect() {.noconv.} = NotcursesDirect.get.stop
 
 # use template/macro for `template addExitProc` when breaking up api layer into
 # included-modules to reduce source code duplication

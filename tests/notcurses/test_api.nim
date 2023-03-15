@@ -9,7 +9,7 @@ suite "API tests":
       stdn = nc.stdPlane
 
   teardown:
-    nc.stop.expect
+    nc.stop
 
   test "test 1":
     check: true

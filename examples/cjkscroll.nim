@@ -14,7 +14,7 @@ let
 
 proc stop() {.noconv.} =
   stdn.putStr("\n\n").expect
-  nc.stop.expect
+  nc.stop
   quit(QuitSuccess)
 
 setControlCHook(stop)

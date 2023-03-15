@@ -18,6 +18,7 @@ type
     AlreadyInitialized = "Notcurses is already initialized"
     AlreadyStopped = "Notcurses is already stopped"
     FailedToInitialize = "Notcurses failed to initialize"
+    FailedToStop = "Notcurses failed to stop"
     FailureNotExpected = "failure not expected"
     InvalidCodepoint = "invalid Notcurses codepoint"
     InvalidUcs32 = "invalid UCS32 codepoint"
@@ -36,7 +37,6 @@ type
   ErrorMessages {.pure.} = enum
     DirectPutStr = "ncdirect_putstr failed"
     DirectSetStyles = "ncdirect_set_styles failed"
-    DirectStop = "ncdirect_stop failed"
     Grad = "ncplane_gradient failed"
     Grad2x1 = "ncplane_gradient2x1 failed"
     PutStr = "ncplane_putstr failed"
@@ -45,7 +45,6 @@ type
     PutWc = "ncplane_putwc failed"
     Render = "notcurses_render failed"
     SetScroll = "ncplane_set_scrolling failed"
-    Stop = "notcurses_stop failed"
 
   InitOption* = distinct uint64
 
