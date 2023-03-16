@@ -24,7 +24,7 @@ func fmtHex(x: seq[byte]): string =
 
 while true:
   blankLn()
-  putLn "paste input or press any key, q to quit"
+  putLn "press any key or paste input, q to quit"
   blankLn()
 
   let ni = nc.getBlocking
