@@ -20,7 +20,7 @@ var
   LC_MONETARY_c {.header: "<locale.h>", importc: "LC_MONETARY".}: cint
   LC_NUMERIC_c  {.header: "<locale.h>", importc: "LC_NUMERIC" .}: cint
   LC_TIME_c     {.header: "<locale.h>", importc: "LC_TIME"    .}: cint
-
+let
   LC_ALL*      = LC_ALL_c.Category
   LC_COLLATE*  = LC_COLLATE_c.Category
   LC_CTYPE*    = LC_CTYPE_c.Category
@@ -31,6 +31,7 @@ var
 when defined(posix):
   var
     LC_MESSAGES_c {.header: "<locale.h>", importc: "LC_MESSAGES".}: cint
+  let
     LC_MESSAGES* = LC_MESSAGES_c.Category
 
 proc expect*[T: LocaleSuccess, E: LocaleError](res: Result[T, E],
