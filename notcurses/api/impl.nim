@@ -50,13 +50,6 @@ type
     flags: uint64
     term: string
 
-  # need to understand Gcluster better, especially re: cell initializers,
-  # i.e. grapheme clusters can be multiple codepoints... check again re:
-  # whether in cell init macros in C and the type they construct we're
-  # dealing with uint32s or pointers, i.e. UncheckedArrays from Nim's
-  # perspective
-  # Gcluster* = distinct uint32
-
   Input* = object
     # make this private again, it's only public for now to support mixed
     # api/abi usage in examples under development
