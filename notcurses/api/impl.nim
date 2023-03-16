@@ -473,7 +473,7 @@ func toBytes(buf: array[5, char]): seq[byte] =
     else: break
   bytes
 
-func bytes(input: Input, skipHigh = false): Option[seq[byte]] =
+func bytes(input: Input, skipHigh: bool): Option[seq[byte]] =
   # assumption: `input.cObj.utf8` contains 1-4 bytes of a valid UTF-8 encoding
   if skipHigh or (input.codepoint.uint32 <= HighUcs32.uint32):
     some input.cObj.utf8.toBytes
@@ -505,7 +505,7 @@ func utf8*(input: Input): Option[string] =
   # assumption: if input's codepoint is valid UCS32 then it has a valid encoding
   let c = input.codepoint.uint32
   if c <= HighUcs32.uint32:
-    some string.fromBytes(input.bytes(skipHigh = true).get)
+    some string.fromBytes(input.bytes(true).get)
   else:
     none[string]()
 
