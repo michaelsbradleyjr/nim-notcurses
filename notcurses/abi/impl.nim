@@ -217,6 +217,111 @@ macro NCCELL_CHAR_INITIALIZER*(c: cchar): nccell =
 template NCCELL_TRIVIAL_INITIALIZER*(): nccell =
   nccell(gcluster: 0, gcluster_backstop: 0, width: 1, stylemask: 0, channels: 0)
 
+# L741 - notcurses/notcurses.h
+proc nccell_init*(c: ptr nccell) {.nc.}
+
+# L748 - notcurses/notcurses.h
+proc nccell_load*(n: ptr ncplane, c: ptr nccell, gcluster: cstring): cint {.nc.}
+
+# L752 - notcurses/notcursesh.
+proc nccell_prime*(n: ptr ncplane, c: ptr nccell, gcluster: cstring, stylemask: uint16, channels: uint64): cint {.nc.}
+
+# L762 - notcurses/notcurses.h
+proc nccell_duplicate*(n: ptr ncplane, targ: ptr nccell, c: ptr nccell): cint {.nc.}
+
+# L765 - notcurses/notcurses.h
+proc nccell_release*(n: ptr ncplane, c: ptr nccell) {.nc.}
+
+# L780 - notcurses/notcurses.h
+proc nccell_set_styles*(c: ptr nccell, stylebits: cuint) {.nc.}
+
+# L786 - notcurses/notcurses.h
+proc nccell_styles*(c: ptr nccell): uint16 {.nc.}
+
+# L793 - notcurses/notcurses.h
+proc nccell_on_styles*(c: ptr nccell, stylebits: cuint) {.nc.}
+
+# L799 - notcurses/notcurses.h
+proc nccell_off_styles*(c: ptr nccell, stylebits: cuint) {.nc.}
+
+# L805 - notcurses/notcurses.h
+proc nccell_set_fg_default*(c: ptr nccell) {.nc.}
+
+# L811 - notcurses/notcurses.h
+proc nccell_set_bg_default*(c: ptr nccell) {.nc.}
+
+# L816 - notcurses/notcurses.h
+proc nccell_set_fg_alpha*(c: ptr nccell, alpha: cuint): cint {.nc.}
+
+# L821 - notcurses/notcurses.h
+proc nccell_set_bg_alpha*(c: ptr nccell, alpha: cuint): cint {.nc.}
+
+# L826 - notcurses/notcurses.h
+proc nccell_set_bchannel*(c: ptr nccell, channel: uint32): uint64 {.nc.}
+
+# L831 - notcurses/notcurses.h
+proc nccell_set_fchannel*(c: ptr nccell, channel: uint32): uint64 {.nc.}
+
+# L836 - notcurses/notcurses.h
+proc nccell_set_channels*(c: ptr nccell, channels: uint64): uint64 {.nc.}
+
+# L842 - notcurses/notcurses.h
+proc nccell_double_wide_p*(c: ptr nccell): bool {.nc.}
+
+# L848 - notcurses/notcurses.h
+proc nccell_wide_right_p*(c: ptr nccell): bool {.nc.}
+
+# L854 - notcurses/notcurses.h
+proc nccell_wide_left_p*(c: ptr nccell): bool {.nc.}
+
+# L861 - notcurses/notcurses.h
+proc nccell_extended_gcluster*(n: ptr ncplane, c: ptr nccell): cstring {.nc.}
+
+# L864 - notcurses/notcurses.h
+proc nccell_channels*(c: ptr nccell): uint64 {.nc.}
+
+# L871 - notcurses/notcurses.h
+proc nccell_bchannel*(cl: ptr nccell): uint32 {.nc.}
+
+# L878 - notcurses/notcurses.h
+proc nccell_fchannel*(cl: ptr nccell): uint32 {.nc.}
+
+# L885 - notcurses/notcurses.h
+proc nccell_cols*(c: ptr nccell): cuint {.nc.}
+
+# L892 - notcurses/notcurses.h
+proc nccell_strdup*(n: ptr ncplane, c: ptr nccell): cstring {.nc.}
+
+# L898 - notcurses/notcurses.h
+proc nccell_extract*(n: ptr ncplane, c: ptr nccell, stylemask: uint16, channels: uint64): cstring {.nc.}
+
+# L915 - notcurses/notcurses.h
+proc nccellcmp*(n1: ptr ncplane, c1: ptr nccell, n2: ptr ncplane, c2: ptr nccell): bool {.nc.}
+
+# L929 - notcurses/notcurses.h
+proc nccell_load_char*(n: ptr ncplane, c: ptr nccell, ch: cchar): cint {.nc.}
+
+# L939 - notcurses/notcurses.h
+proc nccell_load_egc32*(n: ptr ncplane, c: ptr nccell, egc: uint32): cint {.nc.}
+
+# L950 - notcurses/notcurses.h
+proc nccell_load_ucs32*(n: ptr ncplane, c: ptr nccell, u: uint32): cint {.nc.}
+
+# L1065 - notcurses/notcurses.h
+proc notcurses_lex_margins*(op: cstring, opts: ptr notcurses_options): cint {.nc.}
+
+# L1069 - notcurses/notcurses.h
+proc notcurses_lex_blitter*(op: cstring, blitter: ptr ncblitter_e): cint {.nc.}
+
+# L1073 - notcurses/notcurses.h
+proc notcurses_str_blitter*(blitter: ncblitter_e): cstring {.nc.}
+
+# L1077 - notcurses/notcurses.h
+proc notcurses_lex_scalemode*(op: cstring, scalemode: ptr ncscale_e): cint {.nc.}
+
+# L1081 - notcurses/notcurses.h
+proc notcurses_str_scalemode*(scalemode: ncscale_e): cstring {.nc.}
+
 # L1087 - notcurses/notcurses.h
 proc notcurses_init*(opts: ptr notcurses_options, fp: File): ptr notcurses {.nc.}
 
@@ -226,8 +331,29 @@ proc notcurses_core_init*(opts: ptr notcurses_options, fp: File): ptr notcurses 
 # L1094 - notcurses/notcurses.h
 proc notcurses_stop*(nc: ptr notcurses): cint {.nc.}
 
+# L1100 - notcurses/notcurses.h
+proc notcurses_enter_alternate_screen*(nc: ptr notcurses): cint {.nc.}
+
+# L1105 - notcurses/notcurses.h
+proc notcurses_leave_alternate_screen*(nc: ptr notcurses): cint {.nc.}
+
 # L1111 - notcurses/notcurses.h
 proc notcurses_stdplane*(nc: ptr notcurses): ptr ncplane {.nc.}
+
+# L1113 - notcurses/notcurses.h
+proc notcurses_stdplane_const*(nc: ptr notcurses): ptr ncplane {.nc.}
+
+# L1117 - notcurses/notcurses.h
+proc ncpile_top*(n: ptr ncplane): ptr ncplane {.nc.}
+
+# L1121 - notcurses/notcurses.h
+proc ncpile_bottom*(n: ptr ncplane): ptr ncplane {.nc.}
+
+# L1126 - notcurses/notcurses.h
+proc notcurses_top*(n: ptr notcurses): ptr ncplane {.nc.}
+
+# L1132 - notcurses/notcurses.h
+proc notcurses_bottom*(n: ptr notcurses): ptr ncplane {.nc.}
 
 # L1138 - notcurses/notcurses.h
 proc ncpile_render*(n: ptr ncplane): cint {.nc.}
