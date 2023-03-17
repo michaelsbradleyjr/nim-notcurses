@@ -5,11 +5,12 @@
 
 # wchar_t is implementation-defined so use of that type as defined below may
 # produce incorrect results on some platforms
+const wchar_header = "<wchar.h>"
 when defined(windows):
   # https://learn.microsoft.com/en-us/windows/win32/midl/wchar-t
-  type wchar_t* {.header: "<wchar.h>", importc.} = uint16
+  type wchar_t* {.header: wchar_header, importc.} = uint16
 else:
-  type wchar_t* {.header: "<wchar.h>", importc.} = uint32
+  type wchar_t* {.header: wchar_header, importc.} = uint32
 
 const nc_keys_header = "notcurses/nckeys.h"
 {.pragma: nc_keys, cdecl, header: nc_keys_header, importc.}
