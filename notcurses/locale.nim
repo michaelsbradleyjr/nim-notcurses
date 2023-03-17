@@ -7,62 +7,57 @@ import std/macros
 import pkg/stew/results
 
 type
-  Category* = distinct int32
   LocaleError* = object of CatchableError
   LocaleSuccess* = string
 
-const FailureNotExpected = "failure not expected"
+const
+  FailureNotExpected = "failure not expected"
+  loc_header = "<locale.h>"
 
-var
-  LC_ALL_c      {.header: "<locale.h>", importc: "LC_ALL"     .}: cint
-  LC_COLLATE_c  {.header: "<locale.h>", importc: "LC_COLLATE" .}: cint
-  LC_CTYPE_c    {.header: "<locale.h>", importc: "LC_CTYPE"   .}: cint
-  LC_MONETARY_c {.header: "<locale.h>", importc: "LC_MONETARY".}: cint
-  LC_NUMERIC_c  {.header: "<locale.h>", importc: "LC_NUMERIC" .}: cint
-  LC_TIME_c     {.header: "<locale.h>", importc: "LC_TIME"    .}: cint
+{.pragma: loc, header: loc_header, importc, nodecl.}
+
 let
-  LC_ALL*      = LC_ALL_c.Category
-  LC_COLLATE*  = LC_COLLATE_c.Category
-  LC_CTYPE*    = LC_CTYPE_c.Category
-  LC_MONETARY* = LC_MONETARY_c.Category
-  LC_NUMERIC*  = LC_NUMERIC_c.Category
-  LC_TIME*     = LC_TIME_c.Category
+  LC_ALL*      {.loc.}: cint
+  LC_COLLATE*  {.loc.}: cint
+  LC_CTYPE*    {.loc.}: cint
+  LC_MONETARY* {.loc.}: cint
+  LC_NUMERIC*  {.loc.}: cint
+  LC_TIME*     {.loc.}: cint
 
 when defined(posix):
-  var
-    LC_MESSAGES_c {.header: "<locale.h>", importc: "LC_MESSAGES".}: cint
-  let
-    LC_MESSAGES* = LC_MESSAGES_c.Category
+  let LC_MESSAGES* {.loc.}: cint
 
 proc expect*[T: LocaleSuccess, E: LocaleError](res: Result[T, E],
     m = FailureNotExpected): T {.discardable.} =
   results.expect(res, m)
 
 proc setlocale(category: cint, locale: cstring): cstring
-  {.header: "<locale.h>", importc: "setlocale".}
+  {.cdecl, header: loc_header, importc.}
 
-proc getLocale(category: Category, name: string):
+proc getLocale(category: cint, name: string):
     Result[LocaleSuccess, LocaleError] =
-  let loc = setlocale(category.int32, nil)
+  let loc = setlocale(category, nil)
   if loc.isNil:
     err LocaleError(msg: "setlocale failed to query " & name)
   else:
     ok $loc
 
-macro getLocale*(category: Category): Result[LocaleSuccess, LocaleError] =
+macro getLocale*(category: cint): Result[LocaleSuccess, LocaleError] =
   let name = category.strVal
   quote do: getLocale(`category`, `name`)
 
-proc setLocale(category: Category, locale: string, name: string):
+proc setLocale(category: cint, locale: string, name: string):
     Result[LocaleSuccess, LocaleError] =
-  let loc = setlocale(category.int32, locale.cstring)
+  let loc = setlocale(category, locale.cstring)
   if loc.isNil:
-    err LocaleError(
-      msg: "setlocale failed to install " & locale & " as " & name)
+    let msg =
+      if locale == "": "setlocale failed to install " & name
+      else: "setlocale failed to install " & locale & " as " & name
+    err LocaleError(msg: msg)
   else:
     ok $loc
 
-macro setLocale*(category: Category, locale: string):
+macro setLocale*(category: cint, locale: string):
     Result[LocaleSuccess, LocaleError] =
   let name = category.strVal
   quote do: setLocale(`category`, `locale`, `name`)
