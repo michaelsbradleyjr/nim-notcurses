@@ -16,7 +16,7 @@ const
 
 {.pragma: loc, header: loc_header, importc, nodecl.}
 
-let
+var
   LC_ALL*      {.loc.}: cint
   LC_COLLATE*  {.loc.}: cint
   LC_CTYPE*    {.loc.}: cint
@@ -25,7 +25,7 @@ let
   LC_TIME*     {.loc.}: cint
 
 when defined(posix):
-  let LC_MESSAGES* {.loc.}: cint
+  var LC_MESSAGES* {.loc.}: cint
 
 proc expect*[T: LocaleSuccess, E: LocaleError](res: Result[T, E],
     m = FailureNotExpected): T {.discardable.} =

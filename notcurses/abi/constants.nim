@@ -419,7 +419,7 @@ const
 const nc_seqs_header = "notcurses/ncseqs.h"
 {.pragma: nc_seqs, header: nc_seqs_header, importc, nodecl.}
 
-let
+var
   # L9 - notcurses/ncseqs.h
   NCBOXLIGHTW*  {.nc_seqs.}: ptr UncheckedArray[wchar_t]
   NCBOXHEAVYW*  {.nc_seqs.}: ptr UncheckedArray[wchar_t]
