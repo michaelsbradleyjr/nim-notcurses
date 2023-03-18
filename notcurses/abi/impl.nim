@@ -6,8 +6,8 @@ import pkg/stew/endians2
 
 export Time, Timespec, toLE
 
-# may need to revisit whether it's better to impl a wrapper for timespec/time_t
-# or use Timespec/Time from Nim's std/posix
+# may need to revisit whether it's better to impl a (possibly more accurate)
+# custom wrapper for timespec/time_t or use Timespec/Time from Nim's std/posix
 # * https://nim-lang.org/docs/posix.html#Time
 # * https://nim-lang.org/docs/posix.html#Timespec
 # * https://en.cppreference.com/w/c/chrono/timespec
