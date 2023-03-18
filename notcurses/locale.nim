@@ -1,8 +1,6 @@
 # https://en.cppreference.com/w/c/locale/LC_categories
 # https://en.cppreference.com/w/c/locale/setlocale
 
-# this module uses extra whitespace so it can be visually scanned more easily
-
 import std/macros
 import pkg/stew/results
 
@@ -17,12 +15,12 @@ const
 {.pragma: loc, header: loc_header, importc, nodecl.}
 
 var
-  LC_ALL*      {.loc.}: cint
-  LC_COLLATE*  {.loc.}: cint
-  LC_CTYPE*    {.loc.}: cint
+  LC_ALL* {.loc.}: cint
+  LC_COLLATE* {.loc.}: cint
+  LC_CTYPE* {.loc.}: cint
   LC_MONETARY* {.loc.}: cint
-  LC_NUMERIC*  {.loc.}: cint
-  LC_TIME*     {.loc.}: cint
+  LC_NUMERIC* {.loc.}: cint
+  LC_TIME* {.loc.}: cint
 
 when defined(posix):
   var LC_MESSAGES* {.loc.}: cint
