@@ -28,13 +28,13 @@ const
   first = 0x4e00'u16
   last  = 0x9fff'u16
 
-var wc = first
+var u = first
 while true:
   sleep 10
-  stdn.putWc(wc.wchar_t).expect
+  stdn.putWc(u.wchar).expect
   nc.render.expect
-  inc wc
-  if wc > last: wc = first
+  inc u
+  if u > last: u = first
 
 # rendering after each putWc() isn't necessary but it makes the auto-scroll
 # behavior of Notcurses' CLI mode visually more apparent in the compiled

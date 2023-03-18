@@ -292,7 +292,7 @@ proc putStrYx*(plane: Plane, s: string, y, x = -1'i32):
   else:
     ok ApiSuccessPos(code: code)
 
-proc putWc*(plane: Plane, wc: wchar_t): Result[ApiSuccess0, ApiErrorNeg] =
+proc putWc*(plane: Plane, wc: Wchar): Result[ApiSuccess0, ApiErrorNeg] =
   let code = plane.cPtr.ncplane_putwc wc
   if code < 0:
     err ApiErrorNeg(code: code, msg: $PutWc)

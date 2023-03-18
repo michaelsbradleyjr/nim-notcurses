@@ -204,7 +204,7 @@ macro NCCELL_INITIALIZER*(c: uint32, s: uint16, chan: uint64): nccell =
   quote do:
     let
       gcluster = `c`.toLE
-      wcw = `c`.wchar_t.wcwidth
+      wcw = `c`.wchar.wcwidth
       width = (if wcw <= 0: 1 else: wcw).uint8
     nccell(gcluster: gcluster, gcluster_backstop: 0, width: width, stylemask: `s`, channels: `chan`)
 
@@ -213,7 +213,7 @@ macro NCCELL_CHAR_INITIALIZER*(c: cchar): nccell =
   quote do:
     let
       gcluster = `c`.uint32.toLE
-      wcw = `c`.wchar_t.wcwidth
+      wcw = `c`.wchar.wcwidth
       width = (if wcw <= 0: 1 else: wcw).uint8
     nccell(gcluster: gcluster, gcluster_backstop: 0, width: width, stylemask: 0, channels: 0)
 
@@ -465,7 +465,7 @@ proc ncplane_putstr*(n: ptr ncplane, gclustarr: cstring): cint {.nc.}
 proc ncplane_putstr_aligned*(n: ptr ncplane, y: cint, align: ncalign_e, s: cstring): cint {.nc.}
 
 # L2433 - notcurses/notcurses.h
-proc ncplane_putwc*(n: ptr ncplane, w: wchar_t): cint {.nc.}
+proc ncplane_putwc*(n: ptr ncplane, w: Wchar): cint {.nc.}
 
 # L2680 - notcurses/notcurses.h
 proc ncplane_gradient*(n: ptr ncplane, y, x: cint, ylen, xlen: cuint, egc: cstring, styles: uint16, ul, ur, ll, lr: uint64): cint {.nc.}

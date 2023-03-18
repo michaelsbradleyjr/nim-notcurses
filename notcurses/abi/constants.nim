@@ -3,16 +3,21 @@
 
 # this module uses extra whitespace so it can be visually scanned more easily
 
+const
+  wchar_header = "<wchar.h>"
+  wchar_t = "wchar_t"
+
 # wchar_t is implementation-defined so use of that type as defined below may
 # produce incorrect results on some platforms
-const wchar_header = "<wchar.h>"
 when defined(windows):
   # https://learn.microsoft.com/en-us/windows/win32/midl/wchar-t
-  type wchar_t* {.header: wchar_header, importc.} = uint16
+  type Wchar* {.header: wchar_header, importc: wchar_t.} = uint16
 else:
-  type wchar_t* {.header: wchar_header, importc.} = uint32
+  type Wchar* {.header: wchar_header, importc: wchar_t.} = uint32
 
-proc wcwidth*(wc: wchar_t): cint {.cdecl, header: wchar_header, importc.}
+template wchar*(u: untyped): Wchar = u.Wchar
+
+proc wcwidth*(wc: Wchar): cint {.cdecl, header: wchar_header, importc.}
 
 const nc_keys_header = "notcurses/nckeys.h"
 {.pragma: nc_keys, cdecl, header: nc_keys_header, importc.}
@@ -423,70 +428,70 @@ const nc_seqs_header = "notcurses/ncseqs.h"
 
 var
   # L9 - notcurses/ncseqs.h
-  NCBOXLIGHTW*  {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCBOXHEAVYW*  {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCBOXROUNDW*  {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCBOXDOUBLEW* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCBOXASCIIW*  {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCBOXOUTERW*  {.nc_seqs.}: ptr UncheckedArray[wchar_t]
+  NCBOXLIGHTW*  {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCBOXHEAVYW*  {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCBOXROUNDW*  {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCBOXDOUBLEW* {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCBOXASCIIW*  {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCBOXOUTERW*  {.nc_seqs.}: ptr UncheckedArray[Wchar]
 
   # L17 - notcurses/ncseqs.h
-  NCWHITESQUARESW*   {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCWHITECIRCLESW*   {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCCIRCULARARCSW*   {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCWHITETRIANGLESW* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCBLACKTRIANGLESW* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCSHADETRIANGLESW* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
+  NCWHITESQUARESW*   {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCWHITECIRCLESW*   {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCCIRCULARARCSW*   {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCWHITETRIANGLESW* {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCBLACKTRIANGLESW* {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCSHADETRIANGLESW* {.nc_seqs.}: ptr UncheckedArray[Wchar]
 
   # L25 - notcurses/ncseqs.h
-  NCBLACKARROWHEADSW* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCLIGHTARROWHEADSW* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCARROWDOUBLEW*     {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCARROWDASHEDW*     {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCARROWCIRCLEDW*    {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCARROWANTICLOCKW*  {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCBOXDRAWW*         {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCBOXDRAWHEAVYW*    {.nc_seqs.}: ptr UncheckedArray[wchar_t]
+  NCBLACKARROWHEADSW* {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCLIGHTARROWHEADSW* {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCARROWDOUBLEW*     {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCARROWDASHEDW*     {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCARROWCIRCLEDW*    {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCARROWANTICLOCKW*  {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCBOXDRAWW*         {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCBOXDRAWHEAVYW*    {.nc_seqs.}: ptr UncheckedArray[Wchar]
 
   # L35 - notcurses/ncseqs.h
-  NCARROWW*     {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCDIAGONALSW* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
+  NCARROWW*     {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCDIAGONALSW* {.nc_seqs.}: ptr UncheckedArray[Wchar]
 
   # L39 - notcurses/ncseqs.h
-  NCDIGITSSUPERW* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCDIGITSSUBW*   {.nc_seqs.}: ptr UncheckedArray[wchar_t]
+  NCDIGITSSUPERW* {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCDIGITSSUBW*   {.nc_seqs.}: ptr UncheckedArray[Wchar]
 
   # L43 - notcurses/ncseqs.h
-  NCASTERISKS5* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCASTERISKS6* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCASTERISKS8* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
+  NCASTERISKS5* {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCASTERISKS6* {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCASTERISKS8* {.nc_seqs.}: ptr UncheckedArray[Wchar]
 
   # L48 - notcurses/ncseqs.h
-  NCANGLESBR*   {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCANGLESTR*   {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCANGLESBL*   {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCANGLESTL*   {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCEIGHTHSB*   {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCEIGHTHST*   {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCEIGHTHSL*   {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCEIGHTHSR*   {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCHALFBLOCKS* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCQUADBLOCKS* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCSEXBLOCKS*  {.nc_seqs.}: ptr UncheckedArray[wchar_t]
+  NCANGLESBR*   {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCANGLESTR*   {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCANGLESBL*   {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCANGLESTL*   {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCEIGHTHSB*   {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCEIGHTHST*   {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCEIGHTHSL*   {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCEIGHTHSR*   {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCHALFBLOCKS* {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCQUADBLOCKS* {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCSEXBLOCKS*  {.nc_seqs.}: ptr UncheckedArray[Wchar]
 
   # L59 - notcurses/ncseqs.h
-  NCBRAILLEEGCS* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
+  NCBRAILLEEGCS* {.nc_seqs.}: ptr UncheckedArray[Wchar]
 
   # L76 - notcurses/ncseqs.h
-  NCSEGDIGITS* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
+  NCSEGDIGITS* {.nc_seqs.}: ptr UncheckedArray[Wchar]
 
   # L79 - notcurses/ncseqs.h
-  NCSUITSBLACK* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCSUITSWHITE* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCCHESSBLACK* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCCHESSWHITE* {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCDICE*       {.nc_seqs.}: ptr UncheckedArray[wchar_t]
-  NCMUSICSYM*   {.nc_seqs.}: ptr UncheckedArray[wchar_t]
+  NCSUITSBLACK* {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCSUITSWHITE* {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCCHESSBLACK* {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCCHESSWHITE* {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCDICE*       {.nc_seqs.}: ptr UncheckedArray[Wchar]
+  NCMUSICSYM*   {.nc_seqs.}: ptr UncheckedArray[Wchar]
 
 const
   # L87 - notcurses/ncseqs.h
