@@ -1,10 +1,16 @@
 # L[num] comments below pertain to sources for Notcurses v3.0.9
 # https://github.com/dankamongmen/notcurses/tree/v3.0.9/include
 
-import std/[macros, strutils, terminal]
+import std/[macros, posix, strutils, terminal]
 import pkg/stew/endians2
 
-export endians2
+export Time, Timespec, toLE
+
+# may need to revisit whether it's better to impl a wrapper for timespec/time_t
+# or use Timespec/Time from Nim's std/posix
+# * https://nim-lang.org/docs/posix.html#Time
+# * https://nim-lang.org/docs/posix.html#Timespec
+# * https://en.cppreference.com/w/c/chrono/timespec
 
 # L187 notcurses/nckeys.h
 proc nckey_synthesized_p*(w: uint32): bool {.nc_keys.}
@@ -362,11 +368,62 @@ proc ncpile_rasterize*(n: ptr ncplane): cint {.nc.}
 # L1149 - notcurses/notcurses.h
 proc notcurses_render*(nc: ptr notcurses): cint {.nc.}
 
+# L1161 - notcurses/notcurses.h
+proc ncpile_render_to_buffer*(p: ptr ncplane, buf: ptr cstring, buflen: ptr csize_t): cint {.nc.}
+
+# L1166 - notcurses/notcurses.h
+proc ncpile_render_to_file*(p: ptr ncplane, fp: File): cint {.nc.}
+
+# L1170 - notcurses/notcurses.h
+proc notcurses_drop_planes*(nc: ptr notcurses) {.nc.}
+
+# L1190 - notcurses/notcurses.h
+proc nckey_mouse_p*(r: uint32): bool {.nc.}
+
+# L1220 - notcurses/notcurses.h
+proc ncinput_shift_p*(n: ptr ncinput): bool {.nc.}
+
 # L1225 - notcurses/notcurses.h
 proc ncinput_ctrl_p*(ni: ptr ncinput): bool {.nc.}
 
+# L1230 - notcurses/notcurses.h
+proc ncinput_alt_p*(ni: ptr ncinput): bool {.nc.}
+
+# L1235 - notcurses/notcurses.h
+proc ncinput_meta_p*(ni: ptr ncinput): bool {.nc.}
+
+# L1240 - notcurses/notcurses.h
+proc ncinput_super_p*(ni: ptr ncinput): bool {.nc.}
+
+# L1245 - notcurses/notcurses.h
+proc ncinput_hyper_p*(ni: ptr ncinput): bool {.nc.}
+
+# L1250 - notcurses/notcurses.h
+proc ncinput_capslock_p*(ni: ptr ncinput): bool {.nc.}
+
+# L1255 - notcurses/notcurses.h
+proc ncinput_numlock_p*(ni: ptr ncinput): bool {.nc.}
+
+# L1263 - notcurses/notcurses.h
+proc ncinput_equal_p*(n1: ptr ncinput, n2: ptr ncinput): bool {.nc.}
+
+# L1294 - notcurses/notcurses.h
+proc notcurses_get*(n: ptr notcurses, ts: ptr Timespec, ni: ptr ncinput): uint32 {.nc.}
+
+# L1300 - notcurses/notcurses.h
+proc notcurses_getvec*(n: ptr notcurses, ts: ptr Timespec, ni: ptr ncinput, vcount: cint): cint {.nc.}
+
+# L1308 - notcurses/notcurses.h
+proc notcurses_inputready_fd*(n: ptr notcurses): cint {.nc.}
+
+# L1314 - notcurses/notcurses.h
+proc notcurses_get_nblock*(n: ptr notcurses, ni: ptr ncinput): uint32 {.nc.}
+
 # L1322 - notcurses/notcurses.h
 proc notcurses_get_blocking*(n: ptr notcurses, ni: ptr ncinput): uint32 {.nc.}
+
+# L1328 - notcurses/notcurses.h
+proc ncinput_nomod_p*(ni: ptr ncinput): bool {.nc.}
 
 # L1341 - notcurses/notcurses.h
 proc notcurses_mice_enable*(n: ptr notcurses, eventmask: cuint): cint {.nc.}
