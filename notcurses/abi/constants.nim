@@ -12,6 +12,8 @@ when defined(windows):
 else:
   type wchar_t* {.header: wchar_header, importc.} = uint32
 
+proc wcwidth*(wc: wchar_t): cint {.cdecl, header: wchar_header, importc.}
+
 const nc_keys_header = "notcurses/nckeys.h"
 {.pragma: nc_keys, cdecl, header: nc_keys_header, importc.}
 
