@@ -1,17 +1,6 @@
 # L[num] comments below pertain to sources for Notcurses v3.0.9
 # https://github.com/dankamongmen/notcurses/tree/v3.0.9/include
 
-import std/[macros, posix, strutils, terminal]
-import pkg/stew/endians2
-
-export Time, Timespec, toLE
-
-# may need to revisit whether it's better to impl a (possibly more accurate)
-# custom wrapper for timespec/time_t or use Timespec/Time from Nim's std/posix
-# * https://nim-lang.org/docs/posix.html#Time
-# * https://nim-lang.org/docs/posix.html#Timespec
-# * https://en.cppreference.com/w/c/chrono/timespec
-
 # L187 notcurses/nckeys.h
 proc nckey_synthesized_p*(w: uint32): bool {.nc_keys.}
 

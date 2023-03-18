@@ -3,12 +3,6 @@ when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
 else:
   {.push raises: [Defect].}
 
-import std/[atomics, bitops, options, strformat, strutils]
-
-import pkg/stew/[byteutils, results]
-
-export options, results, wchar_t
-
 # should consider moving some of the types and constants here into
 # api/constants, as done with abi/constants re: abi/impl, but there will be
 # additional considerations when splitting out support for Direct mode into

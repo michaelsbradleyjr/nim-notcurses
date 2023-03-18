@@ -3,6 +3,11 @@
 
 # this module uses extra whitespace so it can be visually scanned more easily
 
+import std/[macros, posix, strutils, terminal]
+import pkg/stew/endians2
+
+export Time, Timespec, toLE
+
 const
   wchar_header = "<wchar.h>"
   wchar_t = "wchar_t"
