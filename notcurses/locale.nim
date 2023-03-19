@@ -14,6 +14,7 @@ const
 
 {.pragma: loc, header: loc_header, importc, nodecl.}
 
+# can be `let` instead of `var` with recent enough releases of Nim 1.4+
 var
   LC_ALL* {.loc.}: cint
   LC_COLLATE* {.loc.}: cint

@@ -431,6 +431,7 @@ const
 const nc_seqs_header = "notcurses/ncseqs.h"
 {.pragma: nc_seqs, header: nc_seqs_header, importc, nodecl.}
 
+# can be `let` instead of `var` with recent enough releases of Nim 1.4+
 var
   # L9 - notcurses/ncseqs.h
   NCBOXLIGHTW*  {.nc_seqs.}: ptr UncheckedArray[Wchar]
