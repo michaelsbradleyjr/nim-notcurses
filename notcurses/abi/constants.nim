@@ -16,9 +16,9 @@ const
 # produce incorrect results on some platforms
 when defined(windows):
   # https://learn.microsoft.com/en-us/windows/win32/midl/wchar-t
-  type Wchar* {.header: wchar_header, importc: wchar_t.} = uint16
+  type Wchar* {.header: wchar_header, importc: wchar_t.} = distinct uint16
 else:
-  type Wchar* {.header: wchar_header, importc: wchar_t.} = uint32
+  type Wchar* {.header: wchar_header, importc: wchar_t.} = distinct uint32
 
 template wchar*(u: untyped): Wchar = u.Wchar
 
