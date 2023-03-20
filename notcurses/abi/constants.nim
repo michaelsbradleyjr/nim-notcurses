@@ -8,6 +8,8 @@ import pkg/stew/endians2
 
 export Time, Timespec, toLE
 
+type AbiDefect = object of Defect
+
 const
   wchar_header = "<wchar.h>"
   wchar_t = "wchar_t"

@@ -512,8 +512,6 @@ var
 
 notcurses_version_components(addr lib_notcurses_major, addr lib_notcurses_minor, addr lib_notcurses_patch, addr lib_notcurses_tweak)
 
-type AbiDefect = object of Defect
-
 if nim_notcurses_version.major != lib_notcurses_major:
   let majorMismatchMsg = ("""
 nim-notcurses major version $1 is not compatible with Notcurses library major
