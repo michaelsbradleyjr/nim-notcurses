@@ -1,3 +1,8 @@
+when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
+  {.push raises: [].}
+else:
+  {.push raises: [Defect].}
+
 import std/[atomics, bitops, options, sequtils, sets, strformat, strutils]
 import pkg/stew/[byteutils, results]
 
@@ -12,6 +17,37 @@ type
     Left = ncalign_e.NCALIGN_LEFT.Alignment
     Center = ncalign_e.NCALIGN_CENTER.Alignment
     Right = ncalign_e.NCALIGN_RIGHT.Alignment
+
+  ApiDefect = object of Defect
+
+  ApiError* = object of CatchableError
+
+  ApiError0* = object of ApiError
+    code*: range[low(int32)..0'i32]
+
+  ApiErrorNeg* = object of ApiError
+    code*: range[low(int32)..(-1'i32)]
+
+  # take care that `code != 0` to avoid confusion re: name of this type
+  ApiErrorNot0* = object of ApiError
+    code*: int32
+
+  ApiSuccess* = object of RootObj
+
+  ApiSuccess0* = object of ApiSuccess
+    code*: range[0'i32..high(int32)]
+
+  ApiSuccessOnly0* = object of ApiSuccess
+    code*: range[0'i32..0'i32]
+
+  ApiSuccessPos* = object of ApiSuccess
+    code*: range[1'i32..high(int32)]
+
+  Channel* = distinct uint32
+
+  ChannelPair* = distinct uint64
+
+  Codepoint* = distinct uint32
 
   DefectMessages {.pure.} = enum
     AddExitProcFailed =
@@ -37,6 +73,10 @@ type
     DirectNoQuitSighandlers = NCDIRECT_OPTION_NO_QUIT_SIGHANDLERS.DirectInitOption
     DirectVerbose = NCDIRECT_OPTION_VERBOSE.DirectInitOption
     DirectVeryVerbose = NCDIRECT_OPTION_VERY_VERBOSE.DirectInitOption
+
+  DirectOptions* = object
+    flags: uint64
+    term: string
 
   ErrorMessages {.pure.} = enum
     DirectPutStr = "ncdirect_putstr failed"
@@ -64,6 +104,11 @@ type
     DrainInput = NCOPTION_DRAIN_INPUT.InitOption
     Scrolling = NCOPTION_SCROLLING.InitOption
     CliMode = NCOPTION_CLI_MODE.InitOption
+
+  Input* = object
+    # make this private again, it's only public for now to support mixed
+    # api/abi usage in examples under development
+    cObj*: ncinput
 
   InputEvent* = distinct int32
 
@@ -222,17 +267,6 @@ const
   ScrollDown* = Keys.Button5
   Return* = Keys.Enter
 
-const AllKeys =
-  toHashSet([Keys.Tab.uint32, Keys.Esc.uint32, Keys.Space.uint32]) +
-  toHashSet(toSeq((Keys.Invalid.uint32)..(Keys.EOF.uint32)).filterIt(
-    (it <= Keys.F60.uint32) or
-    (it >= Keys.Enter.uint32 and it <= Keys.Separator.uint32) or
-    (it >= Keys.CapsLock.uint32 and it <= Keys.Menu.uint32) or
-    (it >= Keys.MediaPlay.uint32 and it <= Keys.L5Shift.uint32) or
-    (it >= Keys.Motion.uint32 and it <= Keys.Button11.uint32) or
-    (it == Keys.Signal.uint32) or
-    (it == Keys.EOF.uint32)))
-
 type
   KeyModifier* = distinct int32
 
@@ -259,6 +293,26 @@ type
     Debug = ncloglevel_e.NCLOGLEVEL_DEBUG.LogLevel
     Trace = ncloglevel_e.NCLOGLEVEL_TRACE.LogLevel
 
+  Margins* = tuple[top, right, bottom, left: uint32]
+
+  Notcurses* = object
+    # make this private again, it's only public for now to support mixed
+    # api/abi usage in examples under development
+    cPtr*: ptr notcurses
+
+  NotcursesDirect* = object
+    cPtr: ptr ncdirect
+
+  Options* = object
+    cObj: notcurses_options
+
+  Plane* = object
+    # make this private again, it's only public for now to support mixed
+    # api/abi usage in examples under development
+    cPtr*: ptr ncplane
+
+  PlaneDimensions* = tuple[y, x: uint32]
+
   Style* = distinct uint32
 
   Styles* {.pure.} = enum
@@ -269,3 +323,52 @@ type
     Underline = NCSTYLE_UNDERLINE.Style
     Italic = NCSTYLE_ITALIC.Style
     Mask = NCSTYLE_MASK.Style
+
+  TermDimensions* = tuple[rows, cols: uint32]
+
+  Ucs32 = distinct uint32
+
+  # Aliases
+  Nc* = Notcurses
+  NcChannel* = Channel
+  NcChannels* = ChannelPair
+  NcOptions* = Options
+  Ncd* = NotcursesDirect
+  NcdOptions* = DirectOptions
+
+const
+  AllKeys =
+    toHashSet([Keys.Tab.uint32, Keys.Esc.uint32, Keys.Space.uint32]) +
+    toHashSet(toSeq((Keys.Invalid.uint32)..(Keys.EOF.uint32)).filterIt(
+      (it <= Keys.F60.uint32) or
+      (it >= Keys.Enter.uint32 and it <= Keys.Separator.uint32) or
+      (it >= Keys.CapsLock.uint32 and it <= Keys.Menu.uint32) or
+      (it >= Keys.MediaPlay.uint32 and it <= Keys.L5Shift.uint32) or
+      (it >= Keys.Motion.uint32 and it <= Keys.Button11.uint32) or
+      (it == Keys.Signal.uint32) or
+      (it == Keys.EOF.uint32)))
+
+  HighUcs32* = 0x0010ffff'u32.Ucs32
+
+var
+  lib_notcurses_major: int32
+  lib_notcurses_minor: int32
+  lib_notcurses_patch: int32
+  lib_notcurses_tweak: int32
+
+notcurses_version_components(addr lib_notcurses_major, addr lib_notcurses_minor,
+  addr lib_notcurses_patch, addr lib_notcurses_tweak)
+
+let
+  LibNotcursesMajor* = lib_notcurses_major.int
+  LibNotcursesMinor* = lib_notcurses_minor.int
+  LibNotcursesPatch* = lib_notcurses_patch.int
+  LibNotcursesTweak* = lib_notcurses_tweak.int
+
+const
+  NimNotcursesMajor* = nim_notcurses_version.major.int
+  NimNotcursesMinor* = nim_notcurses_version.minor.int
+  NimNotcursesPatch* = nim_notcurses_version.patch.int
+
+  # https://codepoints.net/U+FFFD
+  ReplacementChar* = string.fromBytes hexToByteArray("0xefbfbd", 3)
