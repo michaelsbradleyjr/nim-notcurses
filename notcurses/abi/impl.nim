@@ -497,11 +497,41 @@ proc ncplane_set_name*(n: ptr ncplane, name: cstring): cint {.nc.}
 # L1518 - notcurses/notcurses.h
 proc ncplane_name*(n: ptr ncplane): cstring {.nc.}
 
+# L1527 - notcurses/notcurses.h
+proc ncplane_reparent*(n: ptr ncplane, newparent: ptr ncplane): ptr ncplane {.nc.}
+
+# L1533 - notcurses/notcurses.h
+proc ncplane_reparent_family*(n: ptr ncplane, newparent: ptr ncplane): ptr ncplane {.nc.}
+
+# L1542 - notcurses/notcurses.h
+proc ncplane_dup*(n: ptr ncplane, opaque: pointer): ptr ncplane {.nc.}
+
+# L1548 - notcurses/notcurses.h
+proc ncplane_translate*(src, dst: ptr ncplane, y, x: ptr cint) {.nc.}
+
+# L1556 - notcurses/notcurses.h
+proc ncplane_translate_abs*(n: ptr ncplane, y, x: ptr cint): bool {.nc.}
+
 # L1562 - notcurses/notcurses.h
 proc ncplane_set_scrolling*(n: ptr ncplane, scrollp: cuint): bool {.nc.}
 
 # L1565 - notcurses/notcurses.h
 proc ncplane_scrolling_p*(n: ptr ncplane): bool {.nc.}
+
+# L1571 - notcurses/notcurses.h
+proc ncplane_set_autogrow*(n: ptr ncplane, growp: cuint): bool {.nc.}
+
+# L1574 - notcurses/notcurses.h
+proc ncplane_autogrow_p*(n: ptr ncplane): bool {.nc.}
+
+# L1588 - notcurses/notcurses.h
+proc ncpalette_new*(nc: ptr notcurses): ptr ncpalette {.nc.}
+
+# L1593 - notcurses/notcurses.h
+proc ncpalette_use*(nc: ptr notcurses, p: ptr ncpalette): cint {.nc.}
+
+# L1598 - notcurses/notcurses.h
+proc ncpalette_set_rgb8*(p: ptr ncpalette, idx: cint, r, g, b: cuint): cint {.nc.}
 
 # L1727 - notcurses/notcurses.h
 proc notcurses_canopen_images*(nc: ptr notcurses): bool {.nc.}

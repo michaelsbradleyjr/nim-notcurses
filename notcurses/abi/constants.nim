@@ -382,6 +382,10 @@ type
     margin_b*: uint32
     margin_r*: uint32
 
+  # L1584 -  notcurses/notcurses.h
+  ncpalette* {.nc_bycopy, importc: "struct ncpalette".} = object
+    chans*: array[NCPALETTESIZE, uint32]
+
   # L3324 - notcurses/notcurses.h
   ncvisual_options* {.nc_bycopy, importc: "struct ncvisual_options".} = object
     n*         : ptr ncplane
