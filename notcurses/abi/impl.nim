@@ -449,8 +449,53 @@ proc ncplane_dim_yx*(n: ptr ncplane, y, x: ptr cuint) {.nc.}
 # L1387 - notcurses/notcurses.h
 proc notcurses_stddim_yx*(nc: ptr notcurses, y, x: ptr cuint): ptr ncplane {.nc.}
 
+# L1394 - notcurses/notcurses.h
+proc notcurses_stddim_yx_const*(nc: ptr notcurses, y, x: ptr cuint): ptr ncplane {.nc.}
+
+# L1401 - notcurses/notcurses.h
+proc ncplane_dim_y*(n: ptr ncplane): cuint {.nc.}
+
+# L1408 - notcurses/notcurses.h
+proc ncplane_dim_x*(n: ptr ncplane): cuint {.nc.}
+
+# L1419 - notcurses/notcurses.h
+proc ncplane_pixel_geom*(n: ptr ncplane, pxy, pxx, celldimy, celldimx, maxbmapy, maxbmapx: ptr cuint) {.nc.}
+
+# L1427 - notcurses/notcurses.h
+proc notcurses_term_dim_yx*(n: ptr notcurses, rows, cols: ptr cuint) {.nc.}
+
+# L1434 - notcurses/notcurses.h
+proc notcurses_at_yx*(nc: ptr notcurses, yoff, xoff: cuint, stylemask: ptr uint16, channels: ptr uint64): cstring {.nc.}
+
 # L1479 - notcurses/notcurses.h
 proc ncplane_create*(n: ptr ncplane, nopts: ptr ncplane_options): ptr ncplane {.nc.}
+
+# L1484 - notcurses/notcurses.h
+proc ncpile_create*(nc: ptr notcurses, nopts: ptr ncplane_options): ptr ncplane {.nc.}
+
+# L1492 - notcurses/notcurses.h
+proc ncplane_resize_maximize*(n: ptr ncplane): cint {.nc.}
+
+# L1496 - notcurses/notcurses.h
+proc ncplane_resize_marginalized*(n: ptr ncplane): cint {.nc.}
+
+# L1500 - notcurses/notcurses.h
+proc ncplane_resize_realign*(n: ptr ncplane): cint {.nc.}
+
+# L1504 - notcurses/notcurses.h
+proc ncplane_resize_placewithin*(n: ptr ncplane): cint {.nc.}
+
+# L1508 - notcurses/notcurses.h
+proc ncplane_set_resizecb*(n: ptr ncplane, resizecb: proc (n: ptr ncplane): cint {.noconv.}) {.nc.}
+
+# L1511 - notcurses/notcurses.h
+proc ncplane_resizecb*(n: ptr ncplane): proc (n: ptr ncplane): cint {.noconv.} {.nc.}
+
+# L1514 - notcurses/notcurses.h
+proc ncplane_set_name*(n: ptr ncplane, name: cstring): cint {.nc.}
+
+# L1518 - notcurses/notcurses.h
+proc ncplane_name*(n: ptr ncplane): cstring {.nc.}
 
 # L1562 - notcurses/notcurses.h
 proc ncplane_set_scrolling*(n: ptr ncplane, scrollp: cuint): bool {.nc.}
