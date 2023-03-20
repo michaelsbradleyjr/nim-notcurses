@@ -13,18 +13,18 @@ proc expect*[T: string, E: LocaleError](res: Result[T, E],
     m = FailureNotExpected): T {.discardable.} =
   results.expect(res, m)
 
-proc getLocale(category: cint, name: string): Result[string, LocaleError] =
+proc getLocale(category: int32, name: string): Result[string, LocaleError] =
   let loc = setlocale(category, nil)
   if loc.isNil:
     err LocaleError(msg: "setlocale failed to query " & name)
   else:
     ok $loc
 
-macro getLocale*(category: cint): Result[string, LocaleError] =
+macro getLocale*(category: int32): Result[string, LocaleError] =
   let name = category.strVal
   quote do: getLocale(`category`, `name`)
 
-proc setLocale(category: cint, locale: string, name: string):
+proc setLocale(category: int32, locale: string, name: string):
     Result[string, LocaleError] =
   let loc = setlocale(category, locale.cstring)
   if loc.isNil:
@@ -35,6 +35,6 @@ proc setLocale(category: cint, locale: string, name: string):
   else:
     ok $loc
 
-macro setLocale*(category: cint, locale: string): Result[string, LocaleError] =
+macro setLocale*(category: int32, locale: string): Result[string, LocaleError] =
   let name = category.strVal
   quote do: setLocale(`category`, `locale`, `name`)
