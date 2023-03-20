@@ -420,8 +420,31 @@ proc notcurses_mice_enable*(n: ptr notcurses, eventmask: cuint): cint {.nc.}
 # L1346 - notcurses/notcurses.h
 proc notcurses_mice_disable*(n: ptr notcurses): cint {.nc.}
 
+# L1352 - notcurses/notcurses.h
+proc notcurses_linesigs_disable*(n: ptr notcurses): cint {.nc.}
+
+# L1357 - notcurses/notcurses.h
+proc notcurses_linesigs_enable*(n: ptr notcurses): cint {.nc.}
+
+# L1365 - notcurses/notcurses.h
+proc notcurses_refresh*(n: ptr notcurses, y, x: cuint): cint {.nc.}
+
+# L1369 - notcurses/notcurses.h
+proc ncplane_notcurses*(n: ptr ncplane): ptr notcurses {.nc.}
+
+# L1372 - notcurses/notcurses.h
+proc ncplane_notcurses_const*(n: ptr ncplane): ptr notcurses {.nc.}
+
 # L1376 - notcurses/notcurses.h
 proc ncplane_dim_yx*(n: ptr ncplane, y, x: ptr cuint) {.nc.}
+
+# see: https://github.com/dankamongmen/notcurses/issues/2710
+#
+# # L1382 - notcurses/notcurses.h
+# proc notcurses_stdplane*(nc: ptr notcurses): ptr ncplane {.nc.}
+#
+# # L1383 - notcurses/notcurses.h
+# proc notcurses_stdplane_const*(nc: ptr notcurses): ptr ncplane {.nc.}
 
 # L1387 - notcurses/notcurses.h
 proc notcurses_stddim_yx*(nc: ptr notcurses, y, x: ptr cuint): ptr ncplane {.nc.}
