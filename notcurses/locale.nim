@@ -1,52 +1,31 @@
-# https://en.cppreference.com/w/c/locale/LC_categories
-# https://en.cppreference.com/w/c/locale/setlocale
-
 import std/macros
 import pkg/stew/results
+import ./abi/locale
 
-type
-  LocaleError* = object of CatchableError
-  LocaleSuccess* = string
+export locale except setlocale
+export results
 
-const
-  FailureNotExpected = "failure not expected"
-  loc_header = "<locale.h>"
+type LocaleError* = object of CatchableError
 
-{.pragma: loc, header: loc_header, importc, nodecl.}
+const FailureNotExpected = "failure not expected"
 
-# can be `let` instead of `var` with recent enough releases of Nim 1.4+
-var
-  LC_ALL* {.loc.}: cint
-  LC_COLLATE* {.loc.}: cint
-  LC_CTYPE* {.loc.}: cint
-  LC_MONETARY* {.loc.}: cint
-  LC_NUMERIC* {.loc.}: cint
-  LC_TIME* {.loc.}: cint
-
-when defined(posix):
-  var LC_MESSAGES* {.loc.}: cint
-
-proc expect*[T: LocaleSuccess, E: LocaleError](res: Result[T, E],
+proc expect*[T: string, E: LocaleError](res: Result[T, E],
     m = FailureNotExpected): T {.discardable.} =
   results.expect(res, m)
 
-proc setlocale(category: cint, locale: cstring): cstring
-  {.cdecl, header: loc_header, importc.}
-
-proc getLocale(category: cint, name: string):
-    Result[LocaleSuccess, LocaleError] =
+proc getLocale(category: cint, name: string): Result[string, LocaleError] =
   let loc = setlocale(category, nil)
   if loc.isNil:
     err LocaleError(msg: "setlocale failed to query " & name)
   else:
     ok $loc
 
-macro getLocale*(category: cint): Result[LocaleSuccess, LocaleError] =
+macro getLocale*(category: cint): Result[string, LocaleError] =
   let name = category.strVal
   quote do: getLocale(`category`, `name`)
 
 proc setLocale(category: cint, locale: string, name: string):
-    Result[LocaleSuccess, LocaleError] =
+    Result[string, LocaleError] =
   let loc = setlocale(category, locale.cstring)
   if loc.isNil:
     let msg =
@@ -56,7 +35,6 @@ proc setLocale(category: cint, locale: string, name: string):
   else:
     ok $loc
 
-macro setLocale*(category: cint, locale: string):
-    Result[LocaleSuccess, LocaleError] =
+macro setLocale*(category: cint, locale: string): Result[string, LocaleError] =
   let name = category.strVal
   quote do: setLocale(`category`, `locale`, `name`)
