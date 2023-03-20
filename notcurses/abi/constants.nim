@@ -431,6 +431,18 @@ const
 const nc_seqs_header = "notcurses/ncseqs.h"
 {.pragma: nc_seqs, header: nc_seqs_header, importc, nodecl.}
 
+# for the wide string literals in notcurses/ncseqs.h to be defined below with
+# Nim's `const` there would need to be an impl of `mbstowcs` or similar in pure
+# Nim that could be called at compile-time
+#
+# see: https://stackoverflow.com/a/148766
+#
+# although that approach has some limitations as pointed out in the SO
+# comments, it should be suitable in this context for a private Nim func that
+# can be called at compile-time to convert a cstring to an array of Wchar;
+# would need to write tests that check that arrays returned by it are an exact
+# match for those obtained with importc
+
 # can be `let` instead of `var` with recent enough releases of Nim 1.4+
 var
   # L9 - notcurses/ncseqs.h
