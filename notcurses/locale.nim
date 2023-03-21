@@ -29,8 +29,10 @@ proc setLocale(category: int32, locale: string, name: string):
   let loc = setlocale(category, locale.cstring)
   if loc.isNil:
     let msg =
-      if locale == "": "setlocale failed to install " & name
-      else: "setlocale failed to install " & locale & " as " & name
+      if locale == "":
+        "setlocale failed to install the user-preferred locale as " & name
+      else:
+        "setlocale failed to install " & locale & " as " & name
     err LocaleError(msg: msg)
   else:
     ok $loc
