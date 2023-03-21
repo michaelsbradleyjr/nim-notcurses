@@ -386,6 +386,27 @@ type
   ncpalette* {.nc_bycopy, importc: "struct ncpalette".} = object
     chans*: array[NCPALETTESIZE, uint32]
 
+  # L1644 - notcurses/notcurses.h
+  nccapabilities* {.nc_bycopy, importc: "struct nccapabilities".} = object
+    colors*           : cuint
+    utf8*             : bool
+    rgb*              : bool
+    can_change_colors*: bool
+    halfblocks*       : bool
+    quadrants*        : bool
+    sextants*         : bool
+    braille*          : bool
+
+  # L1687 - notcurses/notcurses.h
+  ncpixelimpl_e* {.pure.} = enum
+    NCPIXEL_NONE
+    NCPIXEL_SIXEL
+    NCPIXEL_LINUXFB
+    NCPIXEL_ITERM2
+    NCPIXEL_KITTY_STATIC
+    NCPIXEL_KITTY_ANIMATED
+    NCPIXEL_KITTY_SELFREF
+
   # L3324 - notcurses/notcurses.h
   ncvisual_options* {.nc_bycopy, importc: "struct ncvisual_options".} = object
     n*         : ptr ncplane

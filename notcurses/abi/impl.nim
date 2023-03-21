@@ -533,6 +533,45 @@ proc ncpalette_use*(nc: ptr notcurses, p: ptr ncpalette): cint {.nc.}
 # L1598 - notcurses/notcurses.h
 proc ncpalette_set_rgb8*(p: ptr ncpalette, idx: cint, r, g, b: cuint): cint {.nc.}
 
+# L1606 - notcurses/notcurses.h
+proc ncpalette_set*(p: ptr ncpalette, idx: cint, rgb: cuint): cint {.nc.}
+
+# L1614 - notcurses/notcurses.h
+proc ncpalette_get*(p: ptr ncpalette, idx: cint, palent: ptr uint32): cint {.nc.}
+
+# L1623 - notcurses/notcurses.h
+proc ncpalette_get_rgb8*(p: ptr ncpalette, idx: cint, r, g, b: ptr cuint): cint {.nc.}
+
+# L1631 - notcurses/notcurses.h
+proc ncpalette_free*(p: ptr ncpalette) {.nc.}
+
+# L1650 - notcurses/notcurses.h
+proc notcurses_supported_styles*(nc: ptr notcurses): uint16 {.nc.}
+
+# L1656 - notcurses/notcurses.h
+proc notcurses_palette_size*(nc: ptr notcurses): cuint {.nc.}
+
+# L1661 - notcurses/notcurses.h
+proc notcurses_detected_terminal*(nc: ptr notcurses): cstring {.nc.}
+
+# L1664 - notcurses/notcurses.h
+proc notcurses_capabilities*(n: ptr notcurses): ptr nccapabilities {.nc.}
+
+# L1690 - notcurses/notcurses.h
+proc notcurses_check_pixel_support*(nc: ptr notcurses): ncpixelimpl_e {.nc.}
+
+# L1697 - notcurses/notcurses.h
+proc nccapability_canchangecolor*(caps: ptr nccapabilities): bool {.nc.}
+
+# L1710 - notcurses/notcurses.h
+proc notcurses_cantruecolor*(nc: ptr notcurses): bool {.nc.}
+
+# L1716 - notcurses/notcurses.h
+proc notcurses_canchangecolor*(nc: ptr notcurses): bool {.nc.}
+
+# L1722 - notcurses/notcurses.h
+proc notcurses_canfade*(n: ptr notcurses): bool {.nc.}
+
 # L1727 - notcurses/notcurses.h
 proc notcurses_canopen_images*(nc: ptr notcurses): bool {.nc.}
 
