@@ -1,14 +1,15 @@
 import std/os
-import notcurses/[cli, locale]
-# or: import notcurses/[cli/core, locale]
+import notcurses
+# or: import notcurses/core
+import notcurses/locale
 
 # locale can be set manually but it's generally not necessary because Notcurses
 # attempts to do it automatically; this is just an example of using setLocale
 setLocale(LC_ALL, "").expect
 
-# if locale was set manually then pass InhibitSetLocale option to init
+# if locale was set manually then use option InhibitSetLocale
 let
-  opts = [DrainInput, InhibitSetLocale]
+  opts = [CliMode, DrainInput, InhibitSetLocale]
   nc = Nc.init(NcOptions.init opts, addExitProc = false)
   stdn = nc.stdPlane
 

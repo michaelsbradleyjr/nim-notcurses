@@ -125,14 +125,9 @@ proc getBlocking*(nc: Notcurses): Input =
 func init*(T: type Margins, top, right, bottom, left = 0'u32): T =
   (top, right, bottom, left)
 
-# when breaking up api layer into included-modules, refactor baseInitOption to
-# be a param with default value, e.g. CliMode; also constants baseInitOption,
-# ncInit, ncdInit in the various init,core/init modules can probably be
-# refactored as params of a template/macro used to generate the init funcs
-
 func init*(T: type Options, initOptions: openArray[InitOptions] = [], term = "",
     logLevel = LogLevels.Panic, margins = Margins.init): T =
-  var flags = baseInitOption.uint64
+  var flags = 0'u64
   for o in initOptions[0..^1]:
     flags = bitor(flags, o.uint64)
   var termtype: cstring

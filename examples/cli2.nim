@@ -1,9 +1,9 @@
 import std/strutils
-import notcurses/cli/core
-# or: import notcurses/cli
+import notcurses/core
+# or: import notcurses
 
 let
-  nc = Nc.init
+  nc = Nc.init NcOptions.init [CliMode]
   stdn = nc.stdPlane
 
 proc nop() {.noconv.} = discard

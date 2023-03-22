@@ -4,11 +4,11 @@ Nim modules in this directory were closely derived from sources in [Notcurses](h
 
 ## Motivation
 
-Translating Notcurses' example C sources was not an end in itself; instead, the goal was twofold and the process was iterative:
-* Wrap Notcurses' raw C API to an extent that one or more upstream examples could be ported from `.c` to `.nim`.
-* Informed by the porting experience, implement a higher-level *Nim API* built atop the lower-level wrapper.
-* Refactor examples to use the high-level API.
-* Wrap &hellip;
+Translating Notcurses' examples was not an end in itself; the process was iterative and the goal was to inform the high-level API of nim-notcurses
+1. wrap portions of Notcurses' raw C API so an upstream example could be ported from C to Nim
+2. implement portions of a higher-level API
+3. refactor using the high-level API
+4. goto 1
 
 ## Summary
 
@@ -16,15 +16,15 @@ Translating Notcurses' example C sources was not an end in itself; instead, the 
 
 | Nim                                  | C                            | Differences                               |
 | ------------------------------------ | ---------------------------- | ----------------------------------------- |
-| [`cjkscroll.nim`](cjkscroll.nim)     | [`src/poc/cjkscroll.c`][1]   | renders per character instead of per line |
-| [`cli1.nim`](cli1.nim)               | [`src/poc/cli2.c`][2]        | renders *"Hello..."*                      |
-| [`cli2.nim`](cli2.nim)               | [`src/poc/cli1.c`][3]        | reports inputs                            |
-| [`direct1.nim`](direct1.nim)         | n/a                          |                                           |
-| [`direct_sgr.nim`](direct_sgr.nim)   | [`src/poc/sgr-direct.c`][4]  |                                           |
-| [`gradients.nim`](gradients.nim)     | [`src/poc/gradients.c`][5]   |                                           |
-| [`multiselect.nim`](multiselect.nim) | [`src/poc/multiselect.c`][6] |                                           |
-| [`tui1.nim`](tui1.nim)               | [`src/poc/cli3.c`][7]        | renders *"Hello..."*                      |
-| [`zalgo.nim`](zalgo.nim)             | [`src/poc/zalgo.c`][8]       |                                           |
+| [`cjkscroll.nim`](cjkscroll.nim)     | [`cjkscroll.c`][1]   | renders per character instead of per line |
+| [`cli1.nim`](cli1.nim)               | [`cli2.c`][2]        | renders *"Hello..."*                      |
+| [`cli2.nim`](cli2.nim)               | [`cli1.c`][3]        | reports inputs                            |
+| [`direct1.nim`](direct1.nim)         | `n/a`                          |                                           |
+| [`direct_sgr.nim`](direct_sgr.nim)   | [`sgr-direct.c`][4]  |                                           |
+| [`gradients.nim`](gradients.nim)     | [`gradients.c`][5]   |                                           |
+| [`multiselect.nim`](multiselect.nim) | [`multiselect.c`][6] |                                           |
+| [`tui1.nim`](tui1.nim)               | [`cli3.c`][7]        | renders *"Hello..."*                      |
+| [`zalgo.nim`](zalgo.nim)             | [`zalgo.c`][8]       |                                           |
 
 [1]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/cjkscroll.c
 [2]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/cli2.c

@@ -1,12 +1,11 @@
 import pkg/unittest2
-import notcurses/cli
+import notcurses
 
 suite "API tests":
   setup:
     let
-      opts = [DrainInput, SuppressBanners]
+      opts = [CliMode, DrainInput, SuppressBanners]
       nc = Nc.init(NcOptions.init opts, addExitProc = false)
-      stdn = nc.stdPlane
 
   teardown:
     nc.stop
