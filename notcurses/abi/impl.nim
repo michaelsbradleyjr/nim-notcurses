@@ -575,6 +575,9 @@ proc notcurses_canfade*(n: ptr notcurses): bool {.nc.}
 # L1727 - notcurses/notcurses.h
 proc notcurses_canopen_images*(nc: ptr notcurses): bool {.nc.}
 
+# L1731 - notcurses/notcurses.h
+# ...
+
 # L1874 - notcurses/notcurses.h
 proc ncplane_set_base*(n: ptr ncplane, egc: cstring, stylemask: uint16, channels: uint64): cint {.nc.}
 
