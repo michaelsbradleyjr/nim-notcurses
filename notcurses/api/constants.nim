@@ -3,7 +3,7 @@ when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
 else:
   {.push raises: [Defect].}
 
-import std/[atomics, bitops, options, sequtils, sets, strformat, strutils]
+import std/[atomics, bitops, macros, options, sequtils, sets, strformat, strutils]
 import pkg/stew/[byteutils, results]
 
 export options, results

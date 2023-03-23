@@ -273,75 +273,76 @@ else:
   template addExitProc*(T: type NotcursesDirect) =
     if not ncExitProcAdded.exchange(true): addQuitProc stopNotcursesDirect
 
-# use template/macro for `proc init` when breaking up api layer into
-# included-modules to reduce source code duplication
+macro defineNcInit(T: untyped, ncInit: untyped): untyped =
+  quote do:
+    proc init*(T: type `T`, options = Options.init, file = stdout,
+        addExitProc = true): `T` =
+      if not ncPtr.load.isNil:
+        raise (ref ApiDefect)(msg: $AlreadyInitialized)
+      else:
+        var cOpts = options.cObj
+        var cPtr: ptr abi.notcurses
+        when (NimMajor, NimMinor, NimPatch) < (1, 6, 0):
+          try:
+            cPtr = `ncInit`(addr cOpts, file)
+          except Exception:
+            raise (ref ApiDefect)(msg: $FailedToInitialize)
+        else:
+          cPtr = `ncInit`(addr cOpts, file)
+        if cPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
+        ncApiObj = `T`(cPtr: cPtr)
+        if not ncPtr.exchange(cast[pointer](ncApiObj.cPtr)).isNil:
+          raise (ref ApiDefect)(msg: $AlreadyInitialized)
+        if addExitProc:
+          when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+            {.warning[BareExcept]: off.}
+          try:
+            `T`.addExitProc
+          except Exception as e:
+            var msg = $AddExitProcFailed
+            if e.msg != "":
+              msg = msg & " with message \"" & e.msg & "\""
+            raise (ref ApiDefect)(msg: msg)
+          when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+            {.warning[BareExcept]: on.}
+        ncStopped.store(false)
+        ncApiObj
 
-proc init*(T: type Notcurses, options = Options.init, file = stdout,
-    addExitProc = true): T =
-  if not ncPtr.load.isNil:
-    raise (ref ApiDefect)(msg: $AlreadyInitialized)
-  else:
-    var cOpts = options.cObj
-    var cPtr: ptr abi.notcurses
-    when (NimMajor, NimMinor, NimPatch) < (1, 6, 0):
-      try:
-        cPtr = ncInit(addr cOpts, file)
-      except Exception:
-        raise (ref ApiDefect)(msg: $FailedToInitialize)
-    else:
-      cPtr = ncInit(addr cOpts, file)
-    if cPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
-    ncApiObj = T(cPtr: cPtr)
-    if not ncPtr.exchange(cast[pointer](ncApiObj.cPtr)).isNil:
-      raise (ref ApiDefect)(msg: $AlreadyInitialized)
-    if addExitProc:
-      when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-        {.warning[BareExcept]: off.}
-      try:
-        T.addExitProc
-      except Exception as e:
-        var msg = $AddExitProcFailed
-        if e.msg != "":
-          msg = msg & " with message \"" & e.msg & "\""
-        raise (ref ApiDefect)(msg: msg)
-      when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-        {.warning[BareExcept]: on.}
-    ncStopped.store(false)
-    ncApiObj
-
-proc init*(T: type NotcursesDirect, options = DirectOptions.init, file = stdout,
-    addExitProc = true): T =
-  if not ncPtr.load.isNil:
-    raise (ref ApiDefect)(msg: $AlreadyInitialized)
-  else:
-    var cPtr: ptr abi.ncdirect
-    var termtype: cstring
-    if options.term != "": termtype = options.term.cstring
-    when (NimMajor, NimMinor, NimPatch) < (1, 6, 0):
-      try:
-        cPtr = ncdInit(termtype, file, options.flags)
-      except Exception:
-        raise (ref ApiDefect)(msg: $FailedToInitialize)
-    else:
-      cPtr = ncdInit(termtype, file, options.flags)
-    if cPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
-    ncdApiObj = T(cPtr: cPtr)
-    if not ncPtr.exchange(cast[pointer](ncdApiObj.cPtr)).isNil:
-      raise (ref ApiDefect)(msg: $AlreadyInitialized)
-    if addExitProc:
-      when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-        {.warning[BareExcept]: off.}
-      try:
-        T.addExitProc
-      except Exception as e:
-        var msg = $AddExitProcFailed
-        if e.msg != "":
-          msg = msg & " with message \"" & e.msg & "\""
-        raise (ref ApiDefect)(msg: msg)
-      when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-        {.warning[BareExcept]: on.}
-    ncStopped.store(false)
-    ncdApiObj
+macro defineNcdInit(T: untyped, ncdInit: untyped): untyped =
+  quote do:
+    proc init*(T: type `T`, options = DirectOptions.init, file = stdout,
+        addExitProc = true): `T` =
+      if not ncPtr.load.isNil:
+        raise (ref ApiDefect)(msg: $AlreadyInitialized)
+      else:
+        var cPtr: ptr abi.ncdirect
+        var termtype: cstring
+        if options.term != "": termtype = options.term.cstring
+        when (NimMajor, NimMinor, NimPatch) < (1, 6, 0):
+          try:
+            cPtr = `ncdInit`(termtype, file, options.flags)
+          except Exception:
+            raise (ref ApiDefect)(msg: $FailedToInitialize)
+        else:
+          cPtr = `ncdInit`(termtype, file, options.flags)
+        if cPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
+        ncdApiObj = `T`(cPtr: cPtr)
+        if not ncPtr.exchange(cast[pointer](ncdApiObj.cPtr)).isNil:
+          raise (ref ApiDefect)(msg: $AlreadyInitialized)
+        if addExitProc:
+          when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+            {.warning[BareExcept]: off.}
+          try:
+            `T`.addExitProc
+          except Exception as e:
+            var msg = $AddExitProcFailed
+            if e.msg != "":
+              msg = msg & " with message \"" & e.msg & "\""
+            raise (ref ApiDefect)(msg: msg)
+          when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+            {.warning[BareExcept]: on.}
+        ncStopped.store(false)
+        ncdApiObj
 
 func supportedStyles*(ncd: NotcursesDirect): uint16 =
   ncd.cPtr.ncdirect_supported_styles
