@@ -202,7 +202,7 @@ nim-notcurses follows the [version number](https://github.com/dankamongmen/notcu
 * currently [`v3.TBD`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/TBD) (upstream: [`v3.TBD`](https://github.com/dankamongmen/notcurses/releases/tag/TBD))
 * beginning with [`v2.3.13`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/v2.3.13) (upstream: [`v2.3.13`](https://github.com/dankamongmen/notcurses/releases/tag/v2.3.13)).
 
-:bulb: It's recommended to only use version `>= 3.TBD` of *this package* because earlier versions of nim-notcurses were too raw and unproven.
+:bulb: It's recommended to only use versions `>= 3.TBD` of *this package* because earlier versions of nim-notcurses were too raw and unproven.
 
 Starting with [`v3.TBD`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/TBD) the implementation of nim-notcurses was overhauled, with Notcurses' examples and demo ported to the Nim API and tested to compile and run correctly on various platforms.
 
