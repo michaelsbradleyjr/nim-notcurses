@@ -1,9 +1,12 @@
 var
-  ncPtr: Atomic[pointer]
+  ncPtr: Atomic[ptr notcurses]
+  ncdPtr: Atomic[ptr ncdirect]
   ncApiObj {.threadvar.}: Notcurses
   ncdApiObj {.threadvar.}: NotcursesDirect
   ncExitProcAdded: Atomic[bool]
+  ncdExitProcAdded: Atomic[bool]
   ncStopped: Atomic[bool]
+  ncdStopped: Atomic[bool]
 
 func fmtPoint(point: uint32): string =
   let hex = point.uint64.toHex.strip(
@@ -60,28 +63,24 @@ proc expect*[T: ApiSuccess | bool, E: ApiError](res: Result[T, E],
 proc expect*[E: ApiError](res: Result[void, E], m = $FailureNotExpected) =
   results.expect(res, m)
 
-# use template/macro for `proc get` when breaking up api layer into
-# included-modules to reduce source code duplication
-
 proc get*(T: type Notcurses): T =
   let cPtr = ncPtr.load
   if cPtr.isNil:
     raise (ref ApiDefect)(msg: $NotInitialized)
   elif ncApiObj.cPtr.isNil or ncApiObj.cPtr != cPtr:
-    ncApiObj = T(cPtr: cast[ptr abi.notcurses](cPtr))
+    ncApiObj = T(cPtr: cPtr)
   ncApiObj
 
 proc get*(T: type NotcursesDirect): T =
-  let cPtr = ncPtr.load
+  let cPtr = ncdPtr.load
   if cPtr.isNil:
     raise (ref ApiDefect)(msg: $NotInitialized)
   elif ncdApiObj.cPtr.isNil or ncdApiObj.cPtr != cPtr:
-    ncdApiObj = T(cPtr: cast[ptr abi.ncdirect](cPtr))
+    ncdApiObj = T(cPtr: cPtr)
   ncdApiObj
 
 # for `notcurses_get`, etc. (i.e. abi calls that return 0'u32 on timeout), use
 # Option none for timeout and Option some Codepoint otherwise
-
 proc getBlocking*(nc: Notcurses, input: var Input) =
   discard nc.cPtr.notcurses_get_blocking(addr input.cObj)
 
@@ -229,9 +228,6 @@ proc stdPlane*(nc: Notcurses): Plane =
   let cPtr = nc.cPtr.notcurses_stdplane
   Plane(cPtr: cPtr)
 
-# use template/macro for `proc stop` when breaking up api layer into
-# included-modules to reduce source code duplication
-
 proc stop*(nc: Notcurses) =
   if ncStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
   let code = nc.cPtr.notcurses_stop
@@ -244,34 +240,31 @@ proc stop*(nc: Notcurses) =
     ncApiObj = Notcurses()
 
 proc stop*(ncd: NotcursesDirect) =
-  if ncStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
+  if ncdStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
   let code = ncd.cPtr.ncdirect_stop
   if code < 0:
     raise (ref ApiDefect)(msg: $FailedToStop)
-  elif ncStopped.exchange(true):
+  elif ncdStopped.exchange(true):
     raise (ref ApiDefect)(msg: $AlreadyStopped)
   else:
-    ncPtr.store(nil)
+    ncdPtr.store(nil)
     ncdApiObj = NotcursesDirect()
 
 proc stopNotcurses() {.noconv.} = Notcurses.get.stop
 
 proc stopNotcursesDirect() {.noconv.} = NotcursesDirect.get.stop
 
-# use template/macro for `template addExitProc` when breaking up api layer into
-# included-modules to reduce source code duplication
-
 when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
   import std/exitprocs
   template addExitProc*(T: type Notcurses) =
     if not ncExitProcAdded.exchange(true): addExitProc stopNotcurses
   template addExitProc*(T: type NotcursesDirect) =
-    if not ncExitProcAdded.exchange(true): addExitProc stopNotcursesDirect
+    if not ncdExitProcAdded.exchange(true): addExitProc stopNotcursesDirect
 else:
   template addExitProc*(T: type Notcurses) =
     if not ncExitProcAdded.exchange(true): addQuitProc stopNotcurses
   template addExitProc*(T: type NotcursesDirect) =
-    if not ncExitProcAdded.exchange(true): addQuitProc stopNotcursesDirect
+    if not ncdExitProcAdded.exchange(true): addQuitProc stopNotcursesDirect
 
 macro defineNcInit(T: untyped, ncInit: untyped): untyped =
   quote do:
@@ -291,8 +284,9 @@ macro defineNcInit(T: untyped, ncInit: untyped): untyped =
           cPtr = `ncInit`(addr cOpts, file)
         if cPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
         ncApiObj = `T`(cPtr: cPtr)
-        if not ncPtr.exchange(cast[pointer](ncApiObj.cPtr)).isNil:
+        if not ncPtr.exchange(ncApiObj.cPtr).isNil:
           raise (ref ApiDefect)(msg: $AlreadyInitialized)
+        ncStopped.store(false)
         if addExitProc:
           when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
             {.warning[BareExcept]: off.}
@@ -305,14 +299,13 @@ macro defineNcInit(T: untyped, ncInit: untyped): untyped =
             raise (ref ApiDefect)(msg: msg)
           when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
             {.warning[BareExcept]: on.}
-        ncStopped.store(false)
         ncApiObj
 
 macro defineNcdInit(T: untyped, ncdInit: untyped): untyped =
   quote do:
     proc init*(T: type `T`, options = DirectOptions.init, file = stdout,
         addExitProc = true): `T` =
-      if not ncPtr.load.isNil:
+      if not ncdPtr.load.isNil:
         raise (ref ApiDefect)(msg: $AlreadyInitialized)
       else:
         var cPtr: ptr abi.ncdirect
@@ -327,8 +320,9 @@ macro defineNcdInit(T: untyped, ncdInit: untyped): untyped =
           cPtr = `ncdInit`(termtype, file, options.flags)
         if cPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
         ncdApiObj = `T`(cPtr: cPtr)
-        if not ncPtr.exchange(cast[pointer](ncdApiObj.cPtr)).isNil:
+        if not ncdPtr.exchange(ncdApiObj.cPtr).isNil:
           raise (ref ApiDefect)(msg: $AlreadyInitialized)
+        ncdStopped.store(false)
         if addExitProc:
           when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
             {.warning[BareExcept]: off.}
@@ -341,7 +335,6 @@ macro defineNcdInit(T: untyped, ncdInit: untyped): untyped =
             raise (ref ApiDefect)(msg: msg)
           when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
             {.warning[BareExcept]: on.}
-        ncStopped.store(false)
         ncdApiObj
 
 func supportedStyles*(ncd: NotcursesDirect): uint16 =
@@ -357,7 +350,8 @@ func toBytes(buf: array[5, char]): seq[byte] =
   bytes
 
 func bytes(input: Input, skipHigh: bool): Option[seq[byte]] =
-  # assumption: `input.cObj.utf8` contains 1-4 bytes of a valid UTF-8 encoding
+  # assumption: if `input.codepoint` is valid UCS32 then `input.cObj.utf8`
+  # contains 1-4 bytes of a valid UTF-8 encoding
   if skipHigh or (input.codepoint.uint32 <= HighUcs32.uint32):
     some input.cObj.utf8.toBytes
   else:
@@ -385,9 +379,9 @@ func toUtf8*(codepoint: Codepoint | Ucs32): Option[string] =
   else: none()
 
 func utf8*(input: Input): Option[string] =
-  # assumption: if input's codepoint is valid UCS32 then it has a valid encoding
-  let c = input.codepoint.uint32
-  if c <= HighUcs32.uint32:
+  # assumption: if `input.codepoint` is valid UCS32 then `input.bytes` contains
+  # 1-4 bytes of a valid UTF-8 encoding
+  if input.codepoint.uint32 <= HighUcs32.uint32:
     some string.fromBytes(input.bytes(true).get)
   else:
     none[string]()
