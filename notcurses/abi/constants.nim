@@ -3,6 +3,11 @@
 
 # this module uses extra whitespace so it can be visually scanned more easily
 
+when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
+  {.push raises: [].}
+else:
+  {.push raises: [Defect].}
+
 import std/[macros, posix, strutils, terminal]
 import pkg/stew/endians2
 
@@ -14,7 +19,7 @@ const
   wchar_header = "<wchar.h>"
   wchar_t = "wchar_t"
 
-# wchar_t is implementation-defined so use of that type as defined below may
+# wchar_t is implementation-defined so use of that type as specified below may
 # produce incorrect results on some platforms
 when defined(windows):
   # https://learn.microsoft.com/en-us/windows/win32/midl/wchar-t
