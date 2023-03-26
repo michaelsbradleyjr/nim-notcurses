@@ -1,0 +1,260 @@
+name: Builds
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    env:
+      COLORTERM: 24bit
+      LANG: en_US.UTF-8
+      NPROC: 2
+      TERM: xterm-256color
+    strategy:
+      fail-fast: false
+      matrix:
+        cache_marker: [ 34 ]
+        platform:
+          - {
+            icon: 🐧,
+            label: Linux,
+            os: ubuntu,
+            shell: bash --noprofile --norc -eo pipefail
+          }
+          - {
+            icon: 🍎,
+            label: macOS,
+            os: macos,
+            shell: bash --noprofile --norc -eo pipefail
+          }
+          - {
+            icon: 🏁,
+            label: Windows,
+            os: windows,
+            shell: msys2
+          }
+        nim_version: [ version-1-2, version-1-6, version-2-0 ]
+    name: ${{ matrix.platform.icon }} ${{ matrix.platform.label }} - Nim ${{ matrix.nim_version }}
+    runs-on: ${{ matrix.platform.os }}-latest
+    defaults:
+      run:
+        shell: ${{ matrix.platform.shell }} {0}
+
+    steps:
+      - name: Install tools and libraries via APT (Linux)
+        if: matrix.platform.os == 'ubuntu'
+        run: |
+          sudo apt-fast update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-fast install --no-install-recommends -yq \
+            ffmpeg \
+            libavcodec-dev \
+            libavformat-dev \
+            libdeflate-dev \
+            libswscale-dev \
+            libunistring-dev
+
+      - name: Install tools and libraries via Homebrew (macOS)
+        if: matrix.platform.os == 'macos'
+        run: |
+          brew install \
+            coreutils \
+            ffmpeg \
+            findutils \
+            libdeflate \
+            libunistring \
+            ncurses \
+            pkg-config
+
+      - name: Install tools and libraries via MSYS2 (Windows)
+        if: matrix.platform.os == 'windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          install: >
+            base-devel
+            git
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-ffmpeg
+            mingw-w64-ucrt-x86_64-libdeflate
+            mingw-w64-ucrt-x86_64-libunistring
+            mingw-w64-ucrt-x86_64-toolchain
+
+      - name: Checkout nim-notcurses sources
+        uses: actions/checkout@v3
+
+      - name: Calculate cache key components
+        id: cache-key
+        run: |
+          export CHOOSENIM_VERSION=$(curl -sSfL https://nim-lang.org/choosenim/stable)
+          export NOTCURSES_VERSION=$(cat .notcurses_version)
+          echo "choosenim_version=${CHOOSENIM_VERSION}" >> ${GITHUB_OUTPUT}
+          echo "notcurses_version=${NOTCURSES_VERSION}" >> ${GITHUB_OUTPUT}
+          tmpdir="$(mktemp -d)" && cd "${tmpdir}"
+          clone1b () {
+            echo "$1_commit=$( \
+              git clone --depth 1 $2 $1 \
+                        --branch $3 2>/dev/null && \
+              cd $1 && git rev-parse HEAD \
+              | cut -c1-7)" >> ${GITHUB_OUTPUT}
+          }
+          clone1b choosenim \
+                  https://github.com/dom96/choosenim.git \
+                  v${CHOOSENIM_VERSION}
+          clone1b nim \
+                  https://github.com/nim-lang/Nim.git \
+                  ${{ matrix.nim_version }}
+          clone1b notcurses \
+                  https://github.com/dankamongmen/notcurses.git \
+                  v${NOTCURSES_VERSION}
+          if [[ ${{ matrix.platform.os }} = windows ]]; then
+            echo "bash_env=$(cygpath -m "${HOME}")/.bash_env" >> ${GITHUB_OUTPUT}
+            echo "choosenim=$(cygpath -m "${USERPROFILE}")/.choosenim" >> ${GITHUB_OUTPUT}
+            echo "nimble=$(cygpath -m "${HOME}")/.nimble" >> ${GITHUB_OUTPUT}
+            echo "notcurses=$(cygpath -m "${HOME}")/repos/notcurses" >> ${GITHUB_OUTPUT}
+          else
+            echo "bash_env=${HOME}/.bash_env" >> ${GITHUB_OUTPUT}
+            echo "choosenim=${HOME}/.choosenim" >> ${GITHUB_OUTPUT}
+            echo "nimble=${HOME}/.nimble" >> ${GITHUB_OUTPUT}
+            echo "notcurses=${HOME}/repos/notcurses" >> ${GITHUB_OUTPUT}
+          fi
+
+      - name: Restore artifacts from cache
+        id: artifacts-cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ steps.cache-key.outputs.bash_env }}
+            ${{ steps.cache-key.outputs.choosenim }}
+            ${{ steps.cache-key.outputs.nimble }}/bin
+            ${{ steps.cache-key.outputs.notcurses }}
+          key: "${{ matrix.platform.os }}\
+                +choosenim_version:${{ steps.cache-key.outputs.choosenim_version }}\
+                +choosenim_commit:${{ steps.cache-key.outputs.choosenim_commit }}\
+                +nim:${{ matrix.nim_version }}\
+                +nim_commit:${{ steps.cache-key.outputs.nim_commit }}\
+                +notcurses_version:${{ steps.cache-key.outputs.notcurses_version }}\
+                +notcurses_commit:${{ steps.cache-key.outputs.notcurses_commit }}\
+                +cache_marker:${{ matrix.cache_marker }}"
+
+      - name: Checkout Notcurses sources and compile
+        if: steps.artifacts-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p "${HOME}/repos" && cd "${HOME}/repos"
+          git clone --depth 1 https://github.com/dankamongmen/notcurses.git \
+                    --branch v${{ steps.cache-key.outputs.notcurses_version }}
+          cd notcurses
+          mkdir build && cd build
+          if [[ ${{ matrix.platform.os }} = windows ]]; then
+            cmake .. -G"MSYS Makefiles" \
+                     -DCMAKE_BUILD_TYPE=Release \
+                     -DUSE_DOCTEST=off \
+                     -DUSE_PANDOC=off
+          elif [[ ${{ matrix.platform.os }} = macos ]]; then
+            cmake .. -DCMAKE_BUILD_TYPE=Release \
+                     -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
+                     -DUSE_DOCTEST=off \
+                     -DUSE_PANDOC=off
+          else
+            cmake .. -DCMAKE_BUILD_TYPE=Release \
+                     -DUSE_DOCTEST=off \
+                     -DUSE_PANDOC=off
+          fi
+          make -j${NPROC}
+
+      - name: Install Notcurses
+        run: |
+          cd "${HOME}/repos/notcurses/build"
+          if [[ ${{ matrix.platform.os }} != windows ]]; then
+            if [[ ${{ matrix.platform.os }} = macos ]]; then
+              make install
+            else
+              sudo make install
+              sudo ldconfig
+            fi
+          else
+            cp -R ../include/notcurses /ucrt64/include
+            cp -R ../include/ncpp /ucrt64/include
+            cp *.dll /ucrt64/bin
+            cp *.dll.a /ucrt64/lib
+          fi
+
+      - name: Install choosenim and Nim
+        if: steps.artifacts-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p "${HOME}/Downloads" && cd "${HOME}/Downloads"
+          curl -sSf -O https://nim-lang.org/choosenim/init.sh
+          chmod +x init.sh
+          if [[ ${{ matrix.platform.os }} = windows ]]; then
+            mkdir -p "$(cygpath "${USERPROFILE}")/.nimble/bin"
+          fi
+          CHOOSENIM_CHOOSE_VERSION=\#${{ matrix.nim_version }} \
+          CHOOSENIM_NO_ANALYTICS=1 \
+          ./init.sh -y
+          if [[ ${{ matrix.platform.os }} = windows ]]; then
+            mv "$(cygpath "${USERPROFILE}")/.nimble" "${HOME}/"
+          fi
+          echo 'export NIMBLE_DIR="${HOME}/.nimble"' >> "${HOME}/.bash_env"
+          echo 'export PATH="${NIMBLE_DIR}/bin:${PATH}"' >> "${HOME}/.bash_env"
+
+      # maybe can be reworked (along with caching logic) re: Nimble
+      # corresponding to Nim v2, with conditional logic for older Nim/Nimble
+      - name: Install project dependencies per Nimble
+        run: |
+          # delete broken symlinks, which can arise because e.g. the cache
+          # restored a symlink that points to an executable within
+          # ../pkgs/foo-1.2.3/ but the project's .nimble file has been updated
+          # to install foo-#head. In the case of a broken symlink, Nimble's
+          # auto-overwrite fails (only sometimes? only on macOS?)
+          cd "${NIMBLE_DIR}/bin"
+          if [[ ${{ matrix.platform.os }} = macos ]]; then
+            gfind . -xtype l -delete
+          else
+            find . -xtype l -delete
+          fi
+          cd -
+          source "${HOME}/.bash_env"
+          nimble --accept install --depsOnly
+
+      # Nim's version-2-0 branch still sets package search path to pkgs instead
+      # of pkgs2 when NIMBLE_DIR environment variable is set
+      # https://github.com/nim-lang/nimble/issues/1061
+      # https://github.com/nim-lang/Nim/blob/version-2-0/compiler/commands.nim#L613
+      # it's harmless to set an additional --nimblePath that isn't relevant
+      # (doesn't exist) for a particular version of Nim/Nimble
+      - name: Build examples
+        run: |
+          source "${HOME}/.bash_env"
+          declare -a modules=(
+            cjkscroll
+            cli1
+            cli2
+            direct1
+            direct_sgr
+            gradients
+            multiselect
+            tui1
+            zalgo
+          )
+          for module in ${modules[@]}; do
+            nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/${module}.nim
+          done
+          if [[ ${{ matrix.platform.os }} = macos ]]; then
+            gfind examples/ -maxdepth 1 -type f | grep -v '\..*$' | xargs ls -ladh
+          elif [[ ${{ matrix.platform.os }} = ubuntu ]]; then
+            find examples/ -maxdepth 1 -type f | grep -v '\..*$' | xargs ls -ladh
+          else
+            ls -ladh examples/*.exe
+          fi
+
+      # Notcurses is currently not able to access Windows ConPTY in GitHub Actions
+      - name: Build and run tests (Linux, macOS)
+        if: matrix.platform.os != 'windows'
+        run: |
+          source "${HOME}/.bash_env"
+          nimble test
