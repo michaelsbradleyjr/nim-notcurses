@@ -22,26 +22,13 @@ type
 
   ApiError* = object of CatchableError
 
-  ApiError0* = object of ApiError
-    code*: range[low(int32)..0'i32]
-
-  ApiErrorNeg* = object of ApiError
-    code*: range[low(int32)..(-1'i32)]
-
-  # take care that `code != 0` to avoid confusion re: name of this type
-  ApiErrorNot0* = object of ApiError
+  ApiErrorCode* = object of ApiError
     code*: int32
 
   ApiSuccess* = object of RootObj
 
-  ApiSuccess0* = object of ApiSuccess
-    code*: range[0'i32..high(int32)]
-
-  ApiSuccessOnly0* = object of ApiSuccess
-    code*: range[0'i32..0'i32]
-
-  ApiSuccessPos* = object of ApiSuccess
-    code*: range[1'i32..high(int32)]
+  ApiSuccessCode* = object of ApiSuccess
+    code*: int32
 
   Channel* = distinct uint32
 

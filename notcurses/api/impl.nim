@@ -14,7 +14,7 @@ func fmtPoint(point: uint32): string =
   try:
     fmt"{hex:0>4}"
   except ValueError as e:
-    raise (ref Defect)(msg: e.msg)
+    raise (ref ApiDefect)(msg: e.msg)
 
 func `$`*(codepoint: Codepoint): string =
   let
@@ -88,25 +88,25 @@ func getScrolling*(plane: Plane): bool = plane.cPtr.ncplane_scrolling_p
 
 proc gradient*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
     lr: ChannelPair, egc = "", styles: varargs[Styles]):
-    Result[ApiSuccess0, ApiErrorNeg] =
+    Result[ApiSuccessCode, ApiErrorCode] =
   var stylebits = 0'u32
   for s in styles[0..^1]:
     stylebits = bitor(stylebits, s.uint32)
   let code = plane.cPtr.ncplane_gradient(y, x, ylen, xlen, egc.cstring,
     stylebits.uint16, ul.uint64, ur.uint64, ll.uint64, lr.uint64)
   if code < 0:
-    err ApiErrorNeg(code: code, msg: $Grad)
+    err ApiErrorCode(code: code, msg: $Grad)
   else:
-    ok ApiSuccess0(code: code)
+    ok ApiSuccessCode(code: code)
 
 proc gradient2x1*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
-    lr: Channel): Result[ApiSuccess0, ApiErrorNeg] =
+    lr: Channel): Result[ApiSuccessCode, ApiErrorCode] =
   let code = plane.cPtr.ncplane_gradient2x1(y, x, ylen, xlen, ul.uint32,
     ur.uint32, ll.uint32, lr.uint32)
   if code < 0:
-    err ApiErrorNeg(code: code, msg: $Grad2x1)
+    err ApiErrorCode(code: code, msg: $Grad2x1)
   else:
-    ok ApiSuccess0(code: code)
+    ok ApiSuccessCode(code: code)
 
 func init*(T: type Channel, r, g, b: uint32): T =
   NCCHANNEL_INITIALIZER(r, g, b).T
@@ -148,60 +148,54 @@ func key*(input: Input): Option[Keys] =
   if codepoint.uint32 in AllKeys: some cast[Keys](codepoint)
   else: none[Keys]()
 
-proc putStr*(plane: Plane, s: string): Result[ApiSuccessPos, ApiError0] =
+proc putStr*(plane: Plane, s: string): Result[ApiSuccessCode, ApiErrorCode] =
   let code = plane.cPtr.ncplane_putstr s.cstring
   if code <= 0:
-    err ApiError0(code: code, msg: $PutStr)
+    err ApiErrorCode(code: code, msg: $PutStr)
   else:
-    ok ApiSuccessPos(code: code)
+    ok ApiSuccessCode(code: code)
 
 proc putStr*(ncd: NotcursesDirect, s: string, channel = 0.Channel):
-    Result[ApiSuccess0, ApiErrorNeg] =
+    Result[ApiSuccessCode, ApiErrorCode] =
   let code = ncd.cPtr.ncdirect_putstr(channel.uint64, s.cstring)
   if code < 0:
-    err ApiErrorNeg(code: code, msg: $DirectPutStr)
+    err ApiErrorCode(code: code, msg: $DirectPutStr)
   else:
-    ok ApiSuccess0(code: code)
+    ok ApiSuccessCode(code: code)
 
 proc putStrAligned*(plane: Plane, s: string, alignment: Align, y = -1'i32):
-    Result[ApiSuccessPos, ApiError0] =
+    Result[ApiSuccessCode, ApiErrorCode] =
   let code = plane.cPtr.ncplane_putstr_aligned(y, cast[ncalign_e](alignment),
     s.cstring)
   if code <= 0:
-    err ApiError0(code: code, msg: $PutStrYx)
+    err ApiErrorCode(code: code, msg: $PutStrYx)
   else:
-    ok ApiSuccessPos(code: code)
+    ok ApiSuccessCode(code: code)
 
 proc putStrYx*(plane: Plane, s: string, y, x = -1'i32):
-    Result[ApiSuccessPos, ApiError0] =
+    Result[ApiSuccessCode, ApiErrorCode] =
   let code = plane.cPtr.ncplane_putstr_yx(y, x, s.cstring)
   if code <= 0:
-    err ApiError0(code: code, msg: $PutStrYx)
+    err ApiErrorCode(code: code, msg: $PutStrYx)
   else:
-    ok ApiSuccessPos(code: code)
+    ok ApiSuccessCode(code: code)
 
-proc putWc*(plane: Plane, wc: Wchar): Result[ApiSuccess0, ApiErrorNeg] =
+proc putWc*(plane: Plane, wc: Wchar): Result[ApiSuccessCode, ApiErrorCode] =
   let code = plane.cPtr.ncplane_putwc wc
   if code < 0:
-    err ApiErrorNeg(code: code, msg: $PutWc)
+    err ApiErrorCode(code: code, msg: $PutWc)
   else:
-    ok ApiSuccess0(code: code)
+    ok ApiSuccessCode(code: code)
 
-proc render*(nc: Notcurses): Result[void, ApiErrorNeg] =
+proc render*(nc: Notcurses): Result[void, ApiErrorCode] =
   let code = nc.cPtr.notcurses_render
   if code < 0:
-    err ApiErrorNeg(code: code, msg: $Render)
+    err ApiErrorCode(code: code, msg: $Render)
   else:
     ok()
 
-proc setScrolling*(plane: Plane, enable: bool): Result[bool, ApiError] =
-  let
-    wasEnabled = plane.cPtr.ncplane_set_scrolling enable.uint32
-    isEnabled = plane.getScrolling
-  if isEnabled != enable:
-    err ApiError(msg: $SetScroll)
-  else:
-    ok wasEnabled
+proc setScrolling*(plane: Plane, enable: bool): bool =
+  plane.cPtr.ncplane_set_scrolling enable.uint32
 
 proc setStyles*(plane: Plane, styles: varargs[Styles]) =
   var stylebits = 0'u32
@@ -210,15 +204,15 @@ proc setStyles*(plane: Plane, styles: varargs[Styles]) =
   plane.cPtr.ncplane_set_styles stylebits
 
 proc setStyles*(ncd: NotcursesDirect, styles: varargs[Styles]):
-    Result[ApiSuccessOnly0, ApiErrorNot0] =
+    Result[ApiSuccessCode, ApiErrorCode] =
   var stylebits = 0'u32
   for s in styles[0..^1]:
     stylebits = bitor(stylebits, s.uint32)
   let code = ncd.cPtr.ncdirect_set_styles stylebits
   if code != 0:
-    err ApiErrorNot0(code: code, msg: $DirectSetStyles)
+    err ApiErrorCode(code: code, msg: $DirectSetStyles)
   else:
-    ok ApiSuccessOnly0(code: code)
+    ok ApiSuccessCode(code: code)
 
 proc stdDimYx*(nc: Notcurses, y, x: var uint32): Plane =
   let cPtr = nc.cPtr.notcurses_stddim_yx(addr y, addr x)
