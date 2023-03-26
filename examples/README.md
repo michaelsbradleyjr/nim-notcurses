@@ -12,7 +12,7 @@ Translating Notcurses' examples was not an end in itself; the process was iterat
 
 ## Summary
 
-*Differences* reflect how a `.nim` example behaves differently from its `.c` counterpart.
+*Differences*, if any, reflect how a `.nim` example behaves compared to its `.c` counterpart
 
 | Nim                                  | C                            | Differences                               |
 | ------------------------------------ | ---------------------------- | ----------------------------------------- |

@@ -1,16 +1,10 @@
 name: Builds
 
-# on:
-#   pull_request:
-#   push:
-#     branches:
-#       - master
-#   schedule:
-#     - cron: '0 0 * * *'
-#   workflow_dispatch:
-
 on:
+  pull_request:
   push:
+    branches:
+      - master
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:

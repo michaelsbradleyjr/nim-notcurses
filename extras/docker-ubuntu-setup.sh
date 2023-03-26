@@ -1,4 +1,4 @@
-# paste into shell prompt provided by `docker run -it --rm ubuntu`
+# paste into shell prompt provided by e.g. `docker run -it --rm ubuntu`
 # this script should be converted into a Dockerfile
 
 # when using emacs in the container, Docker's default binding for the detach
@@ -53,7 +53,6 @@ export PATH="${HOME}/.nimble/bin${PATH:+:${PATH}}"
 nimble --accept install nimlangserver
 git clone https://github.com/michaelsbradleyjr/nim-notcurses.git "${HOME}/repos/nim-notcurses"
 cd "${HOME}/repos/nim-notcurses"
-git switch version_3_revamp
 nimble --accept develop
 echo 'export LD_LIBRARY_PATH="${HOME}/repos/notcurses/build${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"' >> "${HOME}/.bashrc"
 export LD_LIBRARY_PATH="${HOME}/repos/notcurses/build${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"

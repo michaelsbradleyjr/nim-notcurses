@@ -2,9 +2,9 @@
 
 [![License: Apache](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![ABI: stable](https://img.shields.io/badge/ABI-stable-green.svg?color=2dbd42)](#stability)
+[![ABI: experimental](https://img.shields.io/badge/ABI-experimental-orange.svg)](#stability)
 [![API: experimental](https://img.shields.io/badge/API-experimental-orange.svg)](#stability)
-[![Builds (GitHub Actions)](https://github.com/michaelsbradleyjr/nim-notcurses/workflows/Builds/badge.svg?branch=version_3_revamp)](https://github.com/michaelsbradleyjr/nim-notcurses/actions?query=workflow%3ABuilds+branch%3Aversion_3_revamp)
+[![Builds (GitHub Actions)](https://github.com/michaelsbradleyjr/nim-notcurses/workflows/Builds/badge.svg?branch=master)](https://github.com/michaelsbradleyjr/nim-notcurses/actions?query=workflow%3ABuilds+branch%3Amaster)
 
 Nim wrapper for [Notcurses](https://github.com/dankamongmen/notcurses#readme): blingful TUIs and character graphics.
 
@@ -12,7 +12,9 @@ This package provides a Nim API and a low-level wrapper for Notcurses' raw C API
 
 ---
 
-:construction: [`version_3_revamp`](https://github.com/michaelsbradleyjr/nim-notcurses/tree/version_3_revamp) is a work in progress, its changes are not yet included in any tagged version. What follows includes forward-looking statements.
+:construction: changes in [`master`](https://github.com/michaelsbradleyjr/nim-notcurses/tree/master) since [`v3.0.9`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/v3.0.9) involve a complete overhaul of nim-notcurses and are not yet included in any tagged version.
+
+That overhaul is not complete, but in its current state is still more usable than previous versions. What follows includes forward-looking statements.
 
 ---
 
@@ -22,15 +24,15 @@ Check [requirements](#requirements), then add [`notcures`](https://nimble.direct
 
 <!--
 ```nim
-requires "notcurses >= 3.TBD & < 4.0.0"
+requires "notcurses >= 3.N.N & < 4.0.0"
 ```
 -->
 
 ```nim
-requires "notcurses#version_3_revamp"
+requires "notcurses#head"
 ```
 
-:construction: These instructions will be revised once changes in [`version_3_revamp`](https://github.com/michaelsbradleyjr/nim-notcurses/tree/version_3_revamp) are included in a tagged version.
+:construction: These instructions will be revised once changes in [`master`](https://github.com/michaelsbradleyjr/nim-notcurses/tree/master) are included in a tagged version.
 
 [choosenim](https://github.com/dom96/choosenim#readme) is a convenient way to install the Nim compiler and tools, if you don't have them installed already.
 
@@ -178,7 +180,7 @@ On Linux and Windows, drop the `-rpath` option.
 Support for Microsoft Windows is a bit anemic at present because [Windows Terminal](https://github.com/microsoft/terminal#readme) and Notcurses' support for it are works in progress.
 
 All of the examples can be built and run on Windows + [MSYS2](https://www.msys2.org/), but
-* Programs should be built in an MSYS2 shell and run in [Windows Terminal](https://github.com/microsoft/terminal#readme) in an MSYS2 shell; they will not run correctly in [Mintty](https://mintty.github.io/). It's easy to configure Windows Terminal to launch an MSYS2 shell, see [these instructions](https://www.msys2.org/docs/terminals/).
+* Programs should be built in an MSYS2 shell and run in [Windows Terminal](https://github.com/microsoft/terminal#readme) in an MSYS2 shell; they will not run in [Mintty](https://mintty.github.io/). It's easy to configure Windows Terminal to launch an MSYS2 shell, see [these instructions](https://www.msys2.org/docs/terminals/).
 * DLLs for Notcurses must be in your MSYS2 shell's path at runtime, e.g.<br />`export PATH="${HOME}/repos/notcurses/build:${PATH}"`
 * Windows' system locale needs to be set to [UTF-8](https://en.wikipedia.org/wiki/UTF-8):<br />*Language settings -> Administrative language settings -> Change system locale -> Beta: Use Unicode UTF-8 for worldwide language support*
 * Expect to encounter rendering bugs and for performance to be lackluster.
@@ -199,16 +201,22 @@ In the future, it may be desirable to split this project into two packages: `not
 ## Versioning
 
 nim-notcurses follows the [version number](https://github.com/dankamongmen/notcurses/releases) of Notcurses
-* currently [`v3.TBD`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/TBD) (upstream: [`v3.TBD`](https://github.com/dankamongmen/notcurses/releases/tag/TBD))
+* currently [`v3.0.9`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/v3.0.9) (upstream: [`v3.0.9`](https://github.com/dankamongmen/notcurses/releases/tag/v3.0.9))
 * beginning with [`v2.3.13`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/v2.3.13) (upstream: [`v2.3.13`](https://github.com/dankamongmen/notcurses/releases/tag/v2.3.13)).
 
-:bulb: It's recommended to only use versions `>= 3.TBD` of *this package* because earlier versions of nim-notcurses were too raw and unproven.
+:bulb: It's recommended to only use versions `> 3.0.9` of *nim-notcurses* because its earlier versions were too raw and unproven.
 
-Starting with [`v3.TBD`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/TBD) the implementation of nim-notcurses was overhauled, with Notcurses' examples and demo ported to the Nim API and tested to compile and run correctly on various platforms.
+:construction: At present, that means installing nim-notcurses per the latest commits on its [`master`](https://github.com/michaelsbradleyjr/nim-notcurses/tree/master) branch, cf. [installation](#installation). These instructions will be revised once changes in `master` are included in a tagged version.
+
+Following [`v3.0.9`](https://github.com/michaelsbradleyjr/nim-notcurses/releases/tag/v3.0.9) the implementation of nim-notcurses was overhauled, with Notcurses' examples and demo ported to the Nim API and tested to compile and run correctly on various platforms.
 
 ## Stability
 
-Notcurses' ABI is stable per major version, and this package's low-level wrapper is likewise stable as of version `>= 3.TBD`, cf. [versioning](#versioning).
+<!--
+Notcurses' ABI is stable per major version, and this package's low-level wrapper is likewise stable as of version `>= 3.N.N`, cf. [versioning](#versioning).
+-->
+
+Notcurses' ABI is stable per major version, and this package's low-level wrapper will likewise be stable once changes in `master` are included in a tagged version, cf. [versioning](#versioning).
 
 The Nim API (high-level wrapper) provided by this package is currently marked as experimental. Until it is marked as stable, it may be subject to breaking changes across patch and minor versions.
 
