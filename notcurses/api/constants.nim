@@ -25,10 +25,7 @@ type
   ApiErrorCode* = object of ApiError
     code*: int32
 
-  ApiSuccess* = object of RootObj
-
-  ApiSuccessCode* = object of ApiSuccess
-    code*: int32
+  ApiSuccess = int32
 
   Channel* = distinct uint32
 

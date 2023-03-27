@@ -56,7 +56,7 @@ proc dimYx*(plane: Plane): PlaneDimensions =
 
 func event*(input: Input): InputEvents = cast[InputEvents](input.cObj.evtype)
 
-proc expect*[T: ApiSuccess | bool, E: ApiError](res: Result[T, E],
+proc expect*[T: ApiSuccess, E: ApiError](res: Result[T, E],
     m = $FailureNotExpected): T {.discardable.} =
   results.expect(res, m)
 
@@ -88,7 +88,7 @@ func getScrolling*(plane: Plane): bool = plane.cPtr.ncplane_scrolling_p
 
 proc gradient*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
     lr: ChannelPair, egc = "", styles: varargs[Styles]):
-    Result[ApiSuccessCode, ApiErrorCode] =
+    Result[ApiSuccess, ApiErrorCode] =
   var stylebits = 0'u32
   for s in styles[0..^1]:
     stylebits = bitor(stylebits, s.uint32)
@@ -97,16 +97,16 @@ proc gradient*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
   if code < 0:
     err ApiErrorCode(code: code, msg: $Grad)
   else:
-    ok ApiSuccessCode(code: code)
+    ok code
 
 proc gradient2x1*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
-    lr: Channel): Result[ApiSuccessCode, ApiErrorCode] =
+    lr: Channel): Result[ApiSuccess, ApiErrorCode] =
   let code = plane.cPtr.ncplane_gradient2x1(y, x, ylen, xlen, ul.uint32,
     ur.uint32, ll.uint32, lr.uint32)
   if code < 0:
     err ApiErrorCode(code: code, msg: $Grad2x1)
   else:
-    ok ApiSuccessCode(code: code)
+    ok code
 
 func init*(T: type Channel, r, g, b: uint32): T =
   NCCHANNEL_INITIALIZER(r, g, b).T
@@ -148,44 +148,44 @@ func key*(input: Input): Option[Keys] =
   if codepoint.uint32 in AllKeys: some cast[Keys](codepoint)
   else: none[Keys]()
 
-proc putStr*(plane: Plane, s: string): Result[ApiSuccessCode, ApiErrorCode] =
+proc putStr*(plane: Plane, s: string): Result[ApiSuccess, ApiErrorCode] =
   let code = plane.cPtr.ncplane_putstr s.cstring
   if code <= 0:
     err ApiErrorCode(code: code, msg: $PutStr)
   else:
-    ok ApiSuccessCode(code: code)
+    ok code
 
 proc putStr*(ncd: NotcursesDirect, s: string, channel = 0.Channel):
-    Result[ApiSuccessCode, ApiErrorCode] =
+    Result[ApiSuccess, ApiErrorCode] =
   let code = ncd.cPtr.ncdirect_putstr(channel.uint64, s.cstring)
   if code < 0:
     err ApiErrorCode(code: code, msg: $DirectPutStr)
   else:
-    ok ApiSuccessCode(code: code)
+    ok code
 
 proc putStrAligned*(plane: Plane, s: string, alignment: Align, y = -1'i32):
-    Result[ApiSuccessCode, ApiErrorCode] =
+    Result[ApiSuccess, ApiErrorCode] =
   let code = plane.cPtr.ncplane_putstr_aligned(y, cast[ncalign_e](alignment),
     s.cstring)
   if code <= 0:
     err ApiErrorCode(code: code, msg: $PutStrYx)
   else:
-    ok ApiSuccessCode(code: code)
+    ok code
 
 proc putStrYx*(plane: Plane, s: string, y, x = -1'i32):
-    Result[ApiSuccessCode, ApiErrorCode] =
+    Result[ApiSuccess, ApiErrorCode] =
   let code = plane.cPtr.ncplane_putstr_yx(y, x, s.cstring)
   if code <= 0:
     err ApiErrorCode(code: code, msg: $PutStrYx)
   else:
-    ok ApiSuccessCode(code: code)
+    ok code
 
-proc putWc*(plane: Plane, wc: Wchar): Result[ApiSuccessCode, ApiErrorCode] =
+proc putWc*(plane: Plane, wc: Wchar): Result[ApiSuccess, ApiErrorCode] =
   let code = plane.cPtr.ncplane_putwc wc
   if code < 0:
     err ApiErrorCode(code: code, msg: $PutWc)
   else:
-    ok ApiSuccessCode(code: code)
+    ok code
 
 proc render*(nc: Notcurses): Result[void, ApiErrorCode] =
   let code = nc.cPtr.notcurses_render
@@ -204,7 +204,7 @@ proc setStyles*(plane: Plane, styles: varargs[Styles]) =
   plane.cPtr.ncplane_set_styles stylebits
 
 proc setStyles*(ncd: NotcursesDirect, styles: varargs[Styles]):
-    Result[ApiSuccessCode, ApiErrorCode] =
+    Result[ApiSuccess, ApiErrorCode] =
   var stylebits = 0'u32
   for s in styles[0..^1]:
     stylebits = bitor(stylebits, s.uint32)
@@ -212,7 +212,7 @@ proc setStyles*(ncd: NotcursesDirect, styles: varargs[Styles]):
   if code != 0:
     err ApiErrorCode(code: code, msg: $DirectSetStyles)
   else:
-    ok ApiSuccessCode(code: code)
+    ok code
 
 proc stdDimYx*(nc: Notcurses, y, x: var uint32): Plane =
   let cPtr = nc.cPtr.notcurses_stddim_yx(addr y, addr x)
