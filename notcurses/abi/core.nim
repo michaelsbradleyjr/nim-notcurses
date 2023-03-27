@@ -1,4 +1,4 @@
-{.passL:"-lnotcurses-core".}
+{.passL: "-lnotcurses-core".}
 
 include ./version
 include ./constants
