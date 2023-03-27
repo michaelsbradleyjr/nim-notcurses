@@ -8,10 +8,13 @@ suite "ABI tests":
     var
       (tmpf, tmpp) = createTempFile("", "")
       opts = notcurses_options(flags: flags)
+
+    echo ""
+    echo "tmpf path: " & tmpp
+    echo ""
+
     let nc = notcurses_init(addr opts, tmpf)
     if nc.isNil: raise (ref Defect)(msg: "Notcurses failed to initialize")
-
-    echo "tmpf path: " & tmpp
 
   teardown:
     let code = notcurses_stop nc

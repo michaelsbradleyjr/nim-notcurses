@@ -5,11 +5,14 @@ import notcurses
 suite "API tests":
   setup:
     var (tmpf, tmpp) = createTempFile("", "")
+
+    echo ""
+    echo "tmpf path: " & tmpp
+    echo ""
+
     let
       opts = [CliMode, DrainInput, SuppressBanners]
       nc = Nc.init(NcOptions.init opts, tmpf, false)
-
-    echo "tmpf path: " & tmpp
 
   teardown:
     nc.stop
