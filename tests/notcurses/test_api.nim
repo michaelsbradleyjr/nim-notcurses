@@ -1,16 +1,19 @@
+import std/tempfiles
 import pkg/unittest2
 import notcurses
 
 suite "API tests":
   setup:
-    var devNull = open("/dev/null", fmReadWrite)
+    var (tmpf, tmpp) = createTempFile("", "")
     let
       opts = [CliMode, DrainInput, SuppressBanners]
-      nc = Nc.init(NcOptions.init opts, devNull, false)
+      nc = Nc.init(NcOptions.init opts, tmpf, false)
+
+    echo "tmpf path: " & tmpp
 
   teardown:
     nc.stop
-    devNull.close
+    tmpf.close
 
   test "test 1":
     check: true
