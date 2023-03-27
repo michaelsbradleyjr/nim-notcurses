@@ -3,12 +3,14 @@ import notcurses
 
 suite "API tests":
   setup:
+    var devNull = open("/dev/null", fmReadWrite)
     let
       opts = [CliMode, DrainInput, SuppressBanners]
-      nc = Nc.init(NcOptions.init opts, addExitProc = false)
+      nc = Nc.init(NcOptions.init opts, devNull, false)
 
   teardown:
     nc.stop
+    devNull.close
 
   test "test 1":
     check: true

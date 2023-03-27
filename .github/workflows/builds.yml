@@ -253,8 +253,7 @@ jobs:
           fi
 
       # Notcurses is currently not able to access Windows ConPTY in GitHub Actions
-      - name: Build and run tests (Linux, macOS)
-        if: matrix.platform.os != 'windows'
+      - name: Build and run tests
         run: |
           source "${HOME}/.bash_env"
           nimble test
