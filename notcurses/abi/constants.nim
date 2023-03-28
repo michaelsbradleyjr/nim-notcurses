@@ -477,14 +477,41 @@ const nc_seqs_header = "notcurses/ncseqs.h"
 
 ########## experiment
 
+# adapted from: https://stackoverflow.com/a/148766
+# assumes that encoding of the multibyte string `s` is valid UTF-8; so it's
+# suitable for defining the wide string literals in notcurses/ncseqs.h with
+# Nim's `const` but not as a general purpose utility
+func toSeqW(s: string, l: int): seq[Wchar] =
+  when sizeof(Wchar) > 2:
+    var codepoint = 0'u32
+  else:
+    var codepoint = 0'u16
+  var
+    c = 0'u8
+    i = 0
+    ws: seq[Wchar]
+  while true:
+    if i == l:
+      ws.add 0.wchar
+      break
+    c = s[i].uint8
+    # dummy steps to check it can work at compile-time
+    ws.add c.wchar
+    inc i
+    # ^ dummy steps to check it can work at compile-time
+  ws
+
+# https://en.cppreference.com/w/c/language/string_literal
 macro L(s: static string): untyped =
-  func toArray(s: static string): array[`s`.len + 1, Wchar] =
-    var a: array[s.len + 1, Wchar]
-    for i, c in s:
-      a[i] = c.wchar
-    a[s.len] = 0.wchar
+  func toArrayW(s: static string): array[toSeqW(s, s.len).len, Wchar] =
+    const ws = toSeqW(s, s.len)
+    var wa: array[ws.len, Wchar]
+    for i, wc in ws:
+      wa[i] = wc
+    wa
+
   quote do:
-    `toArray` `s`
+    `toArrayW` `s`
 
 const
   NCBOXLIGHTW_l* = L"┌┐└┘─│"

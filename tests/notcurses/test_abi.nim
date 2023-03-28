@@ -41,6 +41,13 @@ suite "ABI tests (no init)":
     echo ""
 
     echo typeof(NCBOXLIGHTW_l)
+    echo ""
+    for wc in NCBOXLIGHTW_l:
+      when defined(windows):
+        echo wc.uint16
+      else:
+        echo wc.uint32
+    echo ""
     echo NCBOXLIGHTW_l.len
     echo ""
 
