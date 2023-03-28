@@ -478,12 +478,13 @@ const nc_seqs_header = "notcurses/ncseqs.h"
 ########## experiment
 
 macro L(s: static string): untyped =
+  func toArray(s: static string): array[`s`.len + 1, Wchar] =
+    var a: array[s.len + 1, Wchar]
+    for i, c in s:
+      a[i] = c.wchar
+    a[s.len] = 0.wchar
   quote do:
-    # const mbs = s.cstring
-    const l = 7
-    const ws: array[l, Wchar] = [1.wchar, 2.wchar, 3.wchar, 4.wchar,
-      5.wchar, 6.wchar, 0.wchar]
-    ws
+    `toArray` `s`
 
 const
   NCBOXLIGHTW_l* = L"┌┐└┘─│"

@@ -40,6 +40,10 @@ suite "ABI tests (no init)":
     echo i + 1
     echo ""
 
+    echo typeof(NCBOXLIGHTW_l)
+    echo NCBOXLIGHTW_l.len
+    echo ""
+
     for j in 0..i:
       check:
         when defined(windows):
