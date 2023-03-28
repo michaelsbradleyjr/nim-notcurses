@@ -24,10 +24,6 @@ func `==`(x, y: Wchar): bool = x.uint32 == y.uint32
 
 suite "ABI tests (no init)":
   test "compare wide strings":
-    # for i in 0..(NCBOXLIGHTW_a.len - 1):
-    #   check:
-    #     NCBOXLIGHTW_a[i].uint32 == NCBOXLIGHTW[][i].uint32
-
     echo ""
     echo sizeof(Wchar)
     echo ""
@@ -44,4 +40,9 @@ suite "ABI tests (no init)":
     echo i + 1
     echo ""
 
-    check: true
+    for j in 0..i:
+      check:
+        when defined(windows):
+          NCBOXLIGHTW_a[j].uint16 == NCBOXLIGHTW[][j].uint16
+        else:
+          NCBOXLIGHTW_a[j].uint32 == NCBOXLIGHTW[][j].uint32
