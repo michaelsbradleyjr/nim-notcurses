@@ -475,6 +475,24 @@ const nc_seqs_header = "notcurses/ncseqs.h"
 # would need to write tests that check that arrays returned by it are an exact
 # match for those obtained with importc
 
+########## experiment
+
+macro L(s: static string): untyped =
+  quote do:
+    # const mbs = s.cstring
+    const l = 7
+    const ws: array[l, Wchar] = [1.wchar, 2.wchar, 3.wchar, 4.wchar,
+      5.wchar, 6.wchar, 0.wchar]
+    ws
+
+const
+  NCBOXLIGHTW_l* = L"┌┐└┘─│"
+
+var
+  NCBOXLIGHTW_a* {.header: nc_seqs_header, importc: "NCBOXLIGHTW", nodecl.}: array[7, Wchar]
+
+#####################
+
 # can be `let` instead of `var` with recent enough releases of Nim 1.4+
 var
   # L9 - notcurses/ncseqs.h
