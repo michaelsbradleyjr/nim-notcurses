@@ -515,8 +515,8 @@ macro L(s: static string): untyped =
     func `toArrayW`(): array[`wsl`, Wchar] =
       var wa: array[`wsl`, Wchar]
       for i, wc in `ws`:
-        # feels a little weird... I'm guessing the distinct unsigned integer
-        # type (Wchar) is lost in macro-compile-time translation
+        # it seems the distinct unsigned integer type (Wchar) is lost in
+        # macro-compile-time translation
         wa[i] = wc.wchar
       wa
     `toArrayW`()
