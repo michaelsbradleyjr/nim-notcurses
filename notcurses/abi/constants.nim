@@ -461,9 +461,9 @@ const
   NCDIRECT_OPTION_VERY_VERBOSE*        = 0x0000000000000020'u64
 
 # adapted from: https://stackoverflow.com/a/148766
-# assumes encoding of multibyte string `s` is valid UTF-8; so it's suitable for
-# defining wide string literals in notcurses/ncseqs.h with Nim's `const` but
-# not as a general purpose utility
+# `func toSeqW` assumes encoding of multibyte string `s` is valid UTF-8, so
+# it's suitable for helping define wide string literals in notcurses/ncseqs.h
+# with const, but is not suitable as a general purpose utility
 func toSeqW(s: string, l: int): seq[Wchar] =
   when sizeof(Wchar) > 2:
     var codepoint = 0'u32
@@ -506,14 +506,21 @@ func toSeqW(s: string, l: int): seq[Wchar] =
 
 # https://en.cppreference.com/w/c/language/string_literal
 macro L(s: static string): untyped =
-  func toArrayW(s: static string): array[toSeqW(s, s.len).len, Wchar] =
-    const ws = toSeqW(s, s.len)
-    var wa: array[ws.len, Wchar]
-    for i, wc in ws:
-      wa[i] = wc
-    wa
+  let
+    toArrayW = genSym(nskProc, "toArrayW")
+    ws: seq[Wchar] = toSeqW(s, s.len)
+    wsl = ws.len
   quote do:
-    `toArrayW` `s`
+  # result = quote do:
+    func `toArrayW`(): array[`wsl`, Wchar] =
+      var wa: array[`wsl`, Wchar]
+      for i, wc in `ws`:
+        # feels a little weird... I'm guessing the distinct unsigned integer
+        # type (Wchar) is lost in macro-compile-time translation
+        wa[i] = wc.wchar
+      wa
+    `toArrayW`()
+  # debugEcho toStrLit(result)
 
 const
   # L9 - notcurses/ncseqs.h
