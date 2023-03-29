@@ -1,3 +1,4 @@
+import std/macros
 import pkg/unittest2
 import notcurses/abi
 import ./ncseqs
@@ -28,35 +29,88 @@ else:
 
 suite "ABI tests (no init)":
   test "compare wide strings from notcurses/ncseqs.h":
-    echo ""
-    echo sizeof(Wchar)
-    echo ""
-    var i = 0
-    while true:
-      when defined(windows):
-        let wc = NCBOXLIGHTW_impc[][i].uint16
-      else:
-        let wc = NCBOXLIGHTW_impc[][i].uint32
-      echo wc
-      if wc == 0: break
-      inc i
-    echo ""
-    echo i + 1
-    echo ""
-    echo typeof(NCBOXLIGHTW)
-    echo ""
-    for wc in NCBOXLIGHTW:
-      when defined(windows):
-        echo wc.uint16
-      else:
-        echo wc.uint32
-    echo ""
-    echo NCBOXLIGHTW.len
-    echo ""
+    macro compare(was: seq[string]): untyped =
+      # debugEcho treeRepr(was)
+      result = newStmtList()
+      for slit in was[1]:
+        # debugEcho ident(strVal(slit))
+        let wa = ident(strVal(slit))
+        # debugEcho ident(strVal(slit) & "_impc")
+        let wa_impc = ident(strVal(slit) & "_impc")
+        result.add quote do:
+          echo ""
+          for wc in `wa`:
+            when defined(windows):
+              echo wc.uint16
+            else:
+              echo wc.uint32
+          echo ""
+          echo `wa`.len
+          echo ""
+          var i = 0
+          while true:
+            when defined(windows):
+              let wc = `wa_impc`[][i].uint16
+            else:
+              let wc = `wa_impc`[][i].uint32
+            echo wc
+            if wc == 0: break
+            inc i
+          echo ""
+          echo i + 1
+          for j in 0..(`wa`.len - 1):
+            check:
+              when defined(windows):
+                `wa`[j].uint16 == `wa_impc`[][j].uint16
+              else:
+                `wa`[j].uint32 == `wa_impc`[][j].uint32
+      # debugEcho toStrLit(result)
 
-    for j in 0..i:
-      check:
-        when defined(windows):
-          NCBOXLIGHTW[j].uint16 == NCBOXLIGHTW_impc[][j].uint16
-        else:
-          NCBOXLIGHTW[j].uint32 == NCBOXLIGHTW_impc[][j].uint32
+    compare @[
+      "NCBOXLIGHTW",
+      "NCBOXHEAVYW",
+      "NCBOXROUNDW",
+      "NCBOXDOUBLEW",
+      "NCBOXASCIIW",
+      "NCBOXOUTERW",
+      "NCWHITESQUARESW",
+      "NCWHITECIRCLESW",
+      "NCCIRCULARARCSW",
+      "NCWHITETRIANGLESW",
+      "NCBLACKTRIANGLESW",
+      "NCSHADETRIANGLESW",
+      "NCBLACKARROWHEADSW",
+      "NCLIGHTARROWHEADSW",
+      "NCARROWDOUBLEW",
+      "NCARROWDASHEDW",
+      "NCARROWCIRCLEDW",
+      "NCARROWANTICLOCKW",
+      "NCBOXDRAWW",
+      "NCBOXDRAWHEAVYW",
+      "NCARROWW",
+      "NCDIAGONALSW",
+      "NCDIGITSSUPERW",
+      "NCDIGITSSUBW",
+      "NCASTERISKS5",
+      "NCASTERISKS6",
+      "NCASTERISKS8",
+      "NCANGLESBR",
+      "NCANGLESTR",
+      "NCANGLESBL",
+      "NCANGLESTL",
+      "NCEIGHTHSB",
+      "NCEIGHTHST",
+      "NCEIGHTHSL",
+      "NCEIGHTHSR",
+      "NCHALFBLOCKS",
+      "NCQUADBLOCKS",
+      "NCSEXBLOCKS",
+      "NCBRAILLEEGCS",
+      "NCSEGDIGITS",
+      "NCSUITSBLACK",
+      "NCSUITSWHITE",
+      "NCCHESSBLACK",
+      "NCCHESSWHITE",
+      "NCDICE",
+      "NCMUSICSYM"
+    ]
