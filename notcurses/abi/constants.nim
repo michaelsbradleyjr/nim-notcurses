@@ -528,7 +528,7 @@ const
   NCBOXHEAVYW*  = L"┏┓┗┛━┃"
   NCBOXROUNDW*  = L"╭╮╰╯─│"
   NCBOXDOUBLEW* = L"╔╗╚╝═║"
-  NCBOXASCIIW*  = L"/\\\\/-|"
+  NCBOXASCIIW*  = L("/\\\\/-|")
   NCBOXOUTERW*  = L"🭽🭾🭼🭿▁🭵🭶🭰"
 
   # L17 - notcurses/ncseqs.h
@@ -600,12 +600,12 @@ const
       "\u{0001fbf5}\u{0001fbf6}\u{0001fbf7}\u{0001fbf8}\u{0001fbf9}")
 
   # L79 - notcurses/ncseqs.h
-  NCSUITSBLACK* = L"\u2660\u2663\u2665\u2666" # ♠♣♥♦
-  NCSUITSWHITE* = L"\u2661\u2662\u2664\u2667" # ♡♢♤♧
-  NCCHESSBLACK* = L"\u265f\u265c\u265e\u265d\u265b\u265a" # ♟♜♞♝♛♚
-  NCCHESSWHITE* = L"\u265f\u265c\u265e\u265d\u265b\u265a" # ♙♖♘♗♕♔
-  NCDICE*       = L"\u2680\u2681\u2682\u2683\u2684\u2685" # ⚀⚁⚂⚃⚄⚅
-  NCMUSICSYM*   = L"\u2669\u266A\u266B\u266C\u266D\u266E\u266F" # ♩♪♫♬♭♮♯
+  NCSUITSBLACK* = L("\u2660\u2663\u2665\u2666") # ♠♣♥♦
+  NCSUITSWHITE* = L("\u2661\u2662\u2664\u2667") # ♡♢♤♧
+  NCCHESSBLACK* = L("\u265f\u265c\u265e\u265d\u265b\u265a") # ♟♜♞♝♛♚
+  NCCHESSWHITE* = L("\u265f\u265c\u265e\u265d\u265b\u265a") # ♙♖♘♗♕♔
+  NCDICE*       = L("\u2680\u2681\u2682\u2683\u2684\u2685") # ⚀⚁⚂⚃⚄⚅
+  NCMUSICSYM*   = L("\u2669\u266A\u266B\u266C\u266D\u266E\u266F") # ♩♪♫♬♭♮♯
 
   # L87 - notcurses/ncseqs.h
   NCBOXLIGHT*  = "┌┐└┘─│".cstring
