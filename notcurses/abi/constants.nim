@@ -506,12 +506,13 @@ func toSeqW(s: string, l: int): seq[Wchar] =
 
 # https://en.cppreference.com/w/c/language/string_literal
 macro L(s: static string): untyped =
+  # debugEcho s
+  result = newStmtList()
   let
     toArrayW = genSym(nskProc, "toArrayW")
     ws: seq[Wchar] = toSeqW(s, s.len)
     wsl = ws.len
-  quote do:
-  # result = quote do:
+  result.add quote do:
     func `toArrayW`(): array[`wsl`, Wchar] =
       var wa: array[`wsl`, Wchar]
       for i, wc in `ws`:
