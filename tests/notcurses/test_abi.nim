@@ -29,14 +29,18 @@ else:
 
 suite "ABI tests (no init)":
   test "compare wide strings from notcurses/ncseqs.h":
-    macro compare(was: seq[string]): untyped =
-      # debugEcho treeRepr(was)
+
+    # try importc'ing within the macro, and if that works can then get rid of
+    # ./ncseqs.nim
+
+    macro compare(was: static openArray[string]): untyped =
+      # debugEcho was
       result = newStmtList()
-      for slit in was[1]:
-        # debugEcho ident(strVal(slit))
-        let wa = ident(strVal(slit))
-        # debugEcho ident(strVal(slit) & "_impc")
-        let wa_impc = ident(strVal(slit) & "_impc")
+      for s in was:
+        # debugEcho ident s
+        let wa = ident s
+        # debugEcho ident(s & "_impc")
+        let wa_impc = ident(s & "_impc")
         result.add quote do:
           echo ""
           for wc in `wa`:
@@ -66,7 +70,7 @@ suite "ABI tests (no init)":
                 `wa`[j].uint32 == `wa_impc`[][j].uint32
       # debugEcho toStrLit(result)
 
-    compare @[
+    compare [
       "NCBOXLIGHTW",
       "NCBOXHEAVYW",
       "NCBOXROUNDW",
