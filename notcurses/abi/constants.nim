@@ -8,7 +8,7 @@ when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
 else:
   {.push raises: [Defect].}
 
-import std/[bitops, macros, posix, strutils, terminal]
+import std/[bitops, macros, posix, strutils, terminal, typetraits]
 import pkg/stew/endians2
 
 export Time, Timespec, toLE
@@ -461,10 +461,10 @@ const
   NCDIRECT_OPTION_VERY_VERBOSE*        = 0x0000000000000020'u64
 
 # adapted from: https://stackoverflow.com/a/148766
-# `func toSeqW` assumes encoding of multibyte string `s` is valid UTF-8, so
+# `func toSeqDbW` assumes encoding of multibyte string `s` is valid UTF-8, so
 # it's suitable for helping define wide string literals in notcurses/ncseqs.h
 # with const, but is not suitable as a general purpose utility
-func toSeqW(s: string, l: int): seq[Wchar] =
+func toSeqDbW(s: string, l: int): seq[distinctBase(Wchar)] =
 
   # on Windows + MSYS2 this is *sometimes* yielding an array that doesn't match
   # the array obtained with importc, so need to web search re: converting
@@ -473,17 +473,14 @@ func toSeqW(s: string, l: int): seq[Wchar] =
   # linux/macos as a help to figuring out what's going wrong with the
   # conversions for windows' 16-bit wchar_t
 
-  when sizeof(Wchar) > 2:
-    var codepoint = 0'u32
-  else:
-    var codepoint = 0'u16
   var
     c = 0'u8
+    codepoint: distinctBase(Wchar)
     i = 0
-    ws: seq[Wchar]
+    codes: seq[distinctBase(Wchar)]
   while true:
     if i == l:
-      ws.add 0.wchar
+      codes.add 0
       break
     c = s[i].uint8
     if c <= 0x7f:
@@ -504,13 +501,13 @@ func toSeqW(s: string, l: int): seq[Wchar] =
       ci = s[i].uint8
     if (bitand(ci, 0xc0) != 0x80) and (codepoint <= 0x10ffff):
       if sizeof(Wchar) > 2:
-        ws.add codepoint.wchar
+        codes.add codepoint
       elif codepoint > 0xffff:
-        ws.add (0xd800 + (codepoint shr 10)).wchar
-        ws.add (0xdc00 + bitand(codepoint, 0x03ff)).wchar
+        codes.add (0xd800 + (codepoint shr 10))
+        codes.add (0xdc00 + bitand(codepoint, 0x03ff))
       elif (codepoint < 0xd800) or (codepoint >= 0xe000):
-        ws.add codepoint.wchar
-  ws
+        codes.add codepoint
+  codes
 
 # https://en.cppreference.com/w/c/language/string_literal
 macro L(s: static string): untyped =
@@ -518,16 +515,14 @@ macro L(s: static string): untyped =
   result = newStmtList()
   let
     toArrayW = genSym(nskProc, "toArrayW")
-    ws: seq[Wchar] = toSeqW(s, s.len)
-    wsl = ws.len
+    codes = toSeqDbW(s, s.len)
+    l = codes.len
   result.add quote do:
-    func `toArrayW`(): array[`wsl`, Wchar] =
-      var wa: array[`wsl`, Wchar]
-      for i, wc in `ws`:
-        # it seems the distinct unsigned integer type (Wchar) is lost in
-        # macro-compile-time translation
-        wa[i] = wc.wchar
-      wa
+    func `toArrayW`(): array[`l`, Wchar] =
+      var a: array[`l`, Wchar]
+      for i, codepoint in `codes`:
+        a[i] = codepoint.wchar
+      a
     `toArrayW`()
   # debugEcho toStrLit(result)
 
