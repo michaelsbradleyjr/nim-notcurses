@@ -475,7 +475,7 @@ func toSeqDbW(s: string, l: int): seq[distinctBase(Wchar)] =
 
   var
     c = 0'u8
-    codepoint: distinctBase(Wchar)
+    codepoint: uint32
     i = 0
     codes: seq[distinctBase(Wchar)]
   while true:
@@ -500,13 +500,14 @@ func toSeqDbW(s: string, l: int): seq[distinctBase(Wchar)] =
     else:
       ci = s[i].uint8
     if (bitand(ci, 0xc0) != 0x80) and (codepoint <= 0x10ffff):
-      if sizeof(Wchar) > 2:
+      when sizeof(Wchar) > 2:
         codes.add codepoint
-      elif codepoint > 0xffff:
-        codes.add (0xd800 + (codepoint shr 10))
-        codes.add (0xdc00 + bitand(codepoint, 0x03ff))
-      elif (codepoint < 0xd800) or (codepoint >= 0xe000):
-        codes.add codepoint
+      else:
+        if codepoint > 0xffff:
+          codes.add (0xd800 + (codepoint shr 10)).uint16
+          codes.add (0xdc00 + bitand(codepoint, 0x03ff)).uint16
+        elif (codepoint < 0xd800) or (codepoint >= 0xe000):
+          codes.add codepoint.uint16
   codes
 
 # https://en.cppreference.com/w/c/language/string_literal

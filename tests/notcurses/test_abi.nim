@@ -94,12 +94,13 @@ proc `==`(x, y: Wchar): bool {.borrow.}
 macro compare(names: static openArray[string]): untyped =
   # debugEcho names
   result = newStmtList()
+  result.add quote do:
+    echo ""
   for name in names:
     let wa = ident name
     let wa_impc_aw = ident(name & "_impc_aw")
     let wa_impc_puaw = ident(name & "_impc_puaw")
     result.add quote do:
-      echo ""
       echo `name`
       echo ""
       for wc in `wa`:
@@ -124,6 +125,7 @@ macro compare(names: static openArray[string]): untyped =
         inc i
       echo ""
       echo i + 1
+      echo ""
       for j in 0..(`wa`.len - 1):
         check:
           `wa`.len == i + 1
