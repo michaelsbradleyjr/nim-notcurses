@@ -465,14 +465,6 @@ const
 # it's suitable for helping define wide string literals in notcurses/ncseqs.h
 # with const, but is not suitable as a general purpose utility
 func toSeqDbW(s: string, l: int): seq[distinctBase(Wchar)] =
-
-  # on Windows + MSYS2 this is *sometimes* yielding an array that doesn't match
-  # the array obtained with importc, so need to web search re: converting
-  # multibyte string to UTF-16 and compare with algo below, and double-check
-  # against algo I adapted, also check into the codepoints as reported on
-  # linux/macos as a help to figuring out what's going wrong with the
-  # conversions for windows' 16-bit wchar_t
-
   var
     c = 0'u8
     codepoint: uint32
