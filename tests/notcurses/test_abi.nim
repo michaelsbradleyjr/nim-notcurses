@@ -21,7 +21,14 @@ when not defined(windows):
     test "test 2":
       check: true
 
-# write brief explanation re: what's being importc'd and comparison-tested below
+# wide string literals in notcurses/notcurses.h are defined in
+# notcurses/abi/constants.nim as Nim `const` via `macro L` and helpers that
+# calculate at compile-time arrays of wchar_t (type Wchar); it's also possible
+# to access those wide strings via importc (two possibilities: as normal arrays
+# of known length, or as ptr UncheckedArray)
+
+# to ensure that `macro L`, et al. are implemented correctly, the test below
+# compares the arrays generated with `macro L` and those accessed via importc
 
 const ncseqsNames = [
   "NCBOXLIGHTW",
