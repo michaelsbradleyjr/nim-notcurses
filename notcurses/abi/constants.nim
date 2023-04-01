@@ -496,10 +496,8 @@ func toSeqDbW(s: string, l: int): seq[distinctBase(Wchar)] =
         codes.add codepoint
       else:
         if codepoint > 0xffff:
-          # the original has `0xd800 +` but that may be a mistake:
-          # see my 31-Mar-2023 comment on https://stackoverflow.com/a/148766
-          # using `0xd7c0 +` gives the correct result in tests/notcurses/test_abi.nim
-          codes.add (0xd7c0 + (codepoint shr 10)).uint16
+          codepoint = codepoint - 0x10000
+          codes.add (0xd800 + (codepoint shr 10)).uint16
           codes.add (0xdc00 + bitand(codepoint, 0x03ff)).uint16
         elif (codepoint < 0xd800) or (codepoint >= 0xe000):
           codes.add codepoint.uint16
