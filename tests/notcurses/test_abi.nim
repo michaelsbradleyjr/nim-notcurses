@@ -119,5 +119,5 @@ macro compare(names: static openArray[string]): untyped =
   # debugEcho toStrLit(result)
 
 suite "ABI tests (no init)":
-  test "compare wide strings from notcurses/ncseqs.h":
+  test "compare constants with wide strings importc'd from notcurses/ncseqs.h":
     compare ncseqsNames
