@@ -95,7 +95,6 @@ macro mkImpc(names: static openArray[string]): untyped =
 
 mkImpc ncseqsNames
 
-proc `$`(wc: Wchar): string {.borrow.}
 proc `==`(x, y: Wchar): bool {.borrow.}
 
 macro compare(names: static openArray[string]): untyped =
@@ -111,9 +110,9 @@ macro compare(names: static openArray[string]): untyped =
         let wc = `wa_impc_puaw`[][i]
         if wc == 0.wchar: break
         inc i
+      check: `wa`.len == i + 1
       for j in 0..(`wa`.len - 1):
         check:
-          `wa`.len == i + 1
           `wa`[j] == `wa_impc_aw`[j]
           `wa`[j] == `wa_impc_puaw`[][j]
   # debugEcho toStrLit(result)
