@@ -7,7 +7,7 @@ import std/[atomics, bitops, macros, options, sequtils, sets, strformat, strutil
 import pkg/stew/[byteutils, results]
 
 export options, results
-export Time, Timespec, Wchar, wchar
+export L, Time, Timespec, Wchar, fromWide, wchar
 
 type
   Alignment* = distinct int32
