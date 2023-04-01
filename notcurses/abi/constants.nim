@@ -9,7 +9,7 @@ else:
   {.push raises: [Defect].}
 
 import std/[bitops, macros, posix, strutils, terminal, typetraits]
-import pkg/stew/endians2
+import pkg/stew/[byteutils, endians2]
 
 export Time, Timespec, toLE
 
@@ -461,9 +461,47 @@ const
   NCDIRECT_OPTION_VERY_VERBOSE*        = 0x0000000000000020'u64
 
 # adapted from: https://stackoverflow.com/a/148766
-# `func toSeqDbW` assumes encoding of multibyte string `s` is valid UTF-8, so
-# it's suitable for helping define wide string literals in notcurses/ncseqs.h
-# with const, but is not suitable as a general purpose utility
+func toSeqB(s: openArray[Wchar]): seq[byte] =
+  var
+    c: distinctBase(Wchar)
+    codepoint: uint32
+    i = 0
+    bytes: seq[byte]
+  while true:
+    c = distinctBase(Wchar)(s[i])
+    if c == 0:
+      break
+    elif (c >= 0xd800) and (c <= 0xdbff):
+      codepoint = ((c - 0xd800).uint32 shl 10) + 0x10000
+    else:
+      if (c >= 0xdc00) and (c <= 0xdfff):
+         codepoint = bitor(codepoint, (c - 0xdc00).uint32)
+      else:
+        codepoint = c.uint32
+      if codepoint <= 0x7f:
+        bytes.add codepoint.byte
+      elif codepoint <= 0x7ff:
+        bytes.add bitor(0xc0.uint32, bitand(codepoint shr 6, 0x1f)).byte
+        bytes.add bitor(0x80.uint32, bitand(codepoint, 0x3f)).byte
+      elif codepoint <= 0xffff:
+        bytes.add bitor(0xe0.uint32, bitand(codepoint shr 12, 0x0f)).byte
+        bytes.add bitor(0x80.uint32, bitand(codepoint shr 6, 0x3f)).byte
+        bytes.add bitor(0x80.uint32, bitand(codepoint, 0x3f)).byte
+      else:
+        bytes.add bitor(0xf0.uint32, bitand(codepoint shr 18, 0x07)).byte
+        bytes.add bitor(0x80.uint32, bitand(codepoint shr 12, 0x3f)).byte
+        bytes.add bitor(0x80.uint32, bitand(codepoint shr 6, 0x3f)).byte
+        bytes.add bitor(0x80.uint32, bitand(codepoint, 0x3f)).byte
+      codepoint = 0
+    inc i
+  bytes
+
+# `func toSeqB` assumes encoding of wide string `s` is valid, so `fromWide` has
+# somewhat limited use cases
+func fromWide*(T: type string, s: openArray[Wchar]): string =
+  string.fromBytes s.toSeqB
+
+# adapted from: https://stackoverflow.com/a/148766
 func toSeqDbW(s: string, l: int): seq[distinctBase(Wchar)] =
   var
     c = 0'u8
@@ -486,25 +524,26 @@ func toSeqDbW(s: string, l: int): seq[distinctBase(Wchar)] =
     else:
       codepoint = bitand(c, 0x07)
     inc i
-    var ci: uint8
     if i == l:
-      ci = 0
+      c = 0
     else:
-      ci = s[i].uint8
-    if (bitand(ci, 0xc0) != 0x80) and (codepoint <= 0x10ffff):
+      c = s[i].uint8
+    if (bitand(c, 0xc0) != 0x80) and (codepoint <= 0x10ffff):
       when sizeof(Wchar) > 2:
-        codes.add codepoint
+        codes.add distinctBase(Wchar)(codepoint)
       else:
         if codepoint > 0xffff:
           codepoint = codepoint - 0x10000
-          codes.add (0xd800 + (codepoint shr 10)).uint16
-          codes.add (0xdc00 + bitand(codepoint, 0x03ff)).uint16
+          codes.add distinctBase(Wchar)(0xd800 + (codepoint shr 10))
+          codes.add distinctBase(Wchar)(0xdc00 + bitand(codepoint, 0x03ff))
         elif (codepoint < 0xd800) or (codepoint >= 0xe000):
-          codes.add codepoint.uint16
+          codes.add distinctBase(Wchar)(codepoint)
   codes
 
 # https://en.cppreference.com/w/c/language/string_literal
-macro L(s: static string): untyped =
+# `func toSeqDbW` assumes encoding of multibyte string `s` is valid UTF-8, so
+# `L` is only suitable for encoding Nim static strings
+macro L*(s: static string): untyped =
   # debugEcho s
   result = newStmtList()
   let
