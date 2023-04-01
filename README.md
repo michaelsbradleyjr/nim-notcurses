@@ -180,10 +180,10 @@ On Linux and Windows, drop the `-rpath` option.
 Support for Microsoft Windows is a bit anemic at present because [Windows Terminal](https://github.com/microsoft/terminal#readme) and Notcurses' support for it are works in progress.
 
 All of the examples can be built and run on Windows + [MSYS2](https://www.msys2.org/), but
-* Programs should be built in an MSYS2 shell and run in [Windows Terminal](https://github.com/microsoft/terminal#readme) in an MSYS2 shell; they will not run in [Mintty](https://mintty.github.io/). It's easy to configure Windows Terminal to launch an MSYS2 shell, see [these instructions](https://www.msys2.org/docs/terminals/).
+* Programs should be built in an MSYS2 shell and run in [Windows Terminal](https://github.com/microsoft/terminal#readme) in an MSYS2 shell. They can also be run in [Mintty](https://mintty.github.io/), but rendering problems will be more likely and more severe. It's easy to configure Windows Terminal to launch an MSYS2 shell, see [these instructions](https://www.msys2.org/docs/terminals/).
 * DLLs for Notcurses must be in your MSYS2 shell's path at runtime, e.g.<br />`export PATH="${HOME}/repos/notcurses/build:${PATH}"`
 * Windows' system locale needs to be set to [UTF-8](https://en.wikipedia.org/wiki/UTF-8):<br />*Language settings -> Administrative language settings -> Change system locale -> Beta: Use Unicode UTF-8 for worldwide language support*
-* Expect to encounter rendering bugs and for performance to be lackluster.
+* Expect to encounter rendering problems and for performance to be lackluster.
 
 :bulb: Programs using nim-notcurses build correctly in GitHub Actions on Windows + MSYS2, but are known to *not* run successfully in that CI environment *if* they initialize Notcurses.
 
