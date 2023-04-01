@@ -31,11 +31,11 @@ const
 
 var u = first
 while true:
-  sleep 10
   stdn.putWc(u.wchar).expect
   nc.render.expect
-  inc u
-  if u > last: u = first
+  if u < last: inc u
+  else: u = first
+  sleep 10
 
 # rendering after each putWc() isn't necessary but it makes the auto-scroll
 # behavior of Notcurses' CLI mode visually more apparent in the compiled

@@ -185,7 +185,7 @@ All of the examples can be built and run on Windows + [MSYS2](https://www.msys2.
 * Windows' system locale needs to be set to [UTF-8](https://en.wikipedia.org/wiki/UTF-8):<br />*Language settings -> Administrative language settings -> Change system locale -> Beta: Use Unicode UTF-8 for worldwide language support*
 * Expect to encounter rendering bugs and for performance to be lackluster.
 
-:bulb: Programs using nim-notcurses build correctly in GitHub Actions on Windows + MSYS2, but are known to *not* run successfully in that CI environment.
+:bulb: Programs using nim-notcurses build correctly in GitHub Actions on Windows + MSYS2, but are known to *not* run successfully in that CI environment *if* they initialize Notcurses.
 
 ## Goals
 
