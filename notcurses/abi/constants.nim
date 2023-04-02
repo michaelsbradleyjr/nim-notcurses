@@ -502,7 +502,7 @@ func fromWide*(T: type string, s: openArray[Wchar]): T =
   string.fromBytes s.toSeqB
 
 # adapted from: https://stackoverflow.com/a/148766
-func toSeqDbW(s: string, l: int): seq[distinctBase(Wchar)] =
+func toSeqDbW(s: string, l: int): seq[distinctBase(Wchar)] {.compileTime.} =
   var
     c = 0'u8
     codepoint: uint32
@@ -551,7 +551,7 @@ macro L*(s: static string): untyped =
     codes = toSeqDbW(s, s.len)
     l = codes.len
   result.add quote do:
-    func `toArrayW`(): array[`l`, Wchar] =
+    func `toArrayW`(): array[`l`, Wchar] {.compileTime.} =
       var a: array[`l`, Wchar]
       for i, codepoint in `codes`:
         a[i] = codepoint.wchar
