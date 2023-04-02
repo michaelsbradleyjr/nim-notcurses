@@ -498,7 +498,7 @@ func toSeqB(s: openArray[Wchar]): seq[byte] =
 
 # `func toSeqB` assumes encoding of wide string `s` is valid, so `fromWide` has
 # somewhat limited use cases
-func fromWide*(T: type string, s: openArray[Wchar]): string =
+func fromWide*(T: type string, s: openArray[Wchar]): T =
   string.fromBytes s.toSeqB
 
 # adapted from: https://stackoverflow.com/a/148766
