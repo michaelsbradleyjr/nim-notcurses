@@ -8,7 +8,7 @@
 
 Nim wrapper for [Notcurses](https://github.com/dankamongmen/notcurses#readme): blingful TUIs and character graphics.
 
-This package provides a Nim API and a low-level wrapper for Notcurses' raw C API.
+This package provides a Nim API and a lower-level wrapper for Notcurses' raw C API.
 
 ---
 
@@ -86,7 +86,7 @@ let ncd = Ncd.init
 
 ### ABI
 
-If you don't fancy the Nim API provided by this package, you can import its low-level wrapper for Notcurses' raw C API and work with that directly, or use it to build an API to your liking
+If you don't fancy the Nim API provided by this package, you can import its wrapper for Notcurses' raw C API and work with that directly, or use it to build an API to your liking
 
 ```nim
 import notcurses/abi
