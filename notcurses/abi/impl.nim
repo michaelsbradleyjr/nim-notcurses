@@ -576,10 +576,55 @@ proc notcurses_canfade*(n: ptr notcurses): bool {.nc.}
 proc notcurses_canopen_images*(nc: ptr notcurses): bool {.nc.}
 
 # L1731 - notcurses/notcurses.h
-# ...
+proc notcurses_canopen_videos*(nc: ptr notcurses): bool {.nc.}
+
+# L1736 - notcurses/notcurses.h
+proc notcurses_canutf8*(nc: ptr notcurses): bool {.nc.}
+
+# L1742 - notcurses/notcurses.h
+proc notcurses_canhalfblock*(nc: ptr notcurses): bool {.nc.}
+
+# L1748 - notcurses/notcurses.h
+proc notcurses_canquadrant*(nc: ptr notcurses): bool {.nc.}
+
+# L1754 - notcurses/notcurses.h
+proc notcurses_cansextant*(nc: ptr notcurses): bool {.nc.}
+
+# L1760 - notcurses/notcurses.h
+proc notcurses_canbraille*(nc: ptr notcurses): bool {.nc.}
+
+# L1766 - notcurses/notcurses.h
+proc notcurses_canpixel*(nc: ptr notcurses): bool {.nc.}
+
+# L1816 - notcurses/notcurses.h
+proc notcurses_stats_alloc*(nc: ptr notcurses): ptr ncstats {.nc.}
+
+# L1821 - notcurses/notcurses.h
+proc notcurses_stats*(nc: ptr notcurses, stats: ptr ncstats) {.nc.}
+
+# L1826 - notcurses/notcurses.h
+proc notcurses_stats_reset*(nc: ptr notcurses, stats: ptr ncstats) {.nc.}
+
+# L1843 - notcurses/notcurses.h
+proc ncplane_resize*(n: ptr ncplane, keepy, keepx: cint, keepleny, keeplenx: cuint, yoff, xoff: cint, ylen, xlen: cuint): cint {.nc.}
+
+# L1851 - notcurses/notcurses.h
+proc ncplane_resize_simple*(n: ptr ncplane, ylen, xlen: cuint): cint {.nc.}
+
+# L1862 - notcurses/notcurses.h
+proc ncplane_destroy*(n: ptr ncplane): cint {.nc.}
+
+# L1868 - notcurses/notcurses.h
+proc ncplane_set_base_cell*(n: ptr ncplane, c: ptr nccell): cint {.nc.}
 
 # L1874 - notcurses/notcurses.h
 proc ncplane_set_base*(n: ptr ncplane, egc: cstring, stylemask: uint16, channels: uint64): cint {.nc.}
+
+# L1879 - notcurses/notcurses.h
+proc ncplane_base*(n: ptr ncplane, c: ptr nccell): cint {.nc.}
+
+# L... - notcurses/notcurses.h
+# ...
 
 # L2133 - notcurses/notcurses.h
 proc ncplane_cursor_y*(n: ptr ncplane): cuint {.nc.}

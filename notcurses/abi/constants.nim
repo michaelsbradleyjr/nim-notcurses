@@ -412,6 +412,45 @@ type
     NCPIXEL_KITTY_ANIMATED
     NCPIXEL_KITTY_SELFREF
 
+  # L1812 - notcurses/notcurses.h
+  ncstats* {.nc_bycopy, importc: "struct ncstats".} = object
+    renders*          : uint64
+    writeouts*        : uint64
+    failed_renders*   : uint64
+    failed_writeouts* : uint64
+    raster_bytes*     : uint64
+    raster_max_bytes* : int64
+    raster_min_bytes* : int64
+    render_ns*        : uint64
+    render_max_ns*    : int64
+    render_min_ns*    : int64
+    raster_ns*        : uint64
+    raster_max_ns*    : int64
+    raster_min_ns*    : int64
+    writeout_ns*      : uint64
+    writeout_max_ns*  : int64
+    writeout_min_ns*  : int64
+    cellelisions*     : uint64
+    cellemissions*    : uint64
+    fgelisions*       : uint64
+    fgemissions*      : uint64
+    bgelisions*       : uint64
+    bgemissions*      : uint64
+    defaultelisions*  : uint64
+    defaultemissions* : uint64
+    refreshes*        : uint64
+    sprixelemissions* : uint64
+    sprixelelisions*  : uint64
+    sprixelbytes*     : uint64
+    appsync_updates*  : uint64
+    input_errors*     : uint64
+    input_events*     : uint64
+    hpa_gratuitous*   : uint64
+    cell_geo_changes* : uint64
+    pixel_geo_changes*: uint64
+    fbbytes*          : uint64
+    planes*           : uint32
+
   # L3324 - notcurses/notcurses.h
   ncvisual_options* {.nc_bycopy, importc: "struct ncvisual_options".} = object
     n*         : ptr ncplane
