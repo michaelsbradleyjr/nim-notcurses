@@ -1,5 +1,3 @@
-# this module uses extra whitespace so it can be visually scanned more easily
-
 import std/macros
 import pkg/unittest2
 import notcurses/abi
@@ -90,10 +88,11 @@ macro mkImpc(names: static openArray[string]): untyped =
       impc_aw = ident(name & "_impc_aw")
       impc_puaw = ident(name & "_impc_puaw")
     result.add quote do:
+      {.pragma: nc_seqs, header: "notcurses/ncseqs.h", nodecl.}
       # can be `let` instead of `var` with recent enough releases of Nim 1.4+
       var
-        `impc_aw` {.header: "notcurses/ncseqs.h", importc: `name`, nodecl.}: array[`cname`.len, Wchar]
-        `impc_puaw` {.header: "notcurses/ncseqs.h", importc: `name`, nodecl.}: ptr UncheckedArray[Wchar]
+        `impc_aw` {.nc_seqs, importc: `name`.}: array[`cname`.len, Wchar]
+        `impc_puaw` {.nc_seqs, importc: `name`.}: ptr UncheckedArray[Wchar]
   # debugEcho toStrLit(result)
 
 mkImpc ncseqsNames
@@ -126,60 +125,60 @@ macro compareW(names: static openArray[string]): untyped =
 # literals they should match
 
 const
-  NCBOXLIGHTW_ns        = "┌┐└┘─│"
-  NCBOXHEAVYW_ns        = "┏┓┗┛━┃"
-  NCBOXROUNDW_ns        = "╭╮╰╯─│"
-  NCBOXDOUBLEW_ns       = "╔╗╚╝═║"
-  NCBOXASCIIW_ns        = "/\\\\/-|"
-  NCBOXOUTERW_ns        = "🭽🭾🭼🭿▁🭵🭶🭰"
-  NCWHITESQUARESW_ns    = "◲◱◳◰"
-  NCWHITECIRCLESW_ns    = "◶◵◷◴"
-  NCCIRCULARARCSW_ns    = "◜◝◟◞"
-  NCWHITETRIANGLESW_ns  = "◿◺◹◸"
-  NCBLACKTRIANGLESW_ns  = "◢◣◥◤"
-  NCSHADETRIANGLESW_ns  = "🮞🮟🮝🮜"
+  NCBOXLIGHTW_ns = "┌┐└┘─│"
+  NCBOXHEAVYW_ns = "┏┓┗┛━┃"
+  NCBOXROUNDW_ns = "╭╮╰╯─│"
+  NCBOXDOUBLEW_ns = "╔╗╚╝═║"
+  NCBOXASCIIW_ns = "/\\\\/-|"
+  NCBOXOUTERW_ns = "🭽🭾🭼🭿▁🭵🭶🭰"
+  NCWHITESQUARESW_ns = "◲◱◳◰"
+  NCWHITECIRCLESW_ns = "◶◵◷◴"
+  NCCIRCULARARCSW_ns = "◜◝◟◞"
+  NCWHITETRIANGLESW_ns = "◿◺◹◸"
+  NCBLACKTRIANGLESW_ns = "◢◣◥◤"
+  NCSHADETRIANGLESW_ns = "🮞🮟🮝🮜"
   NCBLACKARROWHEADSW_ns = "⮝⮟⮜⮞"
   NCLIGHTARROWHEADSW_ns = "⮙⮛⮘⮚"
-  NCARROWDOUBLEW_ns     = "⮅⮇⮄⮆"
-  NCARROWDASHEDW_ns     = "⭫⭭⭪⭬"
-  NCARROWCIRCLEDW_ns    = "⮉⮋⮈⮊"
-  NCARROWANTICLOCKW_ns  = "⮏⮍⮎⮌"
-  NCBOXDRAWW_ns         = "╵╷╴╶"
-  NCBOXDRAWHEAVYW_ns    = "╹╻╸╺"
-  NCARROWW_ns           = "⭡⭣⭠⭢⭧⭩⭦⭨"
-  NCDIAGONALSW_ns       = "🮣🮠🮡🮢🮤🮥🮦🮧"
-  NCDIGITSSUPERW_ns     = "⁰¹²³⁴⁵⁶⁷⁸⁹"
-  NCDIGITSSUBW_ns       = "₀₁₂₃₄₅₆₇₈₉"
-  NCASTERISKS5_ns       = "🞯🞰🞱🞲🞳🞴"
-  NCASTERISKS6_ns       = "🞵🞶🞷🞸🞹🞺"
-  NCASTERISKS8_ns       = "🞻🞼✳🞽🞾🞿"
-  NCANGLESBR_ns         = "🭁🭂🭃🭄🭅🭆🭇🭈🭉🭊🭋"
-  NCANGLESTR_ns         = "🭒🭓🭔🭕🭖🭧🭢🭣🭤🭥🭦"
-  NCANGLESBL_ns         = "🭌🭍🭎🭏🭐🭑🬼🬽🬾🬿🭀"
-  NCANGLESTL_ns         = "🭝🭞🭟🭠🭡🭜🭗🭘🭙🭚🭛"
-  NCEIGHTHSB_ns         = " ▁▂▃▄▅▆▇█"
-  NCEIGHTHST_ns         = " ▔🮂🮃▀🮄🮅🮆█"
-  NCEIGHTHSL_ns         = "▏▎▍▌▋▊▉█"
-  NCEIGHTHSR_ns         = "▕🮇🮈▐🮉🮊🮋█"
-  NCHALFBLOCKS_ns       = " ▀▄█"
-  NCQUADBLOCKS_ns       = " ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█"
-  NCSEXBLOCKS_ns        = " 🬀🬁🬂🬃🬄🬅🬆🬇🬈🬊🬋🬌🬍🬎🬏🬐🬑🬒🬓▌🬔🬕🬖🬗🬘🬙🬚🬛🬜🬝🬞🬟🬠🬡🬢🬣🬤🬥🬦🬧▐🬨🬩🬪🬫🬬🬭🬮🬯🬰🬱🬲🬳🬴🬵🬶🬷🬸🬹🬺🬻█"
-  NCBRAILLEEGCS_ns      = "⠀⠁⠈⠉⠂⠃⠊⠋⠐⠑⠘⠙⠒⠓⠚⠛⠄⠅⠌⠍⠆⠇⠎⠏⠔⠕⠜⠝⠖⠗⠞⠟⠠⠡⠨⠩⠢⠣⠪⠫⠰⠱⠸⠹⠲⠳⠺⠻⠤⠥⠬⠭⠦⠧⠮⠯⠴⠵⠼⠽⠶⠷⠾⠿⡀⡁⡈⡉⡂⡃⡊⡋⡐⡑⡘⡙⡒⡓⡚⡛⡄⡅⡌⡍⡆⡇⡎⡏⡔⡕⡜⡝⡖⡗⡞⡟⡠⡡⡨⡩⡢⡣⡪⡫⡰⡱⡸⡹⡲⡳⡺⡻⡤⡥⡬⡭⡦⡧⡮⡯⡴⡵⡼⡽⡶⡷⡾⡿⢀⢁⢈⢉⢂⢃⢊⢋⢐⢑⢘⢙⢒⢓⢚⢛⢄⢅⢌⢍⢆⢇⢎⢏⢔⢕⢜⢝⢖⢗⢞⢟⢠⢡⢨⢩⢢⢣⢪⢫⢰⢱⢸⢹⢲⢳⢺⢻⢤⢥⢬⢭⢦⢧⢮⢯⢴⢵⢼⢽⢶⢷⢾⢿⣀⣁⣈⣉⣂⣃⣊⣋⣐⣑⣘⣙⣒⣓⣚⣛⣄⣅⣌⣍⣆⣇⣎⣏⣔⣕⣜⣝⣖⣗⣞⣟⣠⣡⣨⣩⣢⣣⣪⣫⣰⣱⣸⣹⣲⣳⣺⣻⣤⣥⣬⣭⣦⣧⣮⣯⣴⣵⣼⣽⣶⣷⣾⣿"
-  NCSEGDIGITS_ns        = "🯰🯱🯲🯳🯴🯵🯶🯷🯸🯹"
-  NCSUITSBLACK_ns       = "♠♣♥♦"
-  NCSUITSWHITE_ns       = "♡♢♤♧"
-  NCCHESSBLACK_ns       = "♟♜♞♝♛♚"
+  NCARROWDOUBLEW_ns = "⮅⮇⮄⮆"
+  NCARROWDASHEDW_ns = "⭫⭭⭪⭬"
+  NCARROWCIRCLEDW_ns = "⮉⮋⮈⮊"
+  NCARROWANTICLOCKW_ns = "⮏⮍⮎⮌"
+  NCBOXDRAWW_ns = "╵╷╴╶"
+  NCBOXDRAWHEAVYW_ns = "╹╻╸╺"
+  NCARROWW_ns = "⭡⭣⭠⭢⭧⭩⭦⭨"
+  NCDIAGONALSW_ns = "🮣🮠🮡🮢🮤🮥🮦🮧"
+  NCDIGITSSUPERW_ns = "⁰¹²³⁴⁵⁶⁷⁸⁹"
+  NCDIGITSSUBW_ns = "₀₁₂₃₄₅₆₇₈₉"
+  NCASTERISKS5_ns = "🞯🞰🞱🞲🞳🞴"
+  NCASTERISKS6_ns = "🞵🞶🞷🞸🞹🞺"
+  NCASTERISKS8_ns = "🞻🞼✳🞽🞾🞿"
+  NCANGLESBR_ns = "🭁🭂🭃🭄🭅🭆🭇🭈🭉🭊🭋"
+  NCANGLESTR_ns = "🭒🭓🭔🭕🭖🭧🭢🭣🭤🭥🭦"
+  NCANGLESBL_ns = "🭌🭍🭎🭏🭐🭑🬼🬽🬾🬿🭀"
+  NCANGLESTL_ns = "🭝🭞🭟🭠🭡🭜🭗🭘🭙🭚🭛"
+  NCEIGHTHSB_ns = " ▁▂▃▄▅▆▇█"
+  NCEIGHTHST_ns = " ▔🮂🮃▀🮄🮅🮆█"
+  NCEIGHTHSL_ns = "▏▎▍▌▋▊▉█"
+  NCEIGHTHSR_ns = "▕🮇🮈▐🮉🮊🮋█"
+  NCHALFBLOCKS_ns = " ▀▄█"
+  NCQUADBLOCKS_ns = " ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█"
+  NCSEXBLOCKS_ns = " 🬀🬁🬂🬃🬄🬅🬆🬇🬈🬊🬋🬌🬍🬎🬏🬐🬑🬒🬓▌🬔🬕🬖🬗🬘🬙🬚🬛🬜🬝🬞🬟🬠🬡🬢🬣🬤🬥🬦🬧▐🬨🬩🬪🬫🬬🬭🬮🬯🬰🬱🬲🬳🬴🬵🬶🬷🬸🬹🬺🬻█"
+  NCBRAILLEEGCS_ns = "⠀⠁⠈⠉⠂⠃⠊⠋⠐⠑⠘⠙⠒⠓⠚⠛⠄⠅⠌⠍⠆⠇⠎⠏⠔⠕⠜⠝⠖⠗⠞⠟⠠⠡⠨⠩⠢⠣⠪⠫⠰⠱⠸⠹⠲⠳⠺⠻⠤⠥⠬⠭⠦⠧⠮⠯⠴⠵⠼⠽⠶⠷⠾⠿⡀⡁⡈⡉⡂⡃⡊⡋⡐⡑⡘⡙⡒⡓⡚⡛⡄⡅⡌⡍⡆⡇⡎⡏⡔⡕⡜⡝⡖⡗⡞⡟⡠⡡⡨⡩⡢⡣⡪⡫⡰⡱⡸⡹⡲⡳⡺⡻⡤⡥⡬⡭⡦⡧⡮⡯⡴⡵⡼⡽⡶⡷⡾⡿⢀⢁⢈⢉⢂⢃⢊⢋⢐⢑⢘⢙⢒⢓⢚⢛⢄⢅⢌⢍⢆⢇⢎⢏⢔⢕⢜⢝⢖⢗⢞⢟⢠⢡⢨⢩⢢⢣⢪⢫⢰⢱⢸⢹⢲⢳⢺⢻⢤⢥⢬⢭⢦⢧⢮⢯⢴⢵⢼⢽⢶⢷⢾⢿⣀⣁⣈⣉⣂⣃⣊⣋⣐⣑⣘⣙⣒⣓⣚⣛⣄⣅⣌⣍⣆⣇⣎⣏⣔⣕⣜⣝⣖⣗⣞⣟⣠⣡⣨⣩⣢⣣⣪⣫⣰⣱⣸⣹⣲⣳⣺⣻⣤⣥⣬⣭⣦⣧⣮⣯⣴⣵⣼⣽⣶⣷⣾⣿"
+  NCSEGDIGITS_ns = "🯰🯱🯲🯳🯴🯵🯶🯷🯸🯹"
+  NCSUITSBLACK_ns = "♠♣♥♦"
+  NCSUITSWHITE_ns = "♡♢♤♧"
+  NCCHESSBLACK_ns = "♟♜♞♝♛♚"
   # https://github.com/dankamongmen/notcurses/pull/2712
   # NCCHESSWHITE_ns     = "♙♖♘♗♕♔"
-  NCCHESSWHITE_ns       = "♟♜♞♝♛♚"
-  NCDICE_ns             = "⚀⚁⚂⚃⚄⚅"
-  NCMUSICSYM_ns         = "♩♪♫♬♭♮♯"
-  NCBOXLIGHT_ns         = "┌┐└┘─│"
-  NCBOXHEAVY_ns         = "┏┓┗┛━┃"
-  NCBOXROUND_ns         = "╭╮╰╯─│"
-  NCBOXDOUBLE_ns        = "╔╗╚╝═║"
-  NCBOXASCII_ns         = "/\\\\/-|"
-  NCBOXOUTER_ns         = "🭽🭾🭼🭿▁🭵🭶🭰"
+  NCCHESSWHITE_ns = "♟♜♞♝♛♚"
+  NCDICE_ns = "⚀⚁⚂⚃⚄⚅"
+  NCMUSICSYM_ns = "♩♪♫♬♭♮♯"
+  NCBOXLIGHT_ns = "┌┐└┘─│"
+  NCBOXHEAVY_ns = "┏┓┗┛━┃"
+  NCBOXROUND_ns = "╭╮╰╯─│"
+  NCBOXDOUBLE_ns = "╔╗╚╝═║"
+  NCBOXASCII_ns = "/\\\\/-|"
+  NCBOXOUTER_ns = "🭽🭾🭼🭿▁🭵🭶🭰"
 
 macro compareN(names: static openArray[string]): untyped =
   # debugEcho names
@@ -199,9 +198,9 @@ suite "ABI tests (no init)":
   test "compare wide strings converted to Nim strings with string literals":
     compareN ncseqsNames
     check:
-      $NCBOXLIGHT  == NCBOXLIGHT_ns
-      $NCBOXHEAVY  == NCBOXHEAVY_ns
-      $NCBOXROUND  == NCBOXROUND_ns
+      $NCBOXLIGHT == NCBOXLIGHT_ns
+      $NCBOXHEAVY == NCBOXHEAVY_ns
+      $NCBOXROUND == NCBOXROUND_ns
       $NCBOXDOUBLE == NCBOXDOUBLE_ns
-      $NCBOXASCII  == NCBOXASCII_ns
-      $NCBOXOUTER  == NCBOXOUTER_ns
+      $NCBOXASCII == NCBOXASCII_ns
+      $NCBOXOUTER == NCBOXOUTER_ns
