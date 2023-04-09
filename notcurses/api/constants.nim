@@ -246,10 +246,16 @@ type
     Signal = NCKEY_SIGNAL.Key
     EOF = NCKEY_EOF.Key
 
-const
-  ScrollUp* = Keys.Button4
-  ScrollDown* = Keys.Button5
-  Return* = Keys.Enter
+type
+  FakeKeys[T: static Keys] = distinct Keys
+
+converter toKeys*(fake: FakeKeys): Keys = Keys(fake)
+func `$`*(fake: FakeKeys[Button4]): string = "ScrollUp"
+func `$`*(fake: FakeKeys[Button5]): string = "ScrollDown"
+func `$`*(fake: FakeKeys[Enter]): string = "Return"
+template ScrollUp*(_: type Keys): auto = cast[FakeKeys[Button4]](Button4)
+template ScrollDown*(_: type Keys): auto = cast[FakeKeys[Button5]](Button5)
+template Return*(_: type Keys): auto = cast[FakeKeys[Enter]](Enter)
 
 type
   KeyModifier* = distinct int32
