@@ -123,6 +123,7 @@ jobs:
             echo "nimble=${HOME}/.nimble" >> ${GITHUB_OUTPUT}
             echo "notcurses=${HOME}/repos/notcurses" >> ${GITHUB_OUTPUT}
           fi
+          echo "cmake_version=$(cmake --version | awk 'FNR==1{print $3}')" >> ${GITHUB_OUTPUT}
 
       - name: Restore artifacts from cache
         id: artifacts-cache
@@ -140,6 +141,7 @@ jobs:
                 +nim_commit:${{ steps.cache-key.outputs.nim_commit }}\
                 +notcurses_version:${{ steps.cache-key.outputs.notcurses_version }}\
                 +notcurses_commit:${{ steps.cache-key.outputs.notcurses_commit }}\
+                +cmake_version:${{ steps.cache-key.outputs.cmake_version }}\
                 +cache_marker:${{ matrix.cache_marker }}"
 
       - name: Checkout Notcurses sources and compile
