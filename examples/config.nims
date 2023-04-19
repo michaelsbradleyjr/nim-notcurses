@@ -17,11 +17,11 @@ when (NimMajor, NimMinor, NimPatch) < (1, 9, 1):
   # starting with Nim 2.0 --threads:on is the default
   --threads:on
 
-when (NimMajor, NimMinor) <= (1, 2):
+when (NimMajor, NimMinor) == (1, 2):
   switch("hint", "Processing:off")
   switch("hint", "XDeclaredButNotUsed:off")
   switch("warning", "ObservableStores:off")
-elif (NimMajor, NimMinor) <= (1, 4):
+elif (NimMajor, NimMinor) == (1, 4):
   switch("hint", "XCannotRaiseY:off")
 else:
   --hint:"XCannotRaiseY:off"
