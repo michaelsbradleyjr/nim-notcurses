@@ -1,0 +1,7 @@
+{
+  "nim.provider": "lsp",
+  "nim.projectMapping": [{
+    "projectFile": "extras/lsp.nim",
+    "fileRegex": ".*\\.nim"
+  }]
+}
