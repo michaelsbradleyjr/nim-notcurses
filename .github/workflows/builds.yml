@@ -39,7 +39,7 @@ jobs:
             os: windows,
             shell: msys2
           }
-        nim_version: [ v1.2.8, version-1-2, version-1-4, version-1-6, version-2-0 ]
+        nim_version: [ v1.2.8, version-1-2, version-1-4, version-1-6, version-2-0, devel ]
     name: ${{ matrix.platform.icon }} ${{ matrix.platform.label }} - Nim ${{ matrix.nim_version }}
     runs-on: ${{ matrix.platform.os }}-latest
     defaults:
