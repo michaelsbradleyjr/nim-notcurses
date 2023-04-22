@@ -1,8 +1,8 @@
 {.warning: "This module is not intended for compilation!".}
 
-# this is a support module for nimlangserver so that a single nimsuggest
-# process can service all modules in nim-notcurses; see ./project-mapping.el
-# and ../.vscode/settings.json
+# this is a support module for nimlangserver so that a minimal spawning of
+# nimsuggest processes can service all modules in nim-notcurses; see
+# ./project-mapping.el and ../.vscode/settings.json
 
 import
   examples/cjkscroll,
