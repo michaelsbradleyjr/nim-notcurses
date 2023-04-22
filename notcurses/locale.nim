@@ -1,3 +1,8 @@
+when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
+  {.push raises: [].}
+else:
+  {.push raises: [Defect].}
+
 import std/macros
 import pkg/stew/results
 import ./abi/locale
