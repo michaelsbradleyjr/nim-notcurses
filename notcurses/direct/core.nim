@@ -1,6 +1,7 @@
-import ../abi/core as abi
-include ../abi/version
-include ../api/constants
-include ../api/impl
+{.passL: "-lnotcurses-core".}
 
-defineNcdInit(NotcursesDirect, ncdirect_core_init)
+import ../api/direct/impl
+
+export impl except setNcdInit, setNcdCoreInit
+
+setNcdCoreInit()

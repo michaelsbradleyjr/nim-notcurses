@@ -8,6 +8,7 @@
 !/examples/README.md
 !/examples/config.nims
 !/examples/data/**
+/extras/lsp
 /nimcache
 /notcurses.nims
 /tests/**

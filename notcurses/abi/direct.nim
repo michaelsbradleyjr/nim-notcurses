@@ -1,5 +1,5 @@
 {.passL: "-lnotcurses -lnotcurses-core".}
 
-import ./abi/impl
+import ./direct/impl
 
 export impl

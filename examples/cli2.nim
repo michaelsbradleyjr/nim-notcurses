@@ -3,7 +3,7 @@ import notcurses/core
 # or: import notcurses
 
 let
-  nc = Nc.init NcOptions.init [CliMode]
+  nc = Nc.init NcOptions.init [InitOptions.CliMode]
   stdn = nc.stdPlane
 
 proc nop() {.noconv.} = discard
@@ -32,9 +32,9 @@ while true:
   putLn "point : " & $ni.codepoint
 
   let key = ni.key
-  if key.isNone: stdn.setStyles(Struck)
+  if key.isNone: stdn.setStyles(Styles.Struck)
   put "key   : " & (if key.isSome: $key.get else: "")
-  stdn.setStyles(None)
+  stdn.setStyles(Styles.None)
   put "\n"
 
   var prefix = "utf8  : "
@@ -44,18 +44,18 @@ while true:
     let res = stdn.putStr utf8.get
     if res.isErr: put ReplacementChar
   else:
-    stdn.setStyles(Struck)
+    stdn.setStyles(Styles.Struck)
     put prefix
-    stdn.setStyles(None)
+    stdn.setStyles(Styles.None)
   put "\n"
 
   prefix = "bytes : "
   if utf8.isSome:
     put prefix & ni.bytes.get.fmtHex
   else:
-    stdn.setStyles(Struck)
+    stdn.setStyles(Styles.Struck)
     put prefix
-    stdn.setStyles(None)
+    stdn.setStyles(Styles.None)
   put "\n"
 
   if utf8.get("") == "q": break

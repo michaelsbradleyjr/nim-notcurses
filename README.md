@@ -95,22 +95,22 @@ import notcurses/abi
 var opts = notcurses_options()
 let nc = notcurses_init(addr opts, stdout)
 # or: let nc = notcurses_core_init(addr opts, stdout)
-if nc.isNil: raise (ref Defect)(msg: "Notcurses failed to initialize")
+if isNil nc: raise (ref Defect)(msg: "Notcurses failed to initialize")
 
-if (notcurses_stop nc) < 0: raise (ref Defect)(msg: "Notcurses failed to stop")
+if notcurses_stop(nc) < 0: raise (ref Defect)(msg: "Notcurses failed to stop")
 ```
 
 #### Direct mode
 
 ```nim
-import notcurses/abi
-# or: import notcurses/abi/core
+import notcurses/abi/direct
+# or: import notcurses/abi/direct/core
 
 let ncd = ncdirect_init(nil, stdout, 0)
 # or: let ncd = ncdirect_core_init(nil, stdout, 0)
-if ncd.isNil: raise (ref Defect)(msg: "Notcurses failed to initialize")
+if isNil ncd: raise (ref Defect)(msg: "Notcurses failed to initialize")
 
-if (ncdirect_stop ncd) < 0: raise (ref Defect)(msg: "Notcurses failed to stop")
+if ncdirect_stop(ncd) < 0: raise (ref Defect)(msg: "Notcurses failed to stop")
 ```
 
 ## Examples

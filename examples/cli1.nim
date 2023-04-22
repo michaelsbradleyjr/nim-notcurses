@@ -1,7 +1,7 @@
 import notcurses
 # or: import notcurses/core
 
-let nc = Nc.init NcOptions.init [CliMode, DrainInput]
+let nc = Nc.init NcOptions.init [InitOptions.CliMode, InitOptions.DrainInput]
 
 nc.stdPlane.putStr("Hello, Notcurses!\n").expect
 

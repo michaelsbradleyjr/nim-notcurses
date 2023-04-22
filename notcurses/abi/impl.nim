@@ -1,23 +1,45 @@
 # L[num] comments below pertain to sources for Notcurses v3.0.9
 # https://github.com/dankamongmen/notcurses/tree/v3.0.9/include
 
-# L187 notcurses/nckeys.h
-proc nckey_synthesized_p*(w: uint32): bool {.nc_keys.}
+# this module uses extra whitespace so it can be visually scanned more easily
 
-# L201 notcurses/nckeys.h
-proc nckey_pua_p*(w: uint32): bool {.nc_keys.}
+when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
+  {.push raises: [].}
+else:
+  {.push raises: [Defect].}
 
-# L207 notcurses/nckeys.h
-proc nckey_supppuaa_p*(w: uint32): bool {.nc_keys.}
+import std/[macros, posix]
+import pkg/stew/endians2
+import ./common
+import ./constants
 
-# L213 notcurses/nckeys.h
-proc nckey_supppuab_p*(w: uint32): bool {.nc_keys.}
+export Time, Timespec
+export common except lib_notcurses_major, lib_notcurses_minor, lib_notcurses_patch, lib_notcurses_tweak
+export constants except PRETERUNICODEBASE, nim_notcurses_version
 
-# L39 - notcurses/notcurses.h
-proc notcurses_version*(): cstring {.nc.}
+const nc_header = "notcurses/notcurses.h"
+{.pragma: nc, cdecl, header: nc_header, importc.}
+{.pragma: nc_bycopy, bycopy, header: nc_header.}
+{.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
 
-# L42 - notcurses/notcurses.h
-proc notcurses_version_components*(major, minor, patch, tweak: ptr cint) {.nc.}
+type
+  # L44 - notcurses/notcurses.h
+  notcurses*       {.nc_incomplete, importc: "struct notcurses"      .} = object
+  ncplane*         {.nc_incomplete, importc: "struct ncplane"        .} = object
+  ncvisual*        {.nc_incomplete, importc: "struct ncvisual"       .} = object
+  ncuplot*         {.nc_incomplete, importc: "struct ncuplot"        .} = object
+  ncdplot*         {.nc_incomplete, importc: "struct ncdplot"        .} = object
+  ncprogbar*       {.nc_incomplete, importc: "struct ncprogbar"      .} = object
+  ncfdplane*       {.nc_incomplete, importc: "struct ncfdplane"      .} = object
+  ncsubproc*       {.nc_incomplete, importc: "struct ncsubproc"      .} = object
+  ncselector*      {.nc_incomplete, importc: "struct ncselector"     .} = object
+  ncmultiselector* {.nc_incomplete, importc: "struct ncmultiselector".} = object
+  ncreader*        {.nc_incomplete, importc: "struct ncreader"       .} = object
+  ncfadectx*       {.nc_incomplete, importc: "struct ncfadectx"      .} = object
+  nctablet*        {.nc_incomplete, importc: "struct nctablet"       .} = object
+  ncreel*          {.nc_incomplete, importc: "struct ncreel"         .} = object
+  nctab*           {.nc_incomplete, importc: "struct nctab"          .} = object
+  nctabbed*        {.nc_incomplete, importc: "struct nctabbed"       .} = object
 
 # L127 - notcurses/notcurses.h
 macro NCCHANNEL_INITIALIZER*(r, g, b: cuint): uint32 =
@@ -188,6 +210,14 @@ proc ncstrwidth*(egcs: cstring, validbytes, validwidth: ptr cint): cint {.nc.}
 # L609 - notcurses/notcurses.h
 proc notcurses_ucs32_to_utf8*(ucs32: ptr uint32, ucs32count: cuint, resultbuf: ptr UncheckedArray[cchar], buflen: csize_t): cint {.nc.}
 
+# L724 - notcurses/notcurses.h
+type nccell* {.nc_bycopy, importc: "struct nccell".} = object
+  gcluster*         : uint32
+  gcluster_backstop*: uint8
+  width*            : uint8
+  stylemask*        : uint16
+  channels*         : uint64
+
 # L731 - notcurses/notcurses.h
 macro NCCELL_INITIALIZER*(c: uint32, s: uint16, chan: uint64): nccell =
   quote do:
@@ -300,6 +330,16 @@ proc nccell_load_egc32*(n: ptr ncplane, c: ptr nccell, egc: uint32): cint {.nc.}
 # L950 - notcurses/notcurses.h
 proc nccell_load_ucs32*(n: ptr ncplane, c: ptr nccell, u: uint32): cint {.nc.}
 
+# L1060 - notcurses/notcurses.h
+type notcurses_options* {.nc_bycopy, importc: "struct notcurses_options".} = object
+  termtype*: cstring
+  loglevel*: ncloglevel_e
+  margin_t*: uint32
+  margin_r*: uint32
+  margin_b*: uint32
+  margin_l*: uint32
+  flags*   : uint64
+
 # L1065 - notcurses/notcurses.h
 proc notcurses_lex_margins*(op: cstring, opts: ptr notcurses_options): cint {.nc.}
 
@@ -368,6 +408,20 @@ proc notcurses_drop_planes*(nc: ptr notcurses) {.nc.}
 
 # L1190 - notcurses/notcurses.h
 proc nckey_mouse_p*(r: uint32): bool {.nc.}
+
+# L1217 - notcurses/notcurses.h
+type ncinput* {.nc_bycopy, importc: "struct ncinput".} = object
+  id*       : uint32
+  y*        : int32
+  x*        : int32
+  utf8*     : array[5, char]
+  alt*      : bool
+  shift*    : bool
+  ctrl*     : bool
+  evtype*   : ncintype_e
+  modifiers*: uint32
+  ypx*      : int32
+  xpx*      : int32
 
 # L1220 - notcurses/notcurses.h
 proc ncinput_shift_p*(n: ptr ncinput): bool {.nc.}
@@ -467,6 +521,19 @@ proc notcurses_term_dim_yx*(n: ptr notcurses, rows, cols: ptr cuint) {.nc.}
 # L1434 - notcurses/notcurses.h
 proc notcurses_at_yx*(nc: ptr notcurses, yoff, xoff: cuint, stylemask: ptr uint16, channels: ptr uint64): cstring {.nc.}
 
+# L1472 -  notcurses/notcurses.h
+type ncplane_options* {.nc_bycopy, importc: "struct ncplane_options".} = object
+  y*       : int32
+  x*       : int32
+  rows*    : uint32
+  cols*    : uint32
+  userptr* : pointer
+  name*    : cstring
+  resizecb*: proc (n: ptr ncplane): int32 {.noconv.}
+  flags*   : uint64
+  margin_b*: uint32
+  margin_r*: uint32
+
 # L1479 - notcurses/notcurses.h
 proc ncplane_create*(n: ptr ncplane, nopts: ptr ncplane_options): ptr ncplane {.nc.}
 
@@ -524,6 +591,10 @@ proc ncplane_set_autogrow*(n: ptr ncplane, growp: cuint): bool {.nc.}
 # L1574 - notcurses/notcurses.h
 proc ncplane_autogrow_p*(n: ptr ncplane): bool {.nc.}
 
+# L1584 -  notcurses/notcurses.h
+type ncpalette* {.nc_bycopy, importc: "struct ncpalette".} = object
+  chans*: array[NCPALETTESIZE, uint32]
+
 # L1588 - notcurses/notcurses.h
 proc ncpalette_new*(nc: ptr notcurses): ptr ncpalette {.nc.}
 
@@ -544,6 +615,17 @@ proc ncpalette_get_rgb8*(p: ptr ncpalette, idx: cint, r, g, b: ptr cuint): cint 
 
 # L1631 - notcurses/notcurses.h
 proc ncpalette_free*(p: ptr ncpalette) {.nc.}
+
+# L1644 - notcurses/notcurses.h
+type nccapabilities* {.nc_bycopy, importc: "struct nccapabilities".} = object
+  colors*           : cuint
+  utf8*             : bool
+  rgb*              : bool
+  can_change_colors*: bool
+  halfblocks*       : bool
+  quadrants*        : bool
+  sextants*         : bool
+  braille*          : bool
 
 # L1650 - notcurses/notcurses.h
 proc notcurses_supported_styles*(nc: ptr notcurses): uint16 {.nc.}
@@ -595,6 +677,45 @@ proc notcurses_canbraille*(nc: ptr notcurses): bool {.nc.}
 
 # L1766 - notcurses/notcurses.h
 proc notcurses_canpixel*(nc: ptr notcurses): bool {.nc.}
+
+# L1812 - notcurses/notcurses.h
+type ncstats* {.nc_bycopy, importc: "struct ncstats".} = object
+  renders*          : uint64
+  writeouts*        : uint64
+  failed_renders*   : uint64
+  failed_writeouts* : uint64
+  raster_bytes*     : uint64
+  raster_max_bytes* : int64
+  raster_min_bytes* : int64
+  render_ns*        : uint64
+  render_max_ns*    : int64
+  render_min_ns*    : int64
+  raster_ns*        : uint64
+  raster_max_ns*    : int64
+  raster_min_ns*    : int64
+  writeout_ns*      : uint64
+  writeout_max_ns*  : int64
+  writeout_min_ns*  : int64
+  cellelisions*     : uint64
+  cellemissions*    : uint64
+  fgelisions*       : uint64
+  fgemissions*      : uint64
+  bgelisions*       : uint64
+  bgemissions*      : uint64
+  defaultelisions*  : uint64
+  defaultemissions* : uint64
+  refreshes*        : uint64
+  sprixelemissions* : uint64
+  sprixelelisions*  : uint64
+  sprixelbytes*     : uint64
+  appsync_updates*  : uint64
+  input_errors*     : uint64
+  input_events*     : uint64
+  hpa_gratuitous*   : uint64
+  cell_geo_changes* : uint64
+  pixel_geo_changes*: uint64
+  fbbytes*          : uint64
+  planes*           : uint32
 
 # L1816 - notcurses/notcurses.h
 proc notcurses_stats_alloc*(nc: ptr notcurses): ptr ncstats {.nc.}
@@ -659,8 +780,45 @@ proc ncplane_set_bg_rgb*(n: ptr ncplane, channel: uint32): cint {.nc.}
 # L3257 - notcurses/notcurses.h
 proc ncvisual_from_file*(file: cstring): ptr ncvisual {.nc.}
 
+# L3324 - notcurses/notcurses.h
+type ncvisual_options* {.nc_bycopy, importc: "struct ncvisual_options".} = object
+  n*         : ptr ncplane
+  scaling*   : ncscale_e
+  y*         : int32
+  x*         : int32
+  begy*      : uint32
+  begx*      : uint32
+  leny*      : uint32
+  lenx*      : uint32
+  blitter*   : ncblitter_e
+  flags*     : uint64
+  transcolor*: uint32
+  pxoffy*    : uint32
+  pxoffx*    : uint32
+
 # L3453 - notcurses/notcurses.h
 proc ncvisual_blit*(nc: ptr notcurses, ncv: ptr ncvisual, vopts: ptr ncvisual_options): ptr ncplane {.nc.}
+
+type
+  # L3946 - notcurses/notcurses.h
+  ncmselector_item* {.nc_bycopy, importc: "struct ncmselector_item".} = object
+    option*  : cstring
+    desc*    : cstring
+    selected*: bool
+
+  # L3987 - notcurses/notcurses.h
+  ncmultiselector_options* {.nc_bycopy, importc: "struct ncmultiselector_options".} = object
+    title*        : cstring
+    secondary*    : cstring
+    footer*       : cstring
+    items*        : ptr UncheckedArray[ncmselector_item]
+    maxdisplay*   : uint32
+    opchannels*   : uint64
+    descchannels* : uint64
+    titlechannels*: uint64
+    footchannels* : uint64
+    boxchannels*  : uint64
+    flags*        : uint64
 
 # L3989 - notcurses/notcurses.h
 proc ncmultiselector_create*(n: ptr ncplane, opts: ptr ncmultiselector_options): ptr ncmultiselector {.nc.}
@@ -670,61 +828,3 @@ proc ncmultiselector_offer_input*(n: ptr ncmultiselector, ni: ptr ncinput): bool
 
 # L4010 - notcurses/notcurses.h
 proc ncmultiselector_destroy*(n: ptr ncmultiselector) {.nc.}
-
-# L59 - notcurses/direct.h
-proc ncdirect_init*(termtype: cstring, fp: File, flags: uint64): ptr ncdirect {.ncd.}
-
-# L63 - notcurses/direct.h
-proc ncdirect_core_init*(termtype: cstring, fp: File, flags: uint64): ptr ncdirect {.ncd.}
-
-# L92 - notcurses/direct.h
-proc ncdirect_putstr*(nc: ptr ncdirect, channels: uint64, utf8: cstring): cint {.ncd.}
-
-# L142 - notcurses/direct.h
-proc ncdirect_supported_styles*(nc: ptr ncdirect): uint16 {.ncd.}
-
-# L146 - notcurses/direct.h
-proc ncdirect_set_styles*(n: ptr ncdirect, stylebits: cuint): cint {.ncd.}
-
-# L279 - notcurses/direct.h
-proc ncdirect_stop*(nc: ptr ncdirect): cint {.ncd.}
-
-var
-  lib_notcurses_major: cint
-  lib_notcurses_minor: cint
-  lib_notcurses_patch: cint
-  lib_notcurses_tweak: cint
-
-notcurses_version_components(addr lib_notcurses_major, addr lib_notcurses_minor, addr lib_notcurses_patch, addr lib_notcurses_tweak)
-
-if nim_notcurses_version.major != lib_notcurses_major:
-  let majorMismatchMsg = ("""
-nim-notcurses major version $1 is not compatible with Notcurses library major
-version $4 (nim-notcurses: $1.$2.$3, libnotcurses: $5)
-  """ % [
-    $nim_notcurses_version.major,
-    $nim_notcurses_version.minor,
-    $nim_notcurses_version.patch,
-    $lib_notcurses_major,
-    $notcurses_version()
-  ]).strip.replace("\n", " ")
-  styledWriteLine(stderr, fgRed, "Error: ", resetStyle, majorMismatchMsg)
-  raise (ref AbiDefect)(msg: "libnotcurses major version mismatch")
-
-const ncWarnMinor {.booldefine.}: bool = true
-
-when ncWarnMinor:
-  if (nim_notcurses_version.major, nim_notcurses_version.minor) >
-      (lib_notcurses_major, lib_notcurses_minor):
-    let minorMismatchMsg = ("""
-nim-notcurses minor version $1.$2 is newer than Notcurses library minor
-version $4.$5 (nim-notcurses: $1.$2.$3, libnotcurses: $6)
-    """ % [
-      $nim_notcurses_version.major,
-      $nim_notcurses_version.minor,
-      $nim_notcurses_version.patch,
-      $lib_notcurses_major,
-      $lib_notcurses_minor,
-      $notcurses_version()
-    ]).strip.replace("\n", " ")
-    styledWriteLine(stderr, fgYellow, "Warning: ", resetStyle, minorMismatchMsg)
