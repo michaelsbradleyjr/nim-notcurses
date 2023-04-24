@@ -17,19 +17,24 @@ when defined(windows):
 else:
   type Wchar* {.header: wchar_header, importc: wchar_t.} = distinct cuint
 
+when (NimMajor, NimMinor) == (1, 2):
+  proc `==`*(x, y: Wchar): bool {.borrow.}
+else:
+  func `==`*(x, y: Wchar): bool {.borrow.}
+
 template wchar*(u: untyped): Wchar = u.Wchar
 
 proc wcwidth*(wc: Wchar): cint {.cdecl, header: wchar_header, importc.}
 
 # adapted from: https://stackoverflow.com/a/148766
-func toSeqB*(s: openArray[Wchar]): seq[byte] =
+func toSeqB*(ws: ptr UncheckedArray[Wchar]): seq[byte] =
   var
     c: distinctBase(Wchar)
     codepoint: uint32
     i = 0
     bytes: seq[byte]
   while true:
-    c = distinctBase(Wchar)(s[i])
+    c = distinctBase(Wchar)(ws[][i])
     if c == 0:
       break
     elif (c >= 0xd800) and (c <= 0xdbff):
@@ -57,17 +62,19 @@ func toSeqB*(s: openArray[Wchar]): seq[byte] =
     inc i
   bytes
 
+func toSeqB*(ws: openArray[Wchar]): seq[byte] =
+  toSeqB cast[ptr UncheckedArray[Wchar]](unsafeAddr ws[0])
+
 # adapted from: https://stackoverflow.com/a/148766
-func toSeqDbW*(s: string, l: int): seq[distinctBase(Wchar)] =
+func toSeqDbW*(s: string): seq[distinctBase(Wchar)] =
+  let l = s.len
   var
     c = 0'u8
     codepoint: uint32
     i = 0
     codes: seq[distinctBase(Wchar)]
   while true:
-    if i == l:
-      codes.add 0
-      break
+    if i == l: break
     c = s[i].uint8
     if c <= 0x7f:
       codepoint = c
@@ -100,15 +107,16 @@ func toSeqDbW*(s: string, l: int): seq[distinctBase(Wchar)] =
 macro L*(s: static string): untyped =
   # debugEcho s
   result = newStmtList()
+  var codes = toSeqDbW(s)
+  codes.add 0
   let
-    toArrayW = genSym(nskProc, "toArrayW")
-    codes = toSeqDbW(s, s.len)
     l = codes.len
+    toArrayW = genSym(nskProc, "toArrayW")
   result.add quote do:
     func `toArrayW`(): array[`l`, Wchar] {.compileTime.} =
-      var a: array[`l`, Wchar]
+      var ws: array[`l`, Wchar]
       for i, codepoint in `codes`:
-        a[i] = codepoint.wchar
-      a
+        ws[i] = codepoint.wchar
+      ws
     `toArrayW`()
   # debugEcho toStrLit(result)
