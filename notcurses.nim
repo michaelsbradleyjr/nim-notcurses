@@ -1,6 +1,7 @@
-import ./notcurses/abi
-include ./notcurses/abi/version
-include ./notcurses/api/constants
-include ./notcurses/api/impl
+{.passL: "-lnotcurses -lnotcurses-core".}
 
-defineNcInit(Notcurses, notcurses_init)
+import ./notcurses/api/impl
+
+export impl except setNcInit, setNcCoreInit
+
+setNcInit()

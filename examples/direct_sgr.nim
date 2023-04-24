@@ -4,7 +4,7 @@ import notcurses/direct/core
 
 # https://en.wikipedia.org/wiki/ANSI_escape_code#SGR
 
-let ncd = Ncd.init NcdOptions.init [DirectDrainInput]
+let ncd = Ncd.init NcdOptions.init [InitOptions.DrainInput]
 
 func style(i: uint32): Styles = cast[Styles](i)
 

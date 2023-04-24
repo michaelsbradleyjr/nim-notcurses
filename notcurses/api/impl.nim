@@ -1,12 +1,64 @@
+when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
+  {.push raises: [].}
+else:
+  {.push raises: [Defect].}
+
+import std/[atomics, bitops, macros, options, sets, strformat, strutils]
+import pkg/stew/[byteutils, results]
+import ../abi/impl
+import ./common
+import ./constants
+
+export Time, Timespec, options
+export common except ApiDefect, isNcInited, isNcdInited, setNcInited,
+  setNcIniting, setNcStopped, setNcStopping, setNcdInited, setNcdIniting,
+  setNcdStopped, setNcdStopping
+export constants except AllKeys, DefectMessages
+
+type
+  Channel = common.Channel
+
+  ChannelPair* = common.ChannelPair
+
+  ErrorMessages {.pure.} = enum
+    Grad = "ncplane_gradient failed"
+    Grad2x1 = "ncplane_gradient2x1 failed"
+    PutStr = "ncplane_putstr failed"
+    PutStrAligned = "ncplane_putstr_aligned failed"
+    PutStrYx = "ncplane_putstr_yx failed"
+    PutWc = "ncplane_putwc failed"
+    Render = "notcurses_render failed"
+    SetScroll = "ncplane_set_scrolling failed"
+
+  InitProc = proc (o: ptr notcurses_options, f: File): ptr notcurses {.cdecl.}
+
+  Input* = object
+    cObj: ncinput
+
+  Margins* = tuple[top, right, bottom, left: uint32]
+
+  Notcurses* = object
+    cPtr: ptr notcurses
+
+  Options* = object
+    cObj: notcurses_options
+
+  Plane* = object
+    cPtr: ptr ncplane
+
+  PlaneDimensions* = tuple[y, x: uint32]
+
+  TermDimensions* = tuple[rows, cols: uint32]
+
+  # Aliases
+  Nc* = Notcurses
+  NcOptions* = Options
+
 var
-  ncPtr: Atomic[ptr notcurses]
-  ncdPtr: Atomic[ptr ncdirect]
   ncApiObj {.threadvar.}: Notcurses
-  ncdApiObj {.threadvar.}: NotcursesDirect
   ncExitProcAdded: Atomic[bool]
-  ncdExitProcAdded: Atomic[bool]
-  ncStopped: Atomic[bool]
-  ncdStopped: Atomic[bool]
+  ncInit: InitProc
+  ncPtr: Atomic[ptr notcurses]
 
 func fmtPoint(point: uint32): string =
   let hex = point.uint64.toHex.strip(
@@ -56,28 +108,9 @@ proc dimYx*(plane: Plane): PlaneDimensions =
 
 func event*(input: Input): InputEvents = cast[InputEvents](input.cObj.evtype)
 
-proc expect*[T: ApiSuccess, E: ApiError](res: Result[T, E],
-    m = $FailureNotExpected): T {.discardable.} =
-  results.expect(res, m)
-
-proc expect*[E: ApiError](res: Result[void, E], m = $FailureNotExpected) =
-  results.expect(res, m)
-
 proc get*(T: type Notcurses): T =
-  let cPtr = ncPtr.load
-  if cPtr.isNil:
-    raise (ref ApiDefect)(msg: $NotInitialized)
-  elif ncApiObj.cPtr.isNil or ncApiObj.cPtr != cPtr:
-    ncApiObj = T(cPtr: cPtr)
+  if not isNcInited(): raise (ref ApiDefect)(msg: $NotcursesNotInitialized)
   ncApiObj
-
-proc get*(T: type NotcursesDirect): T =
-  let cPtr = ncdPtr.load
-  if cPtr.isNil:
-    raise (ref ApiDefect)(msg: $NotInitialized)
-  elif ncdApiObj.cPtr.isNil or ncdApiObj.cPtr != cPtr:
-    ncdApiObj = T(cPtr: cPtr)
-  ncdApiObj
 
 # for `notcurses_get`, etc. (i.e. abi calls that return 0'u32 on timeout), use
 # Option none for timeout and Option some Codepoint otherwise
@@ -121,7 +154,8 @@ proc getBlocking*(nc: Notcurses): Input =
   nc.getBlocking input
   input
 
-func init*(T: type Margins, top, right, bottom, left = 0'u32): T =
+func init*(T: type Margins, top = 0'u32, right = 0'u32, bottom = 0'u32,
+    left = 0'u32): T =
   (top, right, bottom, left)
 
 func init*(T: type Options, initOptions: openArray[InitOptions] = [], term = "",
@@ -136,13 +170,6 @@ func init*(T: type Options, initOptions: openArray[InitOptions] = [], term = "",
     margin_r: margins.right, margin_b: margins.bottom, margin_l: margins.left,
     flags: flags))
 
-func init*(T: type DirectOptions,
-    initOptions: openArray[DirectInitOptions] = [], term = ""): T =
-  var flags = 0'u64
-  for o in initOptions[0..^1]:
-    flags = bitor(flags, o.uint64)
-  T(flags: flags, term: term)
-
 func key*(input: Input): Option[Keys] =
   let codepoint = input.codepoint
   if codepoint.uint32 in AllKeys: some cast[Keys](codepoint)
@@ -155,14 +182,6 @@ proc putStr*(plane: Plane, s: string): Result[ApiSuccess, ApiErrorCode] =
   else:
     ok code
 
-proc putStr*(ncd: NotcursesDirect, s: string, channel = 0.Channel):
-    Result[ApiSuccess, ApiErrorCode] =
-  let code = ncd.cPtr.ncdirect_putstr(channel.uint64, s.cstring)
-  if code < 0:
-    err ApiErrorCode(code: code, msg: $DirectPutStr)
-  else:
-    ok code
-
 proc putStrAligned*(plane: Plane, s: string, alignment: Align, y = -1'i32):
     Result[ApiSuccess, ApiErrorCode] =
   let code = plane.cPtr.ncplane_putstr_aligned(y, cast[ncalign_e](alignment),
@@ -172,7 +191,7 @@ proc putStrAligned*(plane: Plane, s: string, alignment: Align, y = -1'i32):
   else:
     ok code
 
-proc putStrYx*(plane: Plane, s: string, y, x = -1'i32):
+proc putStrYx*(plane: Plane, s: string, y = -1'i32, x = -1'i32):
     Result[ApiSuccess, ApiErrorCode] =
   let code = plane.cPtr.ncplane_putstr_yx(y, x, s.cstring)
   if code <= 0:
@@ -194,6 +213,22 @@ proc render*(nc: Notcurses): Result[void, ApiErrorCode] =
   else:
     ok()
 
+proc setNcInit*() =
+  if ncInit.isNil: ncInit = notcurses_init
+  elif ncInit != notcurses_init:
+    let msg =
+      "cannot set init proc as notcurses_init when it is already set as " &
+      "notcurses_core_init"
+    raise (ref ApiDefect)(msg: msg)
+
+proc setNcCoreInit*() =
+  if ncInit.isNil: ncInit = notcurses_core_init
+  elif ncInit != notcurses_core_init:
+    let msg =
+      "cannot set init proc as notcurses_core_init when it is already set as " &
+      "notcurses_init"
+    raise (ref ApiDefect)(msg: msg)
+
 proc setScrolling*(plane: Plane, enable: bool): bool =
   plane.cPtr.ncplane_set_scrolling enable.uint32
 
@@ -202,17 +237,6 @@ proc setStyles*(plane: Plane, styles: varargs[Styles]) =
   for s in styles[0..^1]:
     stylebits = bitor(stylebits, s.uint32)
   plane.cPtr.ncplane_set_styles stylebits
-
-proc setStyles*(ncd: NotcursesDirect, styles: varargs[Styles]):
-    Result[ApiSuccess, ApiErrorCode] =
-  var stylebits = 0'u32
-  for s in styles[0..^1]:
-    stylebits = bitor(stylebits, s.uint32)
-  let code = ncd.cPtr.ncdirect_set_styles stylebits
-  if code != 0:
-    err ApiErrorCode(code: code, msg: $DirectSetStyles)
-  else:
-    ok code
 
 proc stdDimYx*(nc: Notcurses, y, x: var uint32): Plane =
   let cPtr = nc.cPtr.notcurses_stddim_yx(addr y, addr x)
@@ -223,116 +247,55 @@ proc stdPlane*(nc: Notcurses): Plane =
   Plane(cPtr: cPtr)
 
 proc stop*(nc: Notcurses) =
-  if ncStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
-  let code = nc.cPtr.notcurses_stop
-  if code < 0:
-    raise (ref ApiDefect)(msg: $FailedToStop)
-  elif ncStopped.exchange(true):
-    raise (ref ApiDefect)(msg: $AlreadyStopped)
+  setNcStopping()
+  if nc.cPtr.notcurses_stop < 0:
+    raise (ref ApiDefect)(msg: $NotcursesFailedToStop)
   else:
     ncPtr.store(nil)
     ncApiObj = Notcurses()
-
-proc stop*(ncd: NotcursesDirect) =
-  if ncdStopped.load: raise (ref ApiDefect)(msg: $AlreadyStopped)
-  let code = ncd.cPtr.ncdirect_stop
-  if code < 0:
-    raise (ref ApiDefect)(msg: $FailedToStop)
-  elif ncdStopped.exchange(true):
-    raise (ref ApiDefect)(msg: $AlreadyStopped)
-  else:
-    ncdPtr.store(nil)
-    ncdApiObj = NotcursesDirect()
+    setNcStopped()
 
 proc stopNotcurses() {.noconv.} = Notcurses.get.stop
 
-proc stopNotcursesDirect() {.noconv.} = NotcursesDirect.get.stop
-
 when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
   import std/exitprocs
-  template addExitProc*(T: type Notcurses) =
+  template addExitProc(T: type Notcurses) =
     if not ncExitProcAdded.exchange(true): addExitProc stopNotcurses
-  template addExitProc*(T: type NotcursesDirect) =
-    if not ncdExitProcAdded.exchange(true): addExitProc stopNotcursesDirect
 else:
-  template addExitProc*(T: type Notcurses) =
+  template addExitProc(T: type Notcurses) =
     if not ncExitProcAdded.exchange(true): addQuitProc stopNotcurses
-  template addExitProc*(T: type NotcursesDirect) =
-    if not ncdExitProcAdded.exchange(true): addQuitProc stopNotcursesDirect
 
-macro defineNcInit(T: untyped, ncInit: untyped): untyped =
-  quote do:
-    proc init*(T: type `T`, options = Options.init, file = stdout,
-        addExitProc = true): `T` =
-      if not ncPtr.load.isNil:
-        raise (ref ApiDefect)(msg: $AlreadyInitialized)
-      else:
-        var cOpts = options.cObj
-        var cPtr: ptr abi.notcurses
-        when (NimMajor, NimMinor, NimPatch) < (1, 6, 0):
-          try:
-            cPtr = `ncInit`(addr cOpts, file)
-          except Exception:
-            raise (ref ApiDefect)(msg: $FailedToInitialize)
-        else:
-          cPtr = `ncInit`(addr cOpts, file)
-        if cPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
-        ncApiObj = `T`(cPtr: cPtr)
-        if not ncPtr.exchange(ncApiObj.cPtr).isNil:
-          raise (ref ApiDefect)(msg: $AlreadyInitialized)
-        ncStopped.store(false)
-        if addExitProc:
-          when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-            {.warning[BareExcept]: off.}
-          try:
-            `T`.addExitProc
-          except Exception as e:
-            var msg = $AddExitProcFailed
-            if e.msg != "":
-              msg = msg & " with message \"" & e.msg & "\""
-            raise (ref ApiDefect)(msg: msg)
-          when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-            {.warning[BareExcept]: on.}
-        ncApiObj
-
-macro defineNcdInit(T: untyped, ncdInit: untyped): untyped =
-  quote do:
-    proc init*(T: type `T`, options = DirectOptions.init, file = stdout,
-        addExitProc = true): `T` =
-      if not ncdPtr.load.isNil:
-        raise (ref ApiDefect)(msg: $AlreadyInitialized)
-      else:
-        var cPtr: ptr abi.ncdirect
-        var termtype: cstring
-        if options.term != "": termtype = options.term.cstring
-        when (NimMajor, NimMinor, NimPatch) < (1, 6, 0):
-          try:
-            cPtr = `ncdInit`(termtype, file, options.flags)
-          except Exception:
-            raise (ref ApiDefect)(msg: $FailedToInitialize)
-        else:
-          cPtr = `ncdInit`(termtype, file, options.flags)
-        if cPtr.isNil: raise (ref ApiDefect)(msg: $FailedToInitialize)
-        ncdApiObj = `T`(cPtr: cPtr)
-        if not ncdPtr.exchange(ncdApiObj.cPtr).isNil:
-          raise (ref ApiDefect)(msg: $AlreadyInitialized)
-        ncdStopped.store(false)
-        if addExitProc:
-          when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-            {.warning[BareExcept]: off.}
-          try:
-            `T`.addExitProc
-          except Exception as e:
-            var msg = $AddExitProcFailed
-            if e.msg != "":
-              msg = msg & " with message \"" & e.msg & "\""
-            raise (ref ApiDefect)(msg: msg)
-          when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-            {.warning[BareExcept]: on.}
-        ncdApiObj
-
-func supportedStyles*(ncd: NotcursesDirect): uint16 =
-  ncd.cPtr.ncdirect_supported_styles
+proc init*(T: type Notcurses, options = Options.init, file = stdout,
+    addExitProc = true): T =
+  setNcIniting()
+  if ncInit.isNil: raise (ref ApiDefect)(msg: $NotcursesInitNotSet)
+  var cOpts = options.cObj
+  var cPtr: ptr notcurses
+  when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+    {.warning[BareExcept]: off.}
+  try:
+    cPtr = ncInit(addr cOpts, file)
+  except Exception:
+    raise (ref ApiDefect)(msg: $NotcursesFailedToInitialize)
+  when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+    {.warning[BareExcept]: on.}
+  if cPtr.isNil: raise (ref ApiDefect)(msg: $NotcursesFailedToInitialize)
+  ncApiObj = T(cPtr: cPtr)
+  ncPtr.store cPtr
+  if addExitProc:
+    when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+      {.warning[BareExcept]: off.}
+    try:
+      T.addExitProc
+    except Exception as e:
+      var msg = $AddExitProcFailed
+      if e.msg != "":
+        msg = msg & " with message \"" & e.msg & "\""
+      raise (ref ApiDefect)(msg: msg)
+    when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+      {.warning[BareExcept]: on.}
+  setNcInited()
+  ncApiObj
 
 func toBytes(buf: array[5, char]): seq[byte] =
   const nullC = '\x00'.char

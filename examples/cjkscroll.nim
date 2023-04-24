@@ -9,7 +9,7 @@ setLocale(LC_ALL, "").expect
 
 # if locale was set manually then use option InhibitSetLocale
 let
-  opts = [CliMode, DrainInput, InhibitSetLocale]
+  opts = [InitOptions.CliMode, InitOptions.DrainInput, InitOptions.InhibitSetLocale]
   nc = Nc.init(NcOptions.init opts, addExitProc = false)
   stdn = nc.stdPlane
 
@@ -20,9 +20,9 @@ proc stop() {.noconv.} =
 
 setControlCHook(stop)
 
-stdn.setStyles(Bold)
+stdn.setStyles(Styles.Bold)
 stdn.putStr("\nThis program is *not* indicative of real scrolling speed.\n\n").expect
-stdn.setStyles(None)
+stdn.setStyles(Styles.None)
 
 # https://codepoints.net/cjk_unified_ideographs
 const
