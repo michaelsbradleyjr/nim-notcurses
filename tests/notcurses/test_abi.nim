@@ -14,10 +14,10 @@ when not defined(windows):
     teardown:
       if notcurses_stop(nc) < 0: raise (ref Defect)(msg: "Notcurses failed to stop")
 
-    test "test 1":
+    test "init then stop":
       check: true
 
-    test "test 2":
+    test "init then stop again":
       check: true
 
 # wide string literals in notcurses/notcurses.h are defined in abi/wide.nim as
@@ -34,7 +34,7 @@ macro mkImpc(names: static openArray[string]): untyped =
   result = newStmtList()
   for name in names:
     let
-      cname = ident(name)
+      cname = ident name
       impc_aw = ident(name & "_impc_aw")
       impc_puaw = ident(name & "_impc_puaw")
     result.add quote do:
@@ -61,13 +61,13 @@ macro compareW(names: static openArray[string]): untyped =
         let wc = `wa_impc_puaw`[][i]
         if wc == 0.wchar: break
         inc i
-      check: `wa`.len == i + 1
-      for j in 0..(`wa`.len - 1):
+      check: i + 1 == `wa`.len
+      for j in 0..<`wa`.len:
         check:
-          `wa`[j] == `wa_impc_aw`[j]
-          `wa`[j] == `wa_impc_puaw`[][j]
+          `wa_impc_aw`[j] == `wa`[j]
+          `wa_impc_puaw`[][j] == `wa`[j]
   # debugEcho toStrLit(result)
 
 suite "ABI tests (no init)":
-  test "compare wide strings importc'd from notcurses/ncseqs.h with constants":
+  test "compare importc'd wide strings with constants":
     compareW ncWideSeqsNames

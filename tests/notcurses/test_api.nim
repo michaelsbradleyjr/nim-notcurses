@@ -1,8 +1,8 @@
 import std/macros
 import pkg/unittest2
 import notcurses
-import notcurses/abi/constants/ncseqs
-import ./helpers/ncseqs as helpers_ncseqs
+import notcurses/abi/constants
+import ./helpers/ncseqs
 
 when not defined(windows):
   suite "API tests":
@@ -14,15 +14,15 @@ when not defined(windows):
     teardown:
       nc.stop
 
-    test "test 1":
+    test "init then stop":
       check: true
 
-    test "test 2":
+    test "init then stop again":
       check: true
 
 # to ensure that `string.fromWide` and `[string].toWide` are implemented
 # correctly, tests are provided below that compare wide strings converted to
-# Nim strings with the string literals they should match, and then converts
+# Nim strings with Nim string literals they should match, and then converts
 # those Nim strings back to wide strings to compare them with the originals
 
 macro compareN(names: static openArray[string]): untyped =
@@ -33,27 +33,37 @@ macro compareN(names: static openArray[string]): untyped =
       wa = ident name
       ns = ident(name & "_ns")
     result.add quote do:
-      check: string.fromWide(`wa`) == `ns`
+      let ns1 = string.fromWide `wa`
+      check: ns1 == `ns`
+      var wcs: seq[Wchar]
+      let ws = ns1.toWide(wcs)
+      var i = 0
+      while true:
+        let wc = ws[][i]
+        if wc == 0.wchar: break
+        inc i
+      check: i + 1 == `wa`.len
+      for j in 0..<`wa`.len:
+        check:
+          wcs[j] == `wa`[j]
+          ws[][j] == `wa`[j]
+      let
+        ns2 = string.fromWide wcs
+        ns3 = string.fromWide ws
+      check:
+        ns2 == `ns`
+        ns3 == `ns`
   # debugEcho toStrLit(result)
 
 suite "API tests (no init)":
-  test "compare wide strings converted to Nim strings with string literals":
+  test "compare constants converted to Nim strings <-> wide strings with statics and originals":
     compareN ncWideSeqsNames
-    check:
-      $NCBOXLIGHT == NCBOXLIGHT_ns
-      $NCBOXHEAVY == NCBOXHEAVY_ns
-      $NCBOXROUND == NCBOXROUND_ns
-      $NCBOXDOUBLE == NCBOXDOUBLE_ns
-      $NCBOXASCII == NCBOXASCII_ns
-      $NCBOXOUTER == NCBOXOUTER_ns
-
-  # impl me, after impl'ing `[string].toWide`
-  # test "compare Nim strings converted to wide strings with constants":
-  #   compareToW ncWideSeqsNames
-  #   check:
-  #     NCBOXLIGHT == NCBOXLIGHT_ns.cstring
-  #     NCBOXHEAVY == NCBOXHEAVY_ns.cstring
-  #     NCBOXROUND == NCBOXROUND_ns.cstring
-  #     NCBOXDOUBLE == NCBOXDOUBLE_ns.cstring
-  #     NCBOXASCII == NCBOXASCII_ns.cstring
-  #     NCBOXOUTER == NCBOXOUTER_ns.cstring
+    for cs in [NCBOXLIGHT, NCBOXHEAVY, NCBOXROUND, NCBOXDOUBLE, NCBOXASCII, NCBOXOUTER]:
+      var wcs: seq[Wchar]
+      let ws = ($cs).toWide(wcs)
+      let
+        ns1 = string.fromWide wcs
+        ns2 = string.fromWide ws
+      check:
+        ns1.cstring == cs
+        ns2.cstring == cs

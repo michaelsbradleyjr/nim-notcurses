@@ -63,9 +63,8 @@ jobs:
         if: matrix.platform.os == 'macos'
         run: |
           brew install \
-            coreutils \
+            bash \
             ffmpeg \
-            findutils \
             libdeflate \
             libunistring \
             ncurses \
@@ -213,12 +212,9 @@ jobs:
           # ../pkgs/foo-1.2.3/ but the project's .nimble file has been updated
           # to install foo-#head. In the case of a broken symlink, Nimble's
           # auto-overwrite fails (only sometimes? only on macOS?)
+          source "${HOME}/.bash_env"
           cd "${NIMBLE_DIR}/bin"
-          if [[ ${{ matrix.platform.os }} = macos ]]; then
-            gfind . -xtype l -delete
-          else
-            find . -xtype l -delete
-          fi
+          find -L . -type l -delete
           cd -
           source "${HOME}/.bash_env"
           nimble --accept install --depsOnly
@@ -232,35 +228,12 @@ jobs:
       - name: Build examples
         run: |
           source "${HOME}/.bash_env"
-          declare -a modules=(
-            cjkscroll
-            cli1
-            cli2
-            direct1
-            direct_sgr
-            gradients
-            multiselect
-            tui1
-            zalgo
-          )
-          for module in ${modules[@]}; do
-            echo nim c --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/${module}.nim
-            nim c --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/${module}.nim
-            echo
-            echo nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/${module}.nim
-            nim c -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2" examples/${module}.nim
-            echo
-          done
-          if [[ ${{ matrix.platform.os }} = macos ]]; then
-            gfind examples/ -maxdepth 1 -type f | grep -v '\..*$' | xargs ls -ladh
-          elif [[ ${{ matrix.platform.os }} = ubuntu ]]; then
-            find examples/ -maxdepth 1 -type f | grep -v '\..*$' | xargs ls -ladh
-          else
-            ls -ladh examples/*.exe
-          fi
+          extras/build_examples.sh --nimblePath:"${NIMBLE_DIR}/pkgs2"
+          echo
+          extras/build_examples.sh -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2"
 
       # Notcurses is currently not able to access Windows ConPTY in GitHub Actions
       - name: Build and run tests
         run: |
           source "${HOME}/.bash_env"
-          nimble test
+          nimble --verbose test

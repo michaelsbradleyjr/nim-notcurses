@@ -108,9 +108,9 @@ import notcurses/abi/direct
 
 let ncd = ncdirect_init(nil, stdout, 0)
 # or: let ncd = ncdirect_core_init(nil, stdout, 0)
-if isNil ncd: raise (ref Defect)(msg: "Notcurses failed to initialize")
+if isNil ncd: raise (ref Defect)(msg: "Direct mode failed to initialize")
 
-if ncdirect_stop(ncd) < 0: raise (ref Defect)(msg: "Notcurses failed to stop")
+if ncdirect_stop(ncd) < 0: raise (ref Defect)(msg: "Direct mode failed to stop")
 ```
 
 ## Examples

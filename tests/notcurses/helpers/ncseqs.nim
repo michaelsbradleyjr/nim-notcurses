@@ -1,7 +1,3 @@
-from notcurses/abi/wide import Wchar
-
-proc `==`*(x, y: Wchar): bool {.borrow.}
-
 const ncWideSeqsNames* = [
   "NCBOXLIGHTW",
   "NCBOXHEAVYW",
