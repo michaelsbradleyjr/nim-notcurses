@@ -17,3 +17,9 @@ for module in ${modules[@]}; do
   nim c "$@" examples/${module}.nim
   echo
 done
+
+if [[ -v MSYSTEM ]]; then
+  ls -ladh examples/*.exe
+else
+  find examples -maxdepth 1 -type f | grep -v '\..*$' | xargs ls -ladh
+fi
