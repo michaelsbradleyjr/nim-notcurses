@@ -4,8 +4,10 @@ else:
   {.push raises: [Defect].}
 
 import std/[bitops, macros, typetraits]
+import pkg/stew/byteutils
 
 const
+  unexpected_base = "unexpected base type for Wchar"
   wchar_header = "<wchar.h>"
   wchar_t = "wchar_t"
 
@@ -17,47 +19,52 @@ when defined(windows):
 else:
   type Wchar* {.header: wchar_header, importc: wchar_t.} = distinct cuint
 
+type DbW = distinctBase(Wchar)
+
 when (NimMajor, NimMinor) == (1, 2):
   proc `==`*(x, y: Wchar): bool {.borrow.}
 else:
   func `==`*(x, y: Wchar): bool {.borrow.}
 
-template wchar*(u: untyped): Wchar = u.Wchar
+template wchar*(u: untyped): Wchar = Wchar(u)
 
 proc wcwidth*(wc: Wchar): cint {.cdecl, header: wchar_header, importc.}
 
 # adapted from: https://stackoverflow.com/a/148766
 func toSeqB*(ws: ptr UncheckedArray[Wchar]): seq[byte] =
+  when not (DbW is cuint or DbW is cushort):
+    # `when` branch was added for defining `type Wchar` but is not accounted
+    # for in `toSeqB`
+    {.fatal: unexpectedBase & ": " & $distinctBase(Wchar).}
   var
-    c: distinctBase(Wchar)
-    codepoint: uint32
+    c = DbW(0)
+    codepoint = 0'u32
     i = 0
     bytes: seq[byte]
   while true:
-    c = distinctBase(Wchar)(ws[][i])
-    if c == 0:
-      break
+    c = DbW(ws[][i])
+    if c == 0: break
     elif (c >= 0xd800) and (c <= 0xdbff):
       codepoint = ((c - 0xd800).uint32 shl 10) + 0x10000
     else:
       if (c >= 0xdc00) and (c <= 0xdfff):
-         codepoint = bitor(codepoint, (c - 0xdc00).uint32)
+        codepoint = bitor(codepoint, (c - 0xdc00).uint32)
       else:
         codepoint = c.uint32
       if codepoint <= 0x7f:
         bytes.add codepoint.byte
       elif codepoint <= 0x7ff:
-        bytes.add bitor(0xc0.uint32, bitand(codepoint shr 6, 0x1f)).byte
-        bytes.add bitor(0x80.uint32, bitand(codepoint, 0x3f)).byte
+        bytes.add bitor(0xc0'u32, bitand(codepoint shr 6, 0x1f)).byte
+        bytes.add bitor(0x80'u32, bitand(codepoint, 0x3f)).byte
       elif codepoint <= 0xffff:
-        bytes.add bitor(0xe0.uint32, bitand(codepoint shr 12, 0x0f)).byte
-        bytes.add bitor(0x80.uint32, bitand(codepoint shr 6, 0x3f)).byte
-        bytes.add bitor(0x80.uint32, bitand(codepoint, 0x3f)).byte
+        bytes.add bitor(0xe0'u32, bitand(codepoint shr 12, 0x0f)).byte
+        bytes.add bitor(0x80'u32, bitand(codepoint shr 6, 0x3f)).byte
+        bytes.add bitor(0x80'u32, bitand(codepoint, 0x3f)).byte
       else:
-        bytes.add bitor(0xf0.uint32, bitand(codepoint shr 18, 0x07)).byte
-        bytes.add bitor(0x80.uint32, bitand(codepoint shr 12, 0x3f)).byte
-        bytes.add bitor(0x80.uint32, bitand(codepoint shr 6, 0x3f)).byte
-        bytes.add bitor(0x80.uint32, bitand(codepoint, 0x3f)).byte
+        bytes.add bitor(0xf0'u32, bitand(codepoint shr 18, 0x07)).byte
+        bytes.add bitor(0x80'u32, bitand(codepoint shr 12, 0x3f)).byte
+        bytes.add bitor(0x80'u32, bitand(codepoint shr 6, 0x3f)).byte
+        bytes.add bitor(0x80'u32, bitand(codepoint, 0x3f)).byte
       codepoint = 0
     inc i
   bytes
@@ -66,57 +73,76 @@ func toSeqB*(ws: openArray[Wchar]): seq[byte] =
   toSeqB cast[ptr UncheckedArray[Wchar]](unsafeAddr ws[0])
 
 # adapted from: https://stackoverflow.com/a/148766
-func toSeqDbW*(s: string): seq[distinctBase(Wchar)] =
-  let l = s.len
+func toSeqW*(s: string): seq[Wchar] =
+  let
+    bs = s.toBytes
+    l = bs.len
   var
-    c = 0'u8
-    codepoint: uint32
+    b = 0'u8
+    codepoint = 0'u32
+    codes: seq[DbW]
     i = 0
-    codes: seq[distinctBase(Wchar)]
   while true:
     if i == l: break
-    c = s[i].uint8
-    if c <= 0x7f:
-      codepoint = c
-    elif c <= 0xbf:
-      codepoint = bitor(codepoint shl 6, bitand(c, 0x3f))
-    elif c <= 0xdf:
-      codepoint = bitand(c, 0x1f)
-    elif c <= 0xef:
-      codepoint = bitand(c, 0x0f)
+    b = bs[i]
+    if b <= 0x7f:
+      codepoint = b
+    elif b <= 0xbf:
+      codepoint = bitor(codepoint shl 6, bitand(b, 0x3f))
+    elif b <= 0xdf:
+      codepoint = bitand(b, 0x1f)
+    elif b <= 0xef:
+      codepoint = bitand(b, 0x0f)
     else:
-      codepoint = bitand(c, 0x07)
+      codepoint = bitand(b, 0x07)
     inc i
     if i == l:
-      c = 0
+      b = 0
     else:
-      c = s[i].uint8
-    if (bitand(c, 0xc0) != 0x80) and (codepoint <= 0x10ffff):
-      when sizeof(Wchar) > 2:
-        codes.add distinctBase(Wchar)(codepoint)
-      else:
+      b = bs[i]
+    if (bitand(b, 0xc0) != 0x80) and (codepoint <= 0x10ffff):
+      when DbW is cuint:
+        codes.add DbW(codepoint)
+      elif DbW is cushort:
         if codepoint > 0xffff:
           codepoint = codepoint - 0x10000
-          codes.add distinctBase(Wchar)(0xd800 + (codepoint shr 10))
-          codes.add distinctBase(Wchar)(0xdc00 + bitand(codepoint, 0x03ff))
+          codes.add DbW(0xd800 + (codepoint shr 10))
+          codes.add DbW(0xdc00 + bitand(codepoint, 0x03ff))
         elif (codepoint < 0xd800) or (codepoint >= 0xe000):
-          codes.add distinctBase(Wchar)(codepoint)
-  codes
+          codes.add DbW(codepoint)
+      else:
+        # `when` branch was added for defining `type Wchar` but is not
+        # accounted for in `toSeqW`
+        {.fatal: unexpectedBase & ": " & $distinctBase(Wchar).}
+  when nimvm:
+    var wcs: seq[Wchar]
+    for c in codes:
+      wcs.add c.wchar
+    wcs
+  else:
+    cast[seq[Wchar]](codes)
 
 # https://en.cppreference.com/w/c/language/string_literal
 macro L*(s: static string): untyped =
   # debugEcho s
   result = newStmtList()
-  var codes = toSeqDbW(s)
-  codes.add 0
+  var wcs = toSeqW s
+  wcs.add 0.wchar
   let
-    l = codes.len
+    l = wcs.len
     toArrayW = genSym(nskProc, "toArrayW")
   result.add quote do:
     func `toArrayW`(): array[`l`, Wchar] {.compileTime.} =
       var ws: array[`l`, Wchar]
-      for i, codepoint in `codes`:
-        ws[i] = codepoint.wchar
+      for i, wc in `wcs`:
+        # when (NimMajor, NimMinor) < (2, 0):
+        when (NimMajor, NimMinor, NimPatch) < (1, 9, 3):
+          # at this point in macro expansion `wc` is a literal so must
+          # explicitly convert to Wchar
+          ws[i] = wc.wchar
+        else:
+          # not an issue in Nim 2.0+
+          ws[i] = wc
       ws
     `toArrayW`()
   # debugEcho toStrLit(result)
