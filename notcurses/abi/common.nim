@@ -10,7 +10,7 @@ import std/[strutils, terminal]
 import ./constants
 import ./wide
 
-export wide except toSeqB, toSeqDbW
+export wide except toSeqB, toSeqW
 
 type AbiDefect = object of Defect
 
