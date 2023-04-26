@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache_marker: [ 34 ]
+        cache_marker: [ 35 ]
         platform:
           - {
             icon: 🐧,
@@ -228,9 +228,9 @@ jobs:
       - name: Build examples
         run: |
           source "${HOME}/.bash_env"
-          extras/build_examples.sh --nimblePath:"${NIMBLE_DIR}/pkgs2"
+          extras/build_examples.sh
           echo
-          extras/build_examples.sh -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2"
+          extras/build_examples.sh -d:release
 
       # Notcurses is currently not able to access Windows ConPTY in GitHub Actions
       - name: Build and run tests
