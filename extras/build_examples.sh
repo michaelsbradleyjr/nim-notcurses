@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eo pipefail
+
 declare -a modules=(
   cjkscroll
   cli1

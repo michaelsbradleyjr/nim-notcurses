@@ -30,7 +30,7 @@ type
     Render = "notcurses_render failed"
     SetScroll = "ncplane_set_scrolling failed"
 
-  InitProc = proc (o: ptr notcurses_options, f: File): ptr notcurses {.cdecl.}
+  InitProc = proc (opts: ptr notcurses_options, fp: File): ptr notcurses {.cdecl.}
 
   Input* = object
     cObj: ncinput
@@ -57,7 +57,6 @@ type
 var
   ncApiObj {.threadvar.}: Notcurses
   ncExitProcAdded: Atomic[bool]
-  ncInit: InitProc
   ncPtr: Atomic[ptr notcurses]
 
 func fmtPoint(point: uint32): string =
@@ -213,22 +212,6 @@ proc render*(nc: Notcurses): Result[void, ApiErrorCode] =
   else:
     ok()
 
-proc setNcInit*() =
-  if ncInit.isNil: ncInit = notcurses_init
-  elif ncInit != notcurses_init:
-    let msg =
-      "cannot set init proc as notcurses_init when it is already set as " &
-      "notcurses_core_init"
-    raise (ref ApiDefect)(msg: msg)
-
-proc setNcCoreInit*() =
-  if ncInit.isNil: ncInit = notcurses_core_init
-  elif ncInit != notcurses_core_init:
-    let msg =
-      "cannot set init proc as notcurses_core_init when it is already set as " &
-      "notcurses_init"
-    raise (ref ApiDefect)(msg: msg)
-
 proc setScrolling*(plane: Plane, enable: bool): bool =
   plane.cPtr.ncplane_set_scrolling enable.uint32
 
@@ -265,16 +248,15 @@ else:
   template addExitProc(T: type Notcurses) =
     if not ncExitProcAdded.exchange(true): addQuitProc stopNotcurses
 
-proc init*(T: type Notcurses, options = Options.init, file = stdout,
-    addExitProc = true): T =
+proc init*(T: type Notcurses, initProc: InitProc, options = Options.init,
+    file = stdout, addExitProc = true): T =
   setNcIniting()
-  if ncInit.isNil: raise (ref ApiDefect)(msg: $NotcursesInitNotSet)
   var cOpts = options.cObj
   var cPtr: ptr notcurses
   when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
     {.warning[BareExcept]: off.}
   try:
-    cPtr = ncInit(addr cOpts, file)
+    cPtr = initProc(addr cOpts, file)
   except Exception:
     raise (ref ApiDefect)(msg: $NotcursesFailedToInitialize)
   when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):

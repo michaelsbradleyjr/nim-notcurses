@@ -1,10 +1,11 @@
 import std/macros
 import pkg/unittest2
 import notcurses/abi
+import notcurses/abi/direct
 import ./helpers/ncseqs
 
 when not defined(windows):
-  suite "ABI tests":
+  suite "ABI":
     setup:
       let flags = NCOPTION_CLI_MODE or NCOPTION_DRAIN_INPUT or NCOPTION_SUPPRESS_BANNERS
       var opts = notcurses_options(flags: flags)
@@ -13,6 +14,22 @@ when not defined(windows):
 
     teardown:
       if notcurses_stop(nc) < 0: raise (ref Defect)(msg: "Notcurses failed to stop")
+
+    test "init then stop":
+      check: true
+
+    test "init then stop again":
+      check: true
+
+  suite "ABI Direct mode":
+    setup:
+      let
+        flags = NCDIRECT_OPTION_DRAIN_INPUT
+        ncd = ncdirect_init(nil, stdout, flags)
+      if isNil ncd: raise (ref Defect)(msg: "Direct mode failed to initialize")
+
+    teardown:
+      if ncdirect_stop(ncd) < 0: raise (ref Defect)(msg: "Direct mode failed to stop")
 
     test "init then stop":
       check: true
@@ -68,6 +85,10 @@ macro compareW(names: static openArray[string]): untyped =
           `wa_impc_puaw`[][j] == `wa`[j]
   # debugEcho toStrLit(result)
 
-suite "ABI tests (no init)":
+suite "ABI (no init)":
   test "compare importc'd wide strings with constants":
     compareW ncWideSeqsNames
+
+suite "ABI Direct mode (no init)":
+  test "should write some tests":
+    check: true

@@ -2,17 +2,36 @@ import std/macros
 import pkg/unittest2
 import notcurses
 import notcurses/abi/constants
+import notcurses/direct
 import ./helpers/ncseqs
 
 when not defined(windows):
-  suite "API tests":
+  suite "API":
     setup:
       let
-        opts = [InitOptions.CliMode, InitOptions.DrainInput, InitOptions.SuppressBanners]
+        opts = [
+          notcurses.InitOptions.CliMode,
+          notcurses.InitOptions.DrainInput,
+          notcurses.InitOptions.SuppressBanners]
         nc = Nc.init(NcOptions.init opts, addExitProc = false)
 
     teardown:
       nc.stop
+
+    test "init then stop":
+      check: true
+
+    test "init then stop again":
+      check: true
+
+  suite "API Direct mode":
+    setup:
+      let
+        opts = [direct.InitOptions.DrainInput]
+        ncd = Ncd.init(NcdOptions.init opts, addExitProc = false)
+
+    teardown:
+      ncd.stop
 
     test "init then stop":
       check: true
@@ -55,7 +74,7 @@ macro compareN(names: static openArray[string]): untyped =
         ns3 == `ns`
   # debugEcho toStrLit(result)
 
-suite "API tests (no init)":
+suite "API (no init)":
   test "compare constants converted to Nim strings <-> wide strings with statics and originals":
     compareN ncWideSeqsNames
     for cs in [NCBOXLIGHT, NCBOXHEAVY, NCBOXROUND, NCBOXDOUBLE, NCBOXASCII, NCBOXOUTER]:
@@ -67,3 +86,7 @@ suite "API tests (no init)":
       check:
         ns1.cstring == cs
         ns2.cstring == cs
+
+suite "API Direct mode (no init)":
+  test "should write some tests":
+    check: true

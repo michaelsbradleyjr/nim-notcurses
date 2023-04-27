@@ -7,7 +7,6 @@ import std/[bitops, macros, typetraits]
 import pkg/stew/byteutils
 
 const
-  unexpected_base = "unexpected base type for Wchar"
   wchar_header = "<wchar.h>"
   wchar_t = "wchar_t"
 
@@ -35,7 +34,7 @@ func toSeqB*(ws: ptr UncheckedArray[Wchar]): seq[byte] =
   when not (DbW is cuint or DbW is cushort):
     # `when` branch was added for defining `type Wchar` but is not accounted
     # for in `toSeqB`
-    {.fatal: unexpectedBase & ": " & $distinctBase(Wchar).}
+    {.fatal: "unexpected base type for Wchar: " & $distinctBase(Wchar).}
   var
     c = DbW(0)
     codepoint = 0'u32
@@ -113,7 +112,7 @@ func toSeqW*(s: string): seq[Wchar] =
       else:
         # `when` branch was added for defining `type Wchar` but is not
         # accounted for in `toSeqW`
-        {.fatal: unexpectedBase & ": " & $distinctBase(Wchar).}
+        {.fatal: "unexpected base type for Wchar: " & $distinctBase(Wchar).}
   when nimvm:
     var wcs: seq[Wchar]
     for c in codes:
