@@ -3,7 +3,7 @@ import notcurses/core
 # or: import notcurses
 
 let
-  nc = Nc.init NcOptions.init [InitOptions.DrainInput]
+  nc = Nc.init NcOpts.init [InitFlags.DrainInput]
   stdn = nc.stdPlane
 
 const

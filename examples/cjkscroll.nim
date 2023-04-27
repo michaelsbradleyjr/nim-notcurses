@@ -7,10 +7,10 @@ import notcurses/locale
 # attempts to do it automatically; this is just an example of using setLocale
 setLocale(LC_ALL, "").expect
 
-# if locale was set manually then use option InhibitSetLocale
+# if locale was set manually then use flag InhibitSetLocale
 let
-  opts = [InitOptions.CliMode, InitOptions.DrainInput, InitOptions.InhibitSetLocale]
-  nc = Nc.init(NcOptions.init opts, addExitProc = false)
+  flags = [InitFlags.CliMode, DrainInput, InhibitSetLocale]
+  nc = Nc.init NcOpts.init flags
   stdn = nc.stdPlane
 
 proc stop() {.noconv.} =

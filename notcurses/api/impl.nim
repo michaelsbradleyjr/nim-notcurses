@@ -52,7 +52,7 @@ type
 
   # Aliases
   Nc* = Notcurses
-  NcOptions* = Options
+  NcOpts* = Options
 
 var
   ncApiObj {.threadvar.}: Notcurses
@@ -157,17 +157,18 @@ func init*(T: type Margins, top = 0'u32, right = 0'u32, bottom = 0'u32,
     left = 0'u32): T =
   (top, right, bottom, left)
 
-func init*(T: type Options, initOptions: openArray[InitOptions] = [], term = "",
+func init*(T: type Options, flags: openArray[InitFlags] = [], term = "",
     logLevel = LogLevels.Panic, margins = Margins.init): T =
-  var flags = 0'u64
-  for o in initOptions[0..^1]:
-    flags = bitor(flags, o.uint64)
+  var fs = 0'u64
+  for f in flags[0..^1]:
+    fs = bitor(fs, f.uint64)
   var termtype: cstring
   if term != "": termtype = term.cstring
-  T(cObj: notcurses_options(termtype: termtype,
+  let cObj = notcurses_options(termtype: termtype,
     loglevel: cast[ncloglevel_e](logLevel), margin_t: margins.top,
     margin_r: margins.right, margin_b: margins.bottom, margin_l: margins.left,
-    flags: flags))
+    flags: fs)
+  T(cObj: cObj)
 
 func key*(input: Input): Option[Keys] =
   let codepoint = input.codepoint

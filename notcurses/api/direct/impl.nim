@@ -32,24 +32,23 @@ type
 
   # Aliases
   Ncd* = NotcursesDirect
-  NcdOptions* = Options
+  NcdOpts* = Options
 
 var
   ncdApiObj {.threadvar.}: NotcursesDirect
   ncdExitProcAdded: Atomic[bool]
   ncdPtr: Atomic[ptr ncdirect]
+func init*(T: type Options, flags: openArray[InitFlags] = [], term = ""): T =
+  var fs = 0'u64
+  for f in flags[0..^1]:
+    fs = bitor(fs, f.uint64)
+  T(flags: fs, term: term)
 
 proc get*(T: type NotcursesDirect): T =
   if not isNcdInited():
     raise (ref ApiDefect)(msg: $NotcursesDirectNotInitialized)
   ncdApiObj
 
-func init*(T: type Options, initOptions: openArray[InitOptions] = [],
-    term = ""): T =
-  var flags = 0'u64
-  for o in initOptions[0..^1]:
-    flags = bitor(flags, o.uint64)
-  T(flags: flags, term: term)
 
 proc putStr*(ncd: NotcursesDirect, s: string, channel = Channel(0)):
     Result[ApiSuccess, ApiErrorCode] =

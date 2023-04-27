@@ -9,11 +9,11 @@ when not defined(windows):
   suite "API":
     setup:
       let
-        opts = [
-          notcurses.InitOptions.CliMode,
-          notcurses.InitOptions.DrainInput,
-          notcurses.InitOptions.SuppressBanners]
-        nc = Nc.init(NcOptions.init opts, addExitProc = false)
+        flags = [
+          notcurses.InitFlags.CliMode,
+          notcurses.InitFlags.DrainInput,
+          notcurses.InitFlags.SuppressBanners]
+        nc = Nc.init NcOpts.init flags
 
     teardown:
       nc.stop
@@ -27,8 +27,8 @@ when not defined(windows):
   suite "API Direct mode":
     setup:
       let
-        opts = [direct.InitOptions.DrainInput]
-        ncd = Ncd.init(NcdOptions.init opts, addExitProc = false)
+        flags = [direct.InitFlags.DrainInput]
+        ncd = Ncd.init NcdOpts.init flags
 
     teardown:
       ncd.stop

@@ -2,7 +2,7 @@ import notcurses/core
 # or: import notcurses
 
 let
-  nc = Nc.init NcOptions.init [InitOptions.CliMode, InitOptions.DrainInput]
+  nc = Nc.init NcOpts.init [InitFlags.CliMode, DrainInput]
   cy = nc.stdPlane.cursorY.int32
 
 proc putCentered(s: string, y: int32) =

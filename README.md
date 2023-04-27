@@ -68,7 +68,7 @@ let nc = Nc.init
 import notcurses
 # or: import notcurses/core
 
-let nc = Nc.init NcOptions.init [InitOptions.CliMode]
+let nc = Nc.init NcOpts.init [InitFlags.CliMode]
 ```
 
 #### Direct mode

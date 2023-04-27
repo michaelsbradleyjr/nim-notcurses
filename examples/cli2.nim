@@ -3,7 +3,7 @@ import notcurses/core
 # or: import notcurses
 
 let
-  nc = Nc.init NcOptions.init [InitOptions.CliMode]
+  nc = Nc.init NcOpts.init [InitFlags.CliMode]
   stdn = nc.stdPlane
 
 proc nop() {.noconv.} = discard
