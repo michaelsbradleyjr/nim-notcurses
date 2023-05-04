@@ -1,5 +1,4 @@
 import std/os
-import notcurses/locale
 import pkg/notcurses
 # or: import pkg/notcurses/core
 

@@ -6,10 +6,11 @@ else:
 import std/atomics
 import pkg/stew/results
 import ../abi/common
+import ../locale
 import ../wide
 import ./constants
 
-export results, wide
+export locale, results, wide
 
 type
   ApiDefect* = object of Defect
