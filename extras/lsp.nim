@@ -18,11 +18,10 @@ import
   notcurses/abi,
   notcurses/abi/core,
   notcurses/abi/direct,
-  notcurses/abi/direct/core as abi_ncd_core,
-  notcurses/core as nc_core,
-  notcurses/direct as ncd,
-  notcurses/direct/core as ncd_core,
-  notcurses/locale,
+  notcurses/abi/direct/core as notcurses_abi_direct_core,
+  notcurses/core as notcurses_core,
+  notcurses/direct as notcurses_direct,
+  notcurses/direct/core as notcurses_direct_core,
   tests/test_all
 
 {.warning[UnusedImport]: off.}
