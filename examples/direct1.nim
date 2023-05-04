@@ -1,5 +1,5 @@
-import notcurses/direct
-# or: import notcurses/direct/core
+import pkg/notcurses/direct
+# or: import pkg/notcurses/direct/core
 
 let ncd = Ncd.init NcdOpts.init [InitFlags.DrainInput]
 

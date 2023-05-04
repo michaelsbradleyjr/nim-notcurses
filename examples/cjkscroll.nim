@@ -1,7 +1,7 @@
 import std/os
-import notcurses
-# or: import notcurses/core
 import notcurses/locale
+import pkg/notcurses
+# or: import pkg/notcurses/core
 
 # locale can be set manually but it's generally not necessary because Notcurses
 # attempts to do it automatically; this is just an example of using setLocale

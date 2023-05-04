@@ -1,8 +1,8 @@
 import std/macros
+import pkg/notcurses
+import pkg/notcurses/abi/constants
+import pkg/notcurses/direct
 import pkg/unittest2
-import notcurses
-import notcurses/abi/constants
-import notcurses/direct
 import ./helpers/ncseqs
 
 when not defined(windows):

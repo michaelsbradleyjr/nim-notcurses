@@ -1,5 +1,5 @@
-import notcurses/core
-# or: import notcurses
+import pkg/notcurses/core
+# or: import pkg/notcurses
 
 let
   nc = Nc.init NcOpts.init [InitFlags.CliMode, DrainInput]

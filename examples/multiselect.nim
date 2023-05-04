@@ -1,11 +1,10 @@
 # refactor when nim-notcurses high-level api supports ncmselector
 
 import std/os
-import pkg/stew/byteutils
-import notcurses/abi
+import pkg/notcurses/abi
 
 # `ncvisual_from_file` makes use of Notcurses' multimedia stack so can't
-# `import notcurses/abi/core` if this example is to function fully
+# `import pkg/notcurses/abi/core` if this example is to function fully
 
 proc nop() {.noconv.} = discard
 setControlCHook(nop)

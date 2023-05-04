@@ -1,6 +1,6 @@
 import std/strutils
-import notcurses/direct/core
-# or: import notcurses/direct
+import pkg/notcurses/direct/core
+# or: import pkg/notcurses/direct
 
 # https://en.wikipedia.org/wiki/ANSI_escape_code#SGR
 
