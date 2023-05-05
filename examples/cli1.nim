@@ -5,6 +5,8 @@ let nc = Nc.init NcOpts.init [InitFlags.CliMode, DrainInput]
 
 nc.stdPlane.putStr("Hello, Notcurses!\n").expect
 
+nc.stop
+
 # in Notcurses' CLI mode '\n' in a string triggers a render+scroll, one or more
 # times depending on the number of times it's included
 

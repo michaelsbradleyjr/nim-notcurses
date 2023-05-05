@@ -10,6 +10,5 @@ import ./api/direct/impl
 
 export impl
 
-proc init*(T: type NotcursesDirect, options = Options.init, file = stdout,
-    addExitProc = true): T =
-  T.init(ncdirect_init, options, file, addExitProc)
+proc init*(T: type NotcursesDirect, options = Options.init, file = stdout): T =
+  T.init(ncdirect_init, options, file)

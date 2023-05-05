@@ -3,16 +3,14 @@ when (NimMajor, NimMinor) >= (1, 4):
 else:
   {.push raises: [Defect].}
 
-import std/[atomics, bitops, macros, options, sets, strformat, strutils]
+import std/[bitops, macros, options, strformat, strutils]
 import pkg/stew/[byteutils, results]
 import ../abi/impl
 import ./common
 import ./constants
 
 export Time, Timespec, options
-export common except ApiDefect, isNcInited, isNcdInited, setNcInited,
-  setNcIniting, setNcStopped, setNcStopping, setNcdInited, setNcdIniting,
-  setNcdStopped, setNcdStopping
+export common except ApiDefect, PseudoCodepoint
 export constants except AllKeys, DefectMessages
 
 type
@@ -30,7 +28,7 @@ type
     Render = "notcurses_render failed"
     SetScroll = "ncplane_set_scrolling failed"
 
-  InitProc = proc (opts: ptr notcurses_options, fp: File): ptr notcurses {.cdecl.}
+  Init = proc (opts: ptr notcurses_options, fp: File): ptr notcurses {.cdecl.}
 
   Input* = object
     cObj: ncinput
@@ -54,10 +52,6 @@ type
   Nc* = Notcurses
   NcOpts* = Options
 
-var
-  ncApiObj {.threadvar.}: Notcurses
-  ncExitProcAdded: Atomic[bool]
-  ncPtr: Atomic[ptr notcurses]
 
 func fmtPoint(point: uint32): string =
   let hex = point.uint64.toHex.strip(
@@ -102,10 +96,6 @@ proc dimYx*(plane: Plane): PlaneDimensions =
   (y, x)
 
 func event*(input: Input): InputEvents = cast[InputEvents](input.cObj.evtype)
-
-proc get*(T: type Notcurses): T =
-  if not isNcInited(): raise (ref ApiDefect)(msg: $NotcursesNotInitialized)
-  ncApiObj
 
 # for `notcurses_get`, etc. (i.e. abi calls that return 0'u32 on timeout), use
 # Option none for timeout and Option some Codepoint otherwise
@@ -155,16 +145,33 @@ func init*(T: type Margins, top = 0'u32, right = 0'u32, bottom = 0'u32,
 
 func init*(T: type Options, flags: openArray[InitFlags] = [], term = "",
     logLevel = LogLevels.Panic, margins = Margins.init): T =
-  var fs = 0'u64
-  for f in flags[0..^1]:
-    fs = bitor(fs, f.uint64)
+  let iflags = @flags
+  var flags = 0'u64
+  for f in iflags[0..^1]:
+    flags = bitor(flags, f.uint64)
   var termtype: cstring
   if term != "": termtype = term.cstring
   let cObj = notcurses_options(termtype: termtype,
     loglevel: cast[ncloglevel_e](logLevel), margin_t: margins.top,
     margin_r: margins.right, margin_b: margins.bottom, margin_l: margins.left,
-    flags: fs)
+    flags: flags)
   T(cObj: cObj)
+
+proc init*(T: type Notcurses, init: Init, options = Options.init,
+    file = stdout): T =
+  var
+    cOpts = options.cObj
+    cPtr: ptr notcurses
+  when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+    {.warning[BareExcept]: off.}
+  try:
+    cPtr = init(addr cOpts, file)
+  except Exception:
+    raise (ref ApiDefect)(msg: $NotcursesFailedToInitialize)
+  when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+    {.warning[BareExcept]: on.}
+  if cPtr.isNil: raise (ref ApiDefect)(msg: $NotcursesFailedToInitialize)
+  T(cPtr: cPtr)
 
 func key*(input: Input): Option[Keys] =
   let codepoint = input.codepoint
@@ -227,54 +234,8 @@ proc stdPlane*(nc: Notcurses): Plane =
   Plane(cPtr: cPtr)
 
 proc stop*(nc: Notcurses) =
-  setNcStopping()
   if nc.cPtr.notcurses_stop < 0:
     raise (ref ApiDefect)(msg: $NotcursesFailedToStop)
-  else:
-    ncPtr.store(nil)
-    ncApiObj = Notcurses()
-    setNcStopped()
-
-proc stopNotcurses() {.noconv.} = Notcurses.get.stop
-
-when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
-  import std/exitprocs
-  template addExitProc(T: type Notcurses) =
-    if not ncExitProcAdded.exchange(true): addExitProc stopNotcurses
-else:
-  template addExitProc(T: type Notcurses) =
-    if not ncExitProcAdded.exchange(true): addQuitProc stopNotcurses
-
-proc init*(T: type Notcurses, initProc: InitProc, options = Options.init,
-    file = stdout, addExitProc = true): T =
-  setNcIniting()
-  var cOpts = options.cObj
-  var cPtr: ptr notcurses
-  when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-    {.warning[BareExcept]: off.}
-  try:
-    cPtr = initProc(addr cOpts, file)
-  except Exception:
-    raise (ref ApiDefect)(msg: $NotcursesFailedToInitialize)
-  when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-    {.warning[BareExcept]: on.}
-  if cPtr.isNil: raise (ref ApiDefect)(msg: $NotcursesFailedToInitialize)
-  ncApiObj = T(cPtr: cPtr)
-  ncPtr.store cPtr
-  if addExitProc:
-    when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-      {.warning[BareExcept]: off.}
-    try:
-      T.addExitProc
-    except Exception as e:
-      var msg = $AddExitProcFailed
-      if e.msg != "":
-        msg = msg & " with message \"" & e.msg & "\""
-      raise (ref ApiDefect)(msg: msg)
-    when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-      {.warning[BareExcept]: on.}
-  setNcInited()
-  ncApiObj
 
 func toBytes(buf: array[5, char]): seq[byte] =
   const nullC = '\x00'.char

@@ -10,6 +10,5 @@ import ./api/impl
 
 export impl
 
-proc init*(T: type Notcurses, options = Options.init, file = stdout,
-    addExitProc = true): T =
-  T.init(notcurses_core_init, options, file, addExitProc)
+proc init*(T: type Notcurses, options = Options.init, file = stdout): T =
+  T.init(notcurses_core_init, options, file)

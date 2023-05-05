@@ -6,9 +6,6 @@ let
   nc = Nc.init NcOpts.init [InitFlags.CliMode]
   stdn = nc.stdPlane
 
-proc nop() {.noconv.} = discard
-setControlCHook(nop)
-
 proc put(s = "") = stdn.putStr(s).expect
 
 proc putLn(s = "") = put s & "\n"
@@ -59,6 +56,8 @@ while true:
   put "\n"
 
   if utf8.get("") == "q": break
+
+nc.stop
 
 # there are one/more bugs in Notcurses whereby, in some terminals, capability
 # query data is sometimes leaking into user input at the start of the program;

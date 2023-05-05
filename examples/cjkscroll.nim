@@ -12,13 +12,6 @@ let
   nc = Nc.init NcOpts.init flags
   stdn = nc.stdPlane
 
-proc stop() {.noconv.} =
-  stdn.putStr("\n\n").expect
-  nc.stop
-  quit(QuitSuccess)
-
-setControlCHook(stop)
-
 stdn.setStyles(Styles.Bold)
 stdn.putStr("\nThis program is *not* indicative of real scrolling speed.\n\n").expect
 stdn.setStyles(Styles.None)
@@ -35,6 +28,8 @@ while true:
   if u < last: inc u
   else: u = first
   sleep 10
+
+nc.stop
 
 # rendering after each putWc() isn't necessary but it makes the auto-scroll
 # behavior of Notcurses' CLI mode visually more apparent in the compiled

@@ -38,3 +38,5 @@ proc gradHigh() =
 gradA()
 gradStriations()
 gradHigh()
+
+nc.stop

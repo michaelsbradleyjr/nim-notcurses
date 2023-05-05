@@ -18,3 +18,5 @@ while i < (Styles.Italic.uint32 shl 1):
   inc e
   if e mod 8 == 0: ncd.putStr("\n").expect
   inc i
+
+ncd.stop
