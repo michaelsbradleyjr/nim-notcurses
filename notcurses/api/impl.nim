@@ -24,7 +24,6 @@ type
     PutStrYx = "ncplane_putstr_yx failed"
     PutWc = "ncplane_putwc failed"
     Render = "notcurses_render failed"
-    SetScroll = "ncplane_set_scrolling failed"
 
   Init = proc (opts: ptr notcurses_options, fp: File): ptr notcurses {.cdecl.}
 
