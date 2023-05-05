@@ -163,15 +163,16 @@ template ScrollDown*(_: type Keys): auto = cast[FakeKeys[Button5]](Button5)
 template Return*(_: type Keys): auto = cast[FakeKeys[Enter]](Enter)
 
 const AllKeys* =
-  toHashSet([Keys.Tab.uint32, Keys.Esc.uint32, Keys.Space.uint32]) +
-  toHashSet(toSeq((Keys.Invalid.uint32)..(Keys.EOF.uint32)).filterIt(
-    (it <= Keys.F60.uint32) or
-    (it >= Keys.Enter.uint32 and it <= Keys.Separator.uint32) or
-    (it >= Keys.CapsLock.uint32 and it <= Keys.Menu.uint32) or
-    (it >= Keys.MediaPlay.uint32 and it <= Keys.L5Shift.uint32) or
-    (it >= Keys.Motion.uint32 and it <= Keys.Button11.uint32) or
-    (it == Keys.Signal.uint32) or
-    (it == Keys.EOF.uint32)))
+  toHashSet(
+    @[Keys.Tab.uint32, Keys.Esc.uint32, Keys.Space.uint32] &
+    toSeq((Keys.Invalid.uint32)..(Keys.EOF.uint32)).filterIt(
+      (it <= Keys.F60.uint32) or
+      (it >= Keys.Enter.uint32 and it <= Keys.Separator.uint32) or
+      (it >= Keys.CapsLock.uint32 and it <= Keys.Menu.uint32) or
+      (it >= Keys.MediaPlay.uint32 and it <= Keys.L5Shift.uint32) or
+      (it >= Keys.Motion.uint32 and it <= Keys.Button11.uint32) or
+      (it == Keys.Signal.uint32) or
+      (it == Keys.EOF.uint32)))
 
 type
   KeyModifier* = distinct int32

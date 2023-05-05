@@ -68,14 +68,12 @@ func fmtPoint(point: uint32): string =
     raise (ref ApiDefect)(msg: e.msg)
 
 func `$`*(codepoint: Codepoint): string =
-  let
-    c = codepoint.uint32
-    hex = c.fmtPoint
+  let hex = codepoint.fmtPoint
   var pri, sec: string
-  if c <= HighUcs32.uint32:
+  if codepoint <= HighUcs32:
     pri = "U+"
-    if c in AllKeys: sec = "NCKEY+"
-  elif c in AllKeys:
+    if codepoint in AllKeys: sec = "NCKEY+"
+  elif codepoint in AllKeys:
     pri = "NCKEY+"
   if pri == "" and sec == "":
     raise (ref ApiDefect)(msg: $InvalidCodepoint & " " & hex)
@@ -86,10 +84,8 @@ func `$`*(input: Input): string = $input.cObj
 func `$`*(options: Options): string = $options.cObj
 
 func `$`*(codepoint: Ucs32): string =
-  let
-    c = codepoint.uint32
-    hex = c.fmtPoint
-  if c > HighUcs32.uint32:
+  let hex = codepoint.fmtPoint
+  if codepoint > HighUcs32:
     raise (ref ApiDefect)(msg: $InvalidUcs32 & " " & hex)
   "U+" & hex
 
@@ -172,7 +168,7 @@ func init*(T: type Options, flags: openArray[InitFlags] = [], term = "",
 
 func key*(input: Input): Option[Keys] =
   let codepoint = input.codepoint
-  if codepoint.uint32 in AllKeys: some cast[Keys](codepoint)
+  if codepoint in AllKeys: some cast[Keys](codepoint)
   else: none[Keys]()
 
 proc putStr*(plane: Plane, s: string): Result[ApiSuccess, ApiErrorCode] =
@@ -292,36 +288,36 @@ func toBytes(buf: array[5, char]): seq[byte] =
 func bytes(input: Input, skipHigh: bool): Option[seq[byte]] =
   # assumption: if `input.codepoint` is valid UCS32 then `input.cObj.utf8`
   # contains 1-4 bytes of a valid UTF-8 encoding
-  if skipHigh or (input.codepoint.uint32 <= HighUcs32.uint32):
+  if skipHigh or (input.codepoint <= HighUcs32):
     some input.cObj.utf8.toBytes
   else:
     none[seq[byte]]()
 
 func bytes*(input: Input): Option[seq[byte]] = input.bytes(false)
 
-func toCodepoint*(u: Ucs32 | uint8 | uint16 | uint32): Option[Codepoint] =
-  let u32 = u.uint32
-  if (u32 <= HighUcs32.uint32) or (u32 in AllKeys): some u32.Codepoint
-  else: none()
+func toCodepoint*(u: PseudoCodepoint | Ucs32): Option[Codepoint] =
+  if (u <= HighUcs32) or (u in AllKeys): some u.Codepoint
+  else: none[Codepoint]()
 
-func toUcs32*(u: Codepoint | uint8 | uint16 | uint32): Option[Ucs32] =
-  let u32 = u.uint32
-  if u32 <= HighUcs32.uint32: some u32.Ucs32
-  else: none()
+func toUcs32*(u: Codepoint | PseudoCodepoint): Option[Ucs32] =
+  if u <= HighUcs32: some u.Ucs32
+  else: none[Ucs32]()
 
 func toUtf8*(codepoint: Codepoint | Ucs32): Option[string] =
-  var
-    buf: array[5, char]
-    c = codepoint.uint32
-  let code = notcurses_ucs32_to_utf8(addr c, 1,
-    cast[ptr UncheckedArray[char]](addr buf), 5)
-  if code >= 0: some string.fromBytes(buf.toBytes)
-  else: none()
+  if codepoint > HighUcs32: none[string]()
+  else:
+    var
+      buf: array[5, char]
+      u = codepoint.uint32
+    let code = notcurses_ucs32_to_utf8(addr u, 1,
+      cast[ptr UncheckedArray[char]](addr buf), 5)
+    if code >= 0: some string.fromBytes(buf.toBytes)
+    else: none[string]()
 
 func utf8*(input: Input): Option[string] =
   # assumption: if `input.codepoint` is valid UCS32 then `input.bytes` contains
   # 1-4 bytes of a valid UTF-8 encoding
-  if input.codepoint.uint32 <= HighUcs32.uint32:
+  if input.codepoint <= HighUcs32:
     some string.fromBytes(input.bytes(true).get)
   else:
     none[string]()
