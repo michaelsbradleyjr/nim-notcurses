@@ -9,7 +9,7 @@ import ../../abi/direct/impl
 import ../common
 import ./constants
 
-export common except ApiDefect, PseudoCodepoint
+export common except ApiDefect, PseudoCodepoint, contains
 export constants except AllKeys, DefectMessages
 
 type

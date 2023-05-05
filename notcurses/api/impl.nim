@@ -10,7 +10,7 @@ import ./common
 import ./constants
 
 export Time, Timespec, options
-export common except ApiDefect, PseudoCodepoint
+export common except ApiDefect, PseudoCodepoint, contains
 export constants except AllKeys, DefectMessages
 
 type
