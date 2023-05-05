@@ -11,10 +11,11 @@ let
   flags = [InitFlags.CliMode, DrainInput, InhibitSetLocale]
   nc = Nc.init NcOpts.init flags
   stdn = nc.stdPlane
+  notice = "\nThis program is *not* indicative of real scrolling speed.\n\n"
 
-stdn.setStyles(Styles.Bold)
-stdn.putStr("\nThis program is *not* indicative of real scrolling speed.\n\n").expect
-stdn.setStyles(Styles.None)
+stdn.setStyles Styles.Bold
+stdn.putStr(notice).expect
+stdn.setStyles Styles.None
 
 # https://codepoints.net/cjk_unified_ideographs
 const

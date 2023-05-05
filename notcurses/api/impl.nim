@@ -49,8 +49,7 @@ type
   Nc* = Notcurses
   NcOpts* = Options
 
-
-func fmtPoint(point: uint32): string =
+func fmtPoint(point: Codepoint | PseudoCodepoint | Ucs32): string =
   let hex = point.uint64.toHex.strip(
     chars = {'0'}, trailing = false).toUpperAscii
   try:
@@ -70,9 +69,11 @@ func `$`*(codepoint: Codepoint): string =
     raise (ref ApiDefect)(msg: $InvalidCodepoint & " " & hex)
   pri & hex & (if sec != "": " | " & sec & hex else: "")
 
-func `$`*(input: Input): string = $input.cObj
+func `$`*(input: Input): string =
+  $input.cObj
 
-func `$`*(options: Options): string = $options.cObj
+func `$`*(options: Options): string =
+  $options.cObj
 
 func `$`*(codepoint: Ucs32): string =
   let hex = codepoint.fmtPoint
@@ -80,9 +81,11 @@ func `$`*(codepoint: Ucs32): string =
     raise (ref ApiDefect)(msg: $InvalidUcs32 & " " & hex)
   "U+" & hex
 
-func codepoint*(input: Input): Codepoint = input.cObj.id.Codepoint
+func codepoint*(input: Input): Codepoint =
+  input.cObj.id.Codepoint
 
-func cursorY*(plane: Plane): uint32 = plane.cPtr.ncplane_cursor_y
+func cursorY*(plane: Plane): uint32 =
+  plane.cPtr.ncplane_cursor_y
 
 proc dimYx*(plane: Plane, y, x: var uint32) =
   plane.cPtr.ncplane_dim_yx(addr y, addr x)
@@ -99,7 +102,8 @@ func event*(input: Input): InputEvents = cast[InputEvents](input.cObj.evtype)
 proc getBlocking*(nc: Notcurses, input: var Input) =
   discard nc.cPtr.notcurses_get_blocking(addr input.cObj)
 
-func getScrolling*(plane: Plane): bool = plane.cPtr.ncplane_scrolling_p
+func getScrolling*(plane: Plane): bool =
+  plane.cPtr.ncplane_scrolling_p
 
 proc gradient*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
     lr: ChannelPair, egc = "", styles: varargs[Styles]):
@@ -129,7 +133,8 @@ func init*(T: type Channel, r, g, b: uint32): T =
 func init*(T: type ChannelPair, fr, fg, fb, br, bg, bb: uint32): T =
   NCCHANNELS_INITIALIZER(fr, fg, fb, br, bg, bb).T
 
-func init*(T: type Input): T = T(cObj: ncinput())
+func init*(T: type Input): T =
+  T(cObj: ncinput())
 
 proc getBlocking*(nc: Notcurses): Input =
   var input = Input.init
@@ -251,7 +256,8 @@ func bytes(input: Input, skipHigh: bool): Option[seq[byte]] =
   else:
     none[seq[byte]]()
 
-func bytes*(input: Input): Option[seq[byte]] = input.bytes(false)
+func bytes*(input: Input): Option[seq[byte]] =
+  input.bytes(false)
 
 func toCodepoint*(u: PseudoCodepoint | Ucs32): Option[Codepoint] =
   if (u <= HighUcs32) or (u in AllKeys): some u.Codepoint
