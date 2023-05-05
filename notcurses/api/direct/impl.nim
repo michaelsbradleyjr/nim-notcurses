@@ -25,8 +25,8 @@ type
     cPtr: ptr ncdirect
 
   Options* = object
-    flags*: uint64
-    term*: string
+    flags: uint64
+    term: string
 
   # Aliases
   Ncd* = NotcursesDirect
