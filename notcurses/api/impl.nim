@@ -16,8 +16,6 @@ export constants except AllKeys, DefectMessages
 type
   Channel = common.Channel
 
-  ChannelPair* = common.ChannelPair
-
   ErrorMessages {.pure.} = enum
     Grad = "ncplane_gradient failed"
     Grad2x1 = "ncplane_gradient2x1 failed"
