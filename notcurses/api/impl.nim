@@ -3,13 +3,13 @@ when (NimMajor, NimMinor) >= (1, 4):
 else:
   {.push raises: [Defect].}
 
-import std/[bitops, macros, options, strformat, strutils]
+import std/[bitops, macros, strformat, strutils]
 import pkg/stew/[byteutils, results]
 import ../abi/impl
 import ./common
 import ./constants
 
-export Time, Timespec, options
+export Time, Timespec
 export common except ApiDefect, PseudoCodepoint, contains
 export constants except AllKeys, DefectMessages
 
@@ -98,7 +98,7 @@ proc dimYx*(plane: Plane): PlaneDimensions =
 func event*(input: Input): InputEvents = cast[InputEvents](input.cObj.evtype)
 
 # for `notcurses_get`, etc. (i.e. abi calls that return 0'u32 on timeout), use
-# Option none for timeout and Option some Codepoint otherwise
+# Opt.none for timeout and Opt.some Codepoint otherwise
 proc getBlocking*(nc: Notcurses, input: var Input): Codepoint {.discardable.} =
   nc.cPtr.notcurses_get_blocking(addr input.cObj).Codepoint
 
@@ -175,10 +175,10 @@ proc init*(T: type Notcurses, init: Init, options = Options.init,
   if cPtr.isNil: raise (ref ApiDefect)(msg: $NotcursesFailedToInitialize)
   T(cPtr: cPtr)
 
-func key*(input: Input): Option[Keys] =
+func key*(input: Input): Opt[Keys] =
   let codepoint = input.codepoint
-  if codepoint in AllKeys: some cast[Keys](codepoint)
-  else: none[Keys]()
+  if codepoint in AllKeys: Opt.some cast[Keys](codepoint)
+  else: Opt.none Keys
 
 proc putStr*(plane: Plane, s: string): Result[ApiSuccess, ApiErrorCode] =
   let code = plane.cPtr.ncplane_putstr s.cstring
@@ -248,40 +248,40 @@ func toBytes(buf: array[5, char]): seq[byte] =
     else: break
   bytes
 
-func bytes(input: Input, skipHigh: bool): Option[seq[byte]] =
+func bytes(input: Input, skipHigh: bool): Opt[seq[byte]] =
   # assumption: if `input.codepoint` is valid UCS32 then `input.cObj.utf8`
   # contains 1-4 bytes of a valid UTF-8 encoding
   if skipHigh or (input.codepoint <= HighUcs32):
-    some input.cObj.utf8.toBytes
+    Opt.some input.cObj.utf8.toBytes
   else:
-    none[seq[byte]]()
+    Opt.none seq[byte]
 
-func bytes*(input: Input): Option[seq[byte]] =
+func bytes*(input: Input): Opt[seq[byte]] =
   input.bytes(false)
 
-func toCodepoint*(u: PseudoCodepoint | Ucs32): Option[Codepoint] =
-  if (u <= HighUcs32) or (u in AllKeys): some u.Codepoint
-  else: none[Codepoint]()
+func toCodepoint*(u: PseudoCodepoint | Ucs32): Opt[Codepoint] =
+  if (u <= HighUcs32) or (u in AllKeys): Opt.some u.Codepoint
+  else: Opt.none Codepoint
 
-func toUcs32*(u: Codepoint | PseudoCodepoint): Option[Ucs32] =
-  if u <= HighUcs32: some u.Ucs32
-  else: none[Ucs32]()
+func toUcs32*(u: Codepoint | PseudoCodepoint): Opt[Ucs32] =
+  if u <= HighUcs32: Opt.some u.Ucs32
+  else: Opt.none Ucs32
 
-func toUtf8*(codepoint: Codepoint | Ucs32): Option[string] =
-  if codepoint > HighUcs32: none[string]()
+func toUtf8*(codepoint: Codepoint | Ucs32): Opt[string] =
+  if codepoint > HighUcs32: Opt.none string
   else:
     var
       buf: array[5, char]
       u = codepoint.uint32
     let code = notcurses_ucs32_to_utf8(addr u, 1,
       cast[ptr UncheckedArray[char]](addr buf), 5)
-    if code >= 0: some string.fromBytes(buf.toBytes)
-    else: none[string]()
+    if code >= 0: Opt.some string.fromBytes(buf.toBytes)
+    else: Opt.none string
 
-func utf8*(input: Input): Option[string] =
+func utf8*(input: Input): Opt[string] =
   # assumption: if `input.codepoint` is valid UCS32 then `input.bytes` contains
   # 1-4 bytes of a valid UTF-8 encoding
   if input.codepoint <= HighUcs32:
-    some string.fromBytes(input.bytes(true).get)
+    Opt.some string.fromBytes(input.bytes(true).get)
   else:
-    none[string]()
+    Opt.none string
