@@ -1,6 +1,8 @@
-import notcurses/direct
-# or: import notcurses/direct/core
+import pkg/notcurses/direct
+# or: import pkg/notcurses/direct/core
 
-let ncd = Ncd.init NcdOptions.init [InitOptions.DrainInput]
+let ncd = Ncd.init NcdOpts.init [InitFlags.DrainInput]
 
 ncd.putStr("Hello, Direct mode!\n").expect
+
+ncd.stop

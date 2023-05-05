@@ -4,22 +4,13 @@ import ../../abi/constants/version
 
 type
   DefectMessages* {.pure.} = enum
-    AddExitProcFailed =
-      when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
-        "addExitProc raised an unknown exception"
-      else:
-        "addQuitProc raised an unknown exception"
     FailureNotExpected = "failure not expected"
     InvalidCodepoint = "invalid Notcurses codepoint"
     InvalidUcs32 = "invalid UCS32 codepoint"
     NotcursesFailedToInitialize = "Notcurses failed to initialize"
     NotcursesFailedToStop = "Notcurses failed to stop"
-    NotcursesInitNotSet = "Notcurses init proc is not set"
-    NotcursesNotInitialized = "Notcurses is not initialized"
     NotcursesDirectFailedToInitialize = "NotcursesDirect failed to initialize"
     NotcursesDirectFailedToStop = "NotcursesDirect failed to stop"
-    NotcursesDirectInitNotSet = "NotcursesDirect init proc is not set"
-    NotcursesDirectNotInitialized = "NotcursesDirect is not initialized"
 
   Style* = distinct uint32
 

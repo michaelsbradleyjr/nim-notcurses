@@ -1,9 +1,11 @@
-import notcurses
-# or: import notcurses/core
+import pkg/notcurses
+# or: import pkg/notcurses/core
 
-let nc = Nc.init NcOptions.init [InitOptions.CliMode, InitOptions.DrainInput]
+let nc = Nc.init NcOpts.init [InitFlags.CliMode, DrainInput]
 
 nc.stdPlane.putStr("Hello, Notcurses!\n").expect
+
+nc.stop
 
 # in Notcurses' CLI mode '\n' in a string triggers a render+scroll, one or more
 # times depending on the number of times it's included

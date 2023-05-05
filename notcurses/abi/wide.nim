@@ -1,4 +1,4 @@
-when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
+when (NimMajor, NimMinor) >= (1, 4):
   {.push raises: [].}
 else:
   {.push raises: [Defect].}
@@ -20,12 +20,11 @@ else:
 
 type DbW = distinctBase(Wchar)
 
-when (NimMajor, NimMinor) == (1, 2):
-  proc `==`*(x, y: Wchar): bool {.borrow.}
-else:
-  func `==`*(x, y: Wchar): bool {.borrow.}
+func `==`*(x, y: Wchar): bool =
+  DbW(x) == DbW(y)
 
-template wchar*(u: untyped): Wchar = Wchar(u)
+template wchar*(u: untyped): Wchar =
+  Wchar(u)
 
 proc wcwidth*(wc: Wchar): cint {.cdecl, header: wchar_header, importc.}
 

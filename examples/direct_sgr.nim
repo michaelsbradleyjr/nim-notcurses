@@ -1,10 +1,10 @@
 import std/strutils
-import notcurses/direct/core
-# or: import notcurses/direct
+import pkg/notcurses/direct/core
+# or: import pkg/notcurses/direct
 
 # https://en.wikipedia.org/wiki/ANSI_escape_code#SGR
 
-let ncd = Ncd.init NcdOptions.init [InitOptions.DrainInput]
+let ncd = Ncd.init NcdOpts.init [InitFlags.DrainInput]
 
 func style(i: uint32): Styles = cast[Styles](i)
 
@@ -18,3 +18,5 @@ while i < (Styles.Italic.uint32 shl 1):
   inc e
   if e mod 8 == 0: ncd.putStr("\n").expect
   inc i
+
+ncd.stop

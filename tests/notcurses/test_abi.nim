@@ -1,7 +1,7 @@
 import std/macros
+import pkg/notcurses/abi
+import pkg/notcurses/abi/direct
 import pkg/unittest2
-import notcurses/abi
-import notcurses/abi/direct
 import ./helpers/ncseqs
 
 when not defined(windows):

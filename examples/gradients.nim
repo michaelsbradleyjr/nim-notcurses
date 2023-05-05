@@ -1,9 +1,9 @@
 import std/os
-import notcurses/core
-# or: import notcurses
+import pkg/notcurses/core
+# or: import pkg/notcurses
 
 let
-  nc = Nc.init NcOptions.init [InitOptions.DrainInput]
+  nc = Nc.init NcOpts.init [InitFlags.DrainInput]
   stdn = nc.stdPlane
 
 const
@@ -38,3 +38,5 @@ proc gradHigh() =
 gradA()
 gradStriations()
 gradHigh()
+
+nc.stop

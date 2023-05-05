@@ -11,11 +11,18 @@ const
 
 switch("nimcache", cacheSubdir)
 
+# same as defaults for these versions, but convenient for experimentation
+when (NimMajor, NimMinor, NimPatch) < (1, 6, 2):
+  --gc:refc
+# elif (NimMajor, NimMinor) < (2, 0):
+elif (NimMajor, NimMinor, NimPatch) < (1, 9, 1):
+  --mm:refc
+else:
+  --mm:orc
+
+--panics:on
+--threads:on
 --tlsEmulation:off
-# when (NimMajor, NimMinor) < (2, 0):
-when (NimMajor, NimMinor, NimPatch) < (1, 9, 1):
-  # starting with Nim 2.0 --threads:on is the default
-  --threads:on
 
 when (NimMajor, NimMinor) == (1, 2):
   switch("hint", "Processing:off")
@@ -25,15 +32,8 @@ elif (NimMajor, NimMinor) == (1, 4):
   switch("hint", "XCannotRaiseY:off")
 else:
   --hint:"XCannotRaiseY:off"
-
-# same as defaults for these versions, but convenient for experimentation
-when (NimMajor, NimMinor, NimPatch) < (1, 6, 2):
-  --gc:refc
-# elif (NimMajor, NimMinor) < (2, 0):
-elif (NimMajor, NimMinor, NimPatch) < (1, 9, 1):
-  --mm:refc
-else:
-  --mm:orc
+when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+  --warning:"BareExcept:on"
 
 when defined(release):
   --hints:off

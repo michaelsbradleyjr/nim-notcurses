@@ -1,17 +1,15 @@
-when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
+when (NimMajor, NimMinor) >= (1, 4):
   {.push raises: [].}
 else:
   {.push raises: [Defect].}
 
-import std/[atomics, bitops]
+import std/bitops
 import pkg/stew/results
 import ../../abi/direct/impl
 import ../common
 import ./constants
 
-export common except ApiDefect, isNcInited, isNcdInited, setNcInited,
-  setNcIniting, setNcStopped, setNcStopping, setNcdInited, setNcdIniting,
-  setNcdStopped, setNcdStopping
+export common except ApiDefect, PseudoCodepoint, contains
 export constants except AllKeys, DefectMessages
 
 type
@@ -21,35 +19,42 @@ type
     PutStr = "ncdirect_putstr failed"
     SetStyles = "ncdirect_set_styles failed"
 
-  InitProc = proc (termtype: cstring, fp: File, flags: uint64): ptr ncdirect {.cdecl.}
+  Init = proc (term: cstring, fp: File, flags: uint64): ptr ncdirect {.cdecl.}
 
   NotcursesDirect* = object
     cPtr: ptr ncdirect
 
   Options* = object
-    flags*: uint64
-    term*: string
+    flags: uint64
+    term: string
 
   # Aliases
   Ncd* = NotcursesDirect
-  NcdOptions* = Options
+  NcdOpts* = Options
 
-var
-  ncdApiObj {.threadvar.}: NotcursesDirect
-  ncdExitProcAdded: Atomic[bool]
-  ncdPtr: Atomic[ptr ncdirect]
-
-proc get*(T: type NotcursesDirect): T =
-  if not isNcdInited():
-    raise (ref ApiDefect)(msg: $NotcursesDirectNotInitialized)
-  ncdApiObj
-
-func init*(T: type Options, initOptions: openArray[InitOptions] = [],
-    term = ""): T =
+func init*(T: type Options, flags: openArray[InitFlags] = [], term = ""): T =
+  let iflags = @flags
   var flags = 0'u64
-  for o in initOptions[0..^1]:
-    flags = bitor(flags, o.uint64)
+  for f in iflags[0..^1]:
+    flags = bitor(flags, f.uint64)
   T(flags: flags, term: term)
+
+proc init*(T: type NotcursesDirect, init: Init, options = Options.init,
+    file = stdout): T =
+  var
+    cPtr: ptr ncdirect
+    termtype: cstring
+  if options.term != "": termtype = options.term.cstring
+  when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+    {.warning[BareExcept]: off.}
+  try:
+    cPtr = init(termtype, file, options.flags)
+  except Exception:
+    raise (ref ApiDefect)(msg: $NotcursesDirectFailedToInitialize)
+  when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
+    {.warning[BareExcept]: on.}
+  if cPtr.isNil: raise (ref ApiDefect)(msg: $NotcursesDirectFailedToInitialize)
+  T(cPtr: cPtr)
 
 proc putStr*(ncd: NotcursesDirect, s: string, channel = Channel(0)):
     Result[ApiSuccess, ApiErrorCode] =
@@ -71,55 +76,8 @@ proc setStyles*(ncd: NotcursesDirect, styles: varargs[Styles]):
     ok code
 
 proc stop*(ncd: NotcursesDirect) =
-  setNcdStopping()
   if ncd.cPtr.ncdirect_stop < 0:
     raise (ref ApiDefect)(msg: $NotcursesDirectFailedToStop)
-  else:
-    ncdPtr.store(nil)
-    ncdApiObj = NotcursesDirect()
-    setNcdStopped()
-
-proc stopNotcurses() {.noconv.} = NotcursesDirect.get.stop
-
-when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
-  import std/exitprocs
-  template addExitProc(T: type NotcursesDirect) =
-    if not ncdExitProcAdded.exchange(true): addExitProc stopNotcurses
-else:
-  template addExitProc(T: type NotcursesDirect) =
-    if not ncdExitProcAdded.exchange(true): addQuitProc stopNotcurses
-
-proc init*(T: type NotcursesDirect, initProc: InitProc, options = Options.init,
-    file = stdout, addExitProc = true): T =
-  setNcdIniting()
-  var cPtr: ptr ncdirect
-  var termtype: cstring
-  if options.term != "": termtype = options.term.cstring
-  when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-    {.warning[BareExcept]: off.}
-  try:
-    cPtr = initProc(termtype, file, options.flags)
-  except Exception:
-    raise (ref ApiDefect)(msg: $NotcursesDirectFailedToInitialize)
-  when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-    {.warning[BareExcept]: on.}
-  if cPtr.isNil: raise (ref ApiDefect)(msg: $NotcursesDirectFailedToInitialize)
-  ncdApiObj = T(cPtr: cPtr)
-  ncdPtr.store cPtr
-  if addExitProc:
-    when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-      {.warning[BareExcept]: off.}
-    try:
-      T.addExitProc
-    except Exception as e:
-      var msg = $AddExitProcFailed
-      if e.msg != "":
-        msg = msg & " with message \"" & e.msg & "\""
-      raise (ref ApiDefect)(msg: msg)
-    when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-      {.warning[BareExcept]: on.}
-  setNcdInited()
-  ncdApiObj
 
 func supportedStyles*(ncd: NotcursesDirect): uint16 =
   ncd.cPtr.ncdirect_supported_styles

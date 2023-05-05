@@ -1,7 +1,7 @@
 # https://en.cppreference.com/w/c/locale/LC_categories
 # https://en.cppreference.com/w/c/locale/setlocale
 
-when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
+when (NimMajor, NimMinor) >= (1, 4):
   {.push raises: [].}
 else:
   {.push raises: [Defect].}
@@ -9,7 +9,7 @@ else:
 const loc_header = "<locale.h>"
 {.pragma: loc, header: loc_header, importc, nodecl.}
 
-when (NimMajor, NimMinor, NimPatch) >= (1, 4, 0):
+when (NimMajor, NimMinor) >= (1, 4):
   let
     LC_ALL* {.loc.}: cint
     LC_COLLATE* {.loc.}: cint

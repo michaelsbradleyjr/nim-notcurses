@@ -1,28 +1,21 @@
 import std/os
-import notcurses
-# or: import notcurses/core
-import notcurses/locale
+import pkg/notcurses
+# or: import pkg/notcurses/core
 
 # locale can be set manually but it's generally not necessary because Notcurses
 # attempts to do it automatically; this is just an example of using setLocale
 setLocale(LC_ALL, "").expect
 
-# if locale was set manually then use option InhibitSetLocale
+# if locale was set manually then use flag InhibitSetLocale
 let
-  opts = [InitOptions.CliMode, InitOptions.DrainInput, InitOptions.InhibitSetLocale]
-  nc = Nc.init(NcOptions.init opts, addExitProc = false)
+  flags = [InitFlags.CliMode, DrainInput, InhibitSetLocale]
+  nc = Nc.init NcOpts.init flags
   stdn = nc.stdPlane
+  notice = "\nThis program is *not* indicative of real scrolling speed.\n\n"
 
-proc stop() {.noconv.} =
-  stdn.putStr("\n\n").expect
-  nc.stop
-  quit(QuitSuccess)
-
-setControlCHook(stop)
-
-stdn.setStyles(Styles.Bold)
-stdn.putStr("\nThis program is *not* indicative of real scrolling speed.\n\n").expect
-stdn.setStyles(Styles.None)
+stdn.setStyles Styles.Bold
+stdn.putStr(notice).expect
+stdn.setStyles Styles.None
 
 # https://codepoints.net/cjk_unified_ideographs
 const
@@ -36,6 +29,8 @@ while true:
   if u < last: inc u
   else: u = first
   sleep 10
+
+nc.stop
 
 # rendering after each putWc() isn't necessary but it makes the auto-scroll
 # behavior of Notcurses' CLI mode visually more apparent in the compiled

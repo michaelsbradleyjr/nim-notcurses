@@ -9,20 +9,20 @@ type
     Center = ncalign_e.NCALIGN_CENTER.Alignment
     Right = ncalign_e.NCALIGN_RIGHT.Alignment
 
-  InitOption* = distinct uint64
+  InitFlag* = distinct uint64
 
-  InitOptions* {.pure.} = enum
-    InhibitSetlocale = NCOPTION_INHIBIT_SETLOCALE.InitOption
-    NoClearBitmaps = NCOPTION_NO_CLEAR_BITMAPS.InitOption
-    NoWinchSighandler = NCOPTION_NO_WINCH_SIGHANDLER.InitOption
-    NoQuitSighandlers = NCOPTION_NO_QUIT_SIGHANDLERS.InitOption
-    PreserveCursor = NCOPTION_PRESERVE_CURSOR.InitOption
-    SuppressBanners = NCOPTION_SUPPRESS_BANNERS.InitOption
-    NoAlternateScreen = NCOPTION_NO_ALTERNATE_SCREEN.InitOption
-    NoFontChanges = NCOPTION_NO_FONT_CHANGES.InitOption
-    DrainInput = NCOPTION_DRAIN_INPUT.InitOption
-    Scrolling = NCOPTION_SCROLLING.InitOption
-    CliMode = NCOPTION_CLI_MODE.InitOption
+  InitFlags* {.pure.} = enum
+    InhibitSetlocale = NCOPTION_INHIBIT_SETLOCALE.InitFlag
+    NoClearBitmaps = NCOPTION_NO_CLEAR_BITMAPS.InitFlag
+    NoWinchSighandler = NCOPTION_NO_WINCH_SIGHANDLER.InitFlag
+    NoQuitSighandlers = NCOPTION_NO_QUIT_SIGHANDLERS.InitFlag
+    PreserveCursor = NCOPTION_PRESERVE_CURSOR.InitFlag
+    SuppressBanners = NCOPTION_SUPPRESS_BANNERS.InitFlag
+    NoAlternateScreen = NCOPTION_NO_ALTERNATE_SCREEN.InitFlag
+    NoFontChanges = NCOPTION_NO_FONT_CHANGES.InitFlag
+    DrainInput = NCOPTION_DRAIN_INPUT.InitFlag
+    Scrolling = NCOPTION_SCROLLING.InitFlag
+    CliMode = NCOPTION_CLI_MODE.InitFlag
 
   InputEvent* = distinct int32
 

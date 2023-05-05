@@ -1,13 +1,10 @@
 import std/strutils
-import notcurses/core
-# or: import notcurses
+import pkg/notcurses/core
+# or: import pkg/notcurses
 
 let
-  nc = Nc.init NcOptions.init [InitOptions.CliMode]
+  nc = Nc.init NcOpts.init [InitFlags.CliMode]
   stdn = nc.stdPlane
-
-proc nop() {.noconv.} = discard
-setControlCHook(nop)
 
 proc put(s = "") = stdn.putStr(s).expect
 
@@ -32,9 +29,9 @@ while true:
   putLn "point : " & $ni.codepoint
 
   let key = ni.key
-  if key.isNone: stdn.setStyles(Styles.Struck)
+  if key.isNone: stdn.setStyles Styles.Struck
   put "key   : " & (if key.isSome: $key.get else: "")
-  stdn.setStyles(Styles.None)
+  stdn.setStyles Styles.None
   put "\n"
 
   var prefix = "utf8  : "
@@ -44,21 +41,23 @@ while true:
     let res = stdn.putStr utf8.get
     if res.isErr: put ReplacementChar
   else:
-    stdn.setStyles(Styles.Struck)
+    stdn.setStyles Styles.Struck
     put prefix
-    stdn.setStyles(Styles.None)
+    stdn.setStyles Styles.None
   put "\n"
 
   prefix = "bytes : "
   if utf8.isSome:
     put prefix & ni.bytes.get.fmtHex
   else:
-    stdn.setStyles(Styles.Struck)
+    stdn.setStyles Styles.Struck
     put prefix
-    stdn.setStyles(Styles.None)
+    stdn.setStyles Styles.None
   put "\n"
 
   if utf8.get("") == "q": break
+
+nc.stop
 
 # there are one/more bugs in Notcurses whereby, in some terminals, capability
 # query data is sometimes leaking into user input at the start of the program;
