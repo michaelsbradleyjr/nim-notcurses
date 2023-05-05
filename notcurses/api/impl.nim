@@ -99,8 +99,8 @@ func event*(input: Input): InputEvents = cast[InputEvents](input.cObj.evtype)
 
 # for `notcurses_get`, etc. (i.e. abi calls that return 0'u32 on timeout), use
 # Option none for timeout and Option some Codepoint otherwise
-proc getBlocking*(nc: Notcurses, input: var Input) =
-  discard nc.cPtr.notcurses_get_blocking(addr input.cObj)
+proc getBlocking*(nc: Notcurses, input: var Input): Codepoint {.discardable.} =
+  nc.cPtr.notcurses_get_blocking(addr input.cObj).Codepoint
 
 func getScrolling*(plane: Plane): bool =
   plane.cPtr.ncplane_scrolling_p
@@ -138,7 +138,7 @@ func init*(T: type Input): T =
 
 proc getBlocking*(nc: Notcurses): Input =
   var input = Input.init
-  nc.getBlocking input
+  discard nc.getBlocking input
   input
 
 func init*(T: type Margins, top = 0'u32, right = 0'u32, bottom = 0'u32,
