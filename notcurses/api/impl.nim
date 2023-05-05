@@ -187,7 +187,7 @@ proc putStrAligned*(plane: Plane, s: string, alignment: Align, y = -1'i32):
   let code = plane.cPtr.ncplane_putstr_aligned(y, cast[ncalign_e](alignment),
     s.cstring)
   if code <= 0:
-    err ApiErrorCode(code: code, msg: $PutStrYx)
+    err ApiErrorCode(code: code, msg: $PutStrAligned)
   else:
     ok code
 
