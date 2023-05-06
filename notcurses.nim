@@ -10,5 +10,5 @@ import ./notcurses/api/impl
 
 export impl
 
-proc init*(T: type Notcurses, options = Options.init, file = stdout): T =
+proc init*(T: typedesc[Notcurses], options = Options.init, file = stdout): T =
   T.init(notcurses_init, options, file)

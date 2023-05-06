@@ -98,7 +98,8 @@ proc dimYx*(plane: Plane): PlaneDimensions =
 func event*(input: Input): InputEvents = cast[InputEvents](input.cObj.evtype)
 
 # for `notcurses_get`, etc. (i.e. abi calls that return 0'u32 on timeout), use
-# Opt.none for timeout and Opt.some Codepoint otherwise
+# `Opt.none Codepoint` for timeout and `Opt.some [codepoint]` otherwise
+
 proc getBlocking*(nc: Notcurses, input: var Input): Codepoint {.discardable.} =
   nc.cPtr.notcurses_get_blocking(addr input.cObj).Codepoint
 
@@ -127,13 +128,13 @@ proc gradient2x1*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
   else:
     ok code
 
-func init*(T: type Channel, r, g, b: uint32): T =
+func init*(T: typedesc[Channel], r, g, b: uint32): T =
   NCCHANNEL_INITIALIZER(r, g, b).T
 
-func init*(T: type ChannelPair, fr, fg, fb, br, bg, bb: uint32): T =
+func init*(T: typedesc[ChannelPair], fr, fg, fb, br, bg, bb: uint32): T =
   NCCHANNELS_INITIALIZER(fr, fg, fb, br, bg, bb).T
 
-func init*(T: type Input): T =
+func init*(T: typedesc[Input]): T =
   T(cObj: ncinput())
 
 proc getBlocking*(nc: Notcurses): Input =
@@ -141,11 +142,11 @@ proc getBlocking*(nc: Notcurses): Input =
   discard nc.getBlocking input
   input
 
-func init*(T: type Margins, top = 0'u32, right = 0'u32, bottom = 0'u32,
+func init*(T: typedesc[Margins], top = 0'u32, right = 0'u32, bottom = 0'u32,
     left = 0'u32): T =
   (top, right, bottom, left)
 
-func init*(T: type Options, flags: openArray[InitFlags] = [], term = "",
+func init*(T: typedesc[Options], flags: openArray[InitFlags] = [], term = "",
     logLevel = LogLevels.Panic, margins = Margins.init): T =
   let iflags = @flags
   var flags = 0'u64
@@ -159,7 +160,7 @@ func init*(T: type Options, flags: openArray[InitFlags] = [], term = "",
     flags: flags)
   T(cObj: cObj)
 
-proc init*(T: type Notcurses, init: Init, options = Options.init,
+proc init*(T: typedesc[Notcurses], init: Init, options = Options.init,
     file = stdout): T =
   var
     cOpts = options.cObj
