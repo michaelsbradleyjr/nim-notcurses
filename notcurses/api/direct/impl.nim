@@ -32,14 +32,15 @@ type
   Ncd* = NotcursesDirect
   NcdOpts* = Options
 
-func init*(T: type Options, flags: openArray[InitFlags] = [], term = ""): T =
+func init*(T: typedesc[Options], flags: openArray[InitFlags] = [],
+    term = ""): T =
   let iflags = @flags
   var flags = 0'u64
   for f in iflags[0..^1]:
     flags = bitor(flags, f.uint64)
   T(flags: flags, term: term)
 
-proc init*(T: type NotcursesDirect, init: Init, options = Options.init,
+proc init*(T: typedesc[NotcursesDirect], init: Init, options = Options.init,
     file = stdout): T =
   var
     cPtr: ptr ncdirect

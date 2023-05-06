@@ -10,11 +10,11 @@ export wide except toSeqB, toSeqW
 
 # `func toSeqB` from abi/wide assumes encoding of wide string `ws` is valid, so
 # `fromWide` has somewhat limited use cases
-func fromWide*(T: type string, ws: openArray[Wchar]): T =
-  string.fromBytes ws.toSeqB
+func fromWide*(T: typedesc[string], ws: openArray[Wchar]): T =
+  T.fromBytes ws.toSeqB
 
-func fromWide*(T: type string, ws: ptr UncheckedArray[Wchar]): T =
-  string.fromBytes ws.toSeqB
+func fromWide*(T: typedesc[string], ws: ptr UncheckedArray[Wchar]): T =
+  T.fromBytes ws.toSeqB
 
 # `func toSeqW` from abi/wide assumes encoding of multibyte string `s` is valid
 # UTF-8, so `toWide` has somewhat limited use cases
