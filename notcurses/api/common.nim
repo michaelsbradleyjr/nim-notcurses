@@ -92,5 +92,5 @@ proc expect*[T: ApiSuccess, E: ApiError](res: Result[T, E],
 proc expect*[E: ApiError](res: Result[void, E], m = $FailureNotExpected) =
   results.expect(res, m)
 
-proc hash*(m: KeyModifiers): Hash =
+proc hash*(m: KeyModifiers | Styles): Hash =
   m.uint32.hash

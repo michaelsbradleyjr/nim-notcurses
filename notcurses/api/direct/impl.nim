@@ -3,7 +3,7 @@ when (NimMajor, NimMinor) >= (1, 4):
 else:
   {.push raises: [Defect].}
 
-import std/bitops
+import std/[bitops, sets]
 import pkg/stew/results
 import ../../abi/direct/impl
 import ../common
@@ -11,6 +11,7 @@ import ./constants
 
 export common except ApiDefect, PseudoCodepoint, contains
 export constants except AllKeys, DefectMessages
+export sets
 
 type
   Channel = common.Channel
@@ -80,5 +81,16 @@ proc stop*(ncd: NotcursesDirect) =
   if ncd.cPtr.ncdirect_stop < 0:
     raise (ref ApiDefect)(msg: $NotcursesDirectFailedToStop)
 
-func supportedStyles*(ncd: NotcursesDirect): uint16 =
-  ncd.cPtr.ncdirect_supported_styles
+# ncdirect_supported_styles returns uint16, and in e.g. Notcurses headers "16
+# bits of NCSTYLE_* attributes" have specific uses, so will need to consider
+# that as the Nim API layer evolves
+func supportedStylesMask*(ncd: NotcursesDirect): Style =
+  Style(ncd.cPtr.ncdirect_supported_styles)
+
+func supportedStyles*(ncd: NotcursesDirect,
+    mask = ncd.supportedStylesMask): HashSet[Styles] =
+  var styles: HashSet[Styles]
+  for s in [Styles.None, Struck, Bold, Undercurl, Underline, Italic]:
+    if bitand(mask.uint32, s.uint32) == s.uint32:
+      styles.incl s
+  styles
