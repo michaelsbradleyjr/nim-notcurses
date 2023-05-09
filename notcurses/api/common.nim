@@ -3,7 +3,7 @@ when (NimMajor, NimMinor) >= (1, 4):
 else:
   {.push raises: [Defect].}
 
-import std/sets
+import std/[hashes, sets]
 import pkg/stew/results
 import ../abi/common
 import ../locale
@@ -91,3 +91,6 @@ proc expect*[T: ApiSuccess, E: ApiError](res: Result[T, E],
 
 proc expect*[E: ApiError](res: Result[void, E], m = $FailureNotExpected) =
   results.expect(res, m)
+
+proc hash*(m: KeyModifiers): Hash =
+  m.uint32.hash

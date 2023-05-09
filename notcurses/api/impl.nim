@@ -3,13 +3,13 @@ when (NimMajor, NimMinor) >= (1, 4):
 else:
   {.push raises: [Defect].}
 
-import std/[bitops, macros, strformat, strutils]
+import std/[bitops, macros, sets, strformat, strutils]
 import pkg/stew/[byteutils, results]
 import ../abi/impl
 import ./common
 import ./constants
 
-export Time, Timespec
+export Time, Timespec, sets
 export common except ApiDefect, PseudoCodepoint, contains
 export constants except AllKeys, DefectMessages
 
@@ -100,6 +100,8 @@ func event*(input: Input): InputEvents = cast[InputEvents](input.cObj.evtype)
 # for `notcurses_get`, etc. (i.e. abi calls that return 0'u32 on timeout), use
 # `Opt.none Codepoint` for timeout and `Opt.some [codepoint]` otherwise
 
+# possibly need to wrap output in Result and return error if
+# notcurses_get_blocking returns high(uint32)
 proc getBlocking*(nc: Notcurses, input: var Input): Codepoint {.discardable.} =
   nc.cPtr.notcurses_get_blocking(addr input.cObj).Codepoint
 
@@ -137,6 +139,8 @@ func init*(T: typedesc[ChannelPair], fr, fg, fb, br, bg, bb: uint32): T =
 func init*(T: typedesc[Input]): T =
   T(cObj: ncinput())
 
+# possibly need to wrap output in Result and return error if
+# notcurses_get_blocking returns high(uint32)
 proc getBlocking*(nc: Notcurses): Input =
   var input = Input.init
   discard nc.getBlocking input
@@ -180,6 +184,26 @@ func key*(input: Input): Opt[Keys] =
   let codepoint = input.codepoint
   if codepoint in AllKeys: Opt.some cast[Keys](codepoint)
   else: Opt.none Keys
+
+# modifiers field for ncinput was introduced in Notcurses v3.0.4, which would
+# be a problem re: the type declaration in abi/impl when linking against
+# earlier versions of the library ... any good way to work around that?
+# maybe it's not such a problem if doing header-less importc?
+# in that case, maybe this func can emulate evaluating the modifiers field if
+# at runtime Notcurses version is < 3.0.4, i.e. by computing with older bool
+# fields alt, shift, control
+func modifiersMask*(input: Input): KeyModifier =
+  KeyModifier(input.cObj.modifiers)
+
+# see comment above re: modifiers field
+func modifiers*(input: Input,
+    mask = input.modifiersMask): HashSet[KeyModifiers] =
+  var mods: HashSet[KeyModifiers]
+  for m in [KeyModifiers.Shift, Alt, Ctrl, Super, Hyper, Meta,
+      KeyModifiers.CapsLock, KeyModifiers.NumLock]:
+    if bitand(mask.uint32, m.uint32) == m.uint32:
+      mods.incl m
+  mods
 
 proc putStr*(plane: Plane, s: string): Result[ApiSuccess, ApiErrorCode] =
   let code = plane.cPtr.ncplane_putstr s.cstring

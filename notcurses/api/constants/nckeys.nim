@@ -175,7 +175,7 @@ const AllKeys* =
       (it == Keys.EOF.uint32)))
 
 type
-  KeyModifier* = distinct int32
+  KeyModifier* = distinct uint32
 
   KeyModifiers* {.pure.} = enum
     Shift = NCKEY_MOD_SHIFT.KeyModifier
