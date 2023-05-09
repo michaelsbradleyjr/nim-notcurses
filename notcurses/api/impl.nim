@@ -3,13 +3,13 @@ when (NimMajor, NimMinor) >= (1, 4):
 else:
   {.push raises: [Defect].}
 
-import std/[bitops, macros, strformat, strutils]
+import std/[bitops, macros, sets, strformat, strutils]
 import pkg/stew/[byteutils, results]
 import ../abi/impl
 import ./common
 import ./constants
 
-export Time, Timespec
+export Time, Timespec, sets
 export common except ApiDefect, PseudoCodepoint, contains
 export constants except AllKeys, DefectMessages
 
@@ -184,6 +184,26 @@ func key*(input: Input): Opt[Keys] =
   let codepoint = input.codepoint
   if codepoint in AllKeys: Opt.some cast[Keys](codepoint)
   else: Opt.none Keys
+
+# modifiers field for ncinput was introduced in Notcurses v3.0.4, which would
+# be a problem re: the type declaration in abi/impl when linking against
+# earlier versions of the library ... any good way to work around that?
+# maybe it's not such a problem if doing header-less importc?
+# in that case, maybe this func can emulate evaluating the modifiers field if
+# at runtime Notcurses version is < 3.0.4, i.e. by computing with older bool
+# fields alt, shift, control
+func modifiersMask*(input: Input): KeyModifier =
+  KeyModifier(input.cObj.modifiers)
+
+# see comment above re: modifiers field
+func modifiers*(input: Input,
+    mask = input.modifiersMask): HashSet[KeyModifiers] =
+  var mods: HashSet[KeyModifiers]
+  for m in [KeyModifiers.Shift, Alt, Ctrl, Super, Hyper, Meta,
+      KeyModifiers.CapsLock, KeyModifiers.NumLock]:
+    if bitand(mask.uint32, m.uint32) == m.uint32:
+      mods.incl m
+  mods
 
 proc putStr*(plane: Plane, s: string): Result[ApiSuccess, ApiErrorCode] =
   let code = plane.cPtr.ncplane_putstr s.cstring
