@@ -1,4 +1,4 @@
-import std/strutils
+import std/[sequtils, strutils]
 import pkg/notcurses/core
 # or: import pkg/notcurses
 
@@ -6,54 +6,65 @@ let
   nc = Nc.init NcOpts.init [InitFlags.CliMode]
   stdn = nc.stdPlane
 
+func fmtHex(bs: seq[byte]): string =
+  var hex = ""
+  for b in bs:
+    let h = b.uint64.toHex(2).toUpperAscii
+    hex &= " " & h
+  hex.strip
+
 proc put(s = "") = stdn.putStr(s).expect
 
 proc putLn(s = "") = put s & "\n"
 
-proc blankLn() = putLn()
-
-func fmtHex(x: seq[byte]): string =
-  var hex = ""
-  for b in x:
-    let f = b.uint64.toHex(2).toUpperAscii
-    hex &= " " & f
-  hex.strip
+proc strike(s: string) =
+  stdn.setStyles Styles.Struck
+  put s
+  stdn.setStyles Styles.None
 
 while true:
-  blankLn()
+  putLn()
   putLn "press any key or paste input, q to quit"
-  blankLn()
+  putLn()
 
   let ni = nc.getBlocking
+  var prefix: string
+
   putLn "event : " & $ni.event
   putLn "point : " & $ni.codepoint
 
+  prefix = "key   : "
   let key = ni.key
-  if key.isNone: stdn.setStyles Styles.Struck
-  put "key   : " & (if key.isSome: $key.get else: "")
-  stdn.setStyles Styles.None
-  put "\n"
+  if key.isSome:
+    put prefix & $key.get
+  else:
+    strike prefix
+  putLn()
 
-  var prefix = "utf8  : "
+  prefix = "mods  : "
+  let mods = ni.modifiers
+  if mods.len > 0:
+    put prefix & mods.mapIt($it).join(", ")
+  else:
+    strike prefix
+  putLn()
+
+  prefix = "utf8  : "
   let utf8 = ni.utf8
   if utf8.isSome:
     put prefix
-    let res = stdn.putStr utf8.get
-    if res.isErr: put ReplacementChar
+    if stdn.putStr(utf8.get).isErr:
+      put ReplacementChar
   else:
-    stdn.setStyles Styles.Struck
-    put prefix
-    stdn.setStyles Styles.None
-  put "\n"
+    strike prefix
+  putLn()
 
   prefix = "bytes : "
   if utf8.isSome:
     put prefix & ni.bytes.get.fmtHex
   else:
-    stdn.setStyles Styles.Struck
-    put prefix
-    stdn.setStyles Styles.None
-  put "\n"
+    strike prefix
+  putLn()
 
   if utf8.get("") == "q": break
 
