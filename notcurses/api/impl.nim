@@ -100,6 +100,8 @@ func event*(input: Input): InputEvents = cast[InputEvents](input.cObj.evtype)
 # for `notcurses_get`, etc. (i.e. abi calls that return 0'u32 on timeout), use
 # `Opt.none Codepoint` for timeout and `Opt.some [codepoint]` otherwise
 
+# possibly need to wrap output in Result and return error if
+# notcurses_get_blocking returns high(uint32)
 proc getBlocking*(nc: Notcurses, input: var Input): Codepoint {.discardable.} =
   nc.cPtr.notcurses_get_blocking(addr input.cObj).Codepoint
 
@@ -137,6 +139,8 @@ func init*(T: typedesc[ChannelPair], fr, fg, fb, br, bg, bb: uint32): T =
 func init*(T: typedesc[Input]): T =
   T(cObj: ncinput())
 
+# possibly need to wrap output in Result and return error if
+# notcurses_get_blocking returns high(uint32)
 proc getBlocking*(nc: Notcurses): Input =
   var input = Input.init
   discard nc.getBlocking input
