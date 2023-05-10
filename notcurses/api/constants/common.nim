@@ -7,10 +7,8 @@ type
     FailureNotExpected = "failure not expected"
     InvalidCodepoint = "invalid Notcurses codepoint"
     InvalidUcs32 = "invalid UCS32 codepoint"
-    NotcursesFailedToInitialize = "Notcurses failed to initialize"
-    NotcursesFailedToStop = "Notcurses failed to stop"
-    NotcursesDirectFailedToInitialize = "NotcursesDirect failed to initialize"
-    NotcursesDirectFailedToStop = "NotcursesDirect failed to stop"
+    NcStop = "notcurses_stop failed"
+    NcdStop = "ncdirect_stop failed"
 
   Style* = distinct uint32
 

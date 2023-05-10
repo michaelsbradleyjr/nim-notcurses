@@ -8,7 +8,7 @@ import pkg/notcurses/abi
 
 var opts = notcurses_options(loglevel: NCLOGLEVEL_ERROR)
 let nc = notcurses_init(addr opts, stdout)
-if isNil nc: raise (ref Defect)(msg: "Notcurses failed to initialize")
+if isNil nc: raise (ref Defect)(msg: "notcurses_init failed")
 let stdn = notcurses_stdplane nc
 
 discard notcurses_mice_enable(nc, NCMICE_BUTTON_EVENT)
@@ -16,7 +16,7 @@ discard notcurses_mice_enable(nc, NCMICE_BUTTON_EVENT)
 # https://github.com/dankamongmen/notcurses/issues/2699
 
 proc stopAndRaise(msg: string) =
-  if notcurses_stop(nc) < 0: raise (ref Defect)(msg: "Notcurses failed to stop")
+  if notcurses_stop(nc) < 0: raise (ref Defect)(msg: "notcurses_stop failed")
   raise (ref Defect)(msg: msg)
 
 if notcurses_canopen_images nc:
@@ -121,4 +121,4 @@ run:
   sopts.secondary = nil
   sopts.footer    = nil
 
-if notcurses_stop(nc) < 0: raise (ref Defect)(msg: "Notcurses failed to stop")
+if notcurses_stop(nc) < 0: raise (ref Defect)(msg: "notcurses_stop failed")

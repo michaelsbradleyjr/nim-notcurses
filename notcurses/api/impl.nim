@@ -164,21 +164,27 @@ func init*(T: typedesc[Options], flags: openArray[InitFlags] = [], term = "",
     flags: flags)
   T(cObj: cObj)
 
-proc init*(T: typedesc[Notcurses], init: Init, options = Options.init,
-    file = stdout): T =
+proc init*(T: typedesc[Notcurses], init: Init, initName: string,
+    options = Options.init, file = stdout): T =
   var
     cOpts = options.cObj
     cPtr: ptr notcurses
+  let failedMsg = initName & " failed"
   when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
     {.warning[BareExcept]: off.}
   try:
     cPtr = init(addr cOpts, file)
   except Exception:
-    raise (ref ApiDefect)(msg: $NotcursesFailedToInitialize)
+    raise (ref ApiDefect)(msg: failedMsg)
   when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
     {.warning[BareExcept]: on.}
-  if cPtr.isNil: raise (ref ApiDefect)(msg: $NotcursesFailedToInitialize)
+  if cPtr.isNil: raise (ref ApiDefect)(msg: failedMsg)
   T(cPtr: cPtr)
+
+macro init*(T: typedesc[Notcurses], init: Init, options = Options.init,
+    file = stdout): Notcurses =
+  let name = init.strVal
+  quote do: `T`.init(`init`, `name`, `options`, `file`)
 
 func key*(input: Input): Opt[Keys] =
   let codepoint = input.codepoint
@@ -262,7 +268,7 @@ proc stdPlane*(nc: Notcurses): Plane =
 
 proc stop*(nc: Notcurses) =
   if nc.cPtr.notcurses_stop < 0:
-    raise (ref ApiDefect)(msg: $NotcursesFailedToStop)
+    raise (ref ApiDefect)(msg: $NcStop)
 
 func toBytes(buf: array[5, char]): seq[byte] =
   const nullC = '\x00'.char

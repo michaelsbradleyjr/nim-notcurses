@@ -3,7 +3,7 @@ when (NimMajor, NimMinor) >= (1, 4):
 else:
   {.push raises: [Defect].}
 
-import std/[bitops, sets]
+import std/[bitops, macros, sets]
 import pkg/stew/results
 import ../../abi/direct/impl
 import ../common
@@ -41,22 +41,28 @@ func init*(T: typedesc[Options], flags: openArray[InitFlags] = [],
     flags = bitor(flags, f.uint64)
   T(flags: flags, term: term)
 
-proc init*(T: typedesc[NotcursesDirect], init: Init, options = Options.init,
-    file = stdout): T =
+proc init*(T: typedesc[NotcursesDirect], init: Init, initName: string,
+    options = Options.init, file = stdout): T =
   var
     cPtr: ptr ncdirect
     termtype: cstring
+  let failedMsg = initName & " failed"
   if options.term != "": termtype = options.term.cstring
   when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
     {.warning[BareExcept]: off.}
   try:
     cPtr = init(termtype, file, options.flags)
   except Exception:
-    raise (ref ApiDefect)(msg: $NotcursesDirectFailedToInitialize)
+    raise (ref ApiDefect)(msg: failedMsg)
   when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
     {.warning[BareExcept]: on.}
-  if cPtr.isNil: raise (ref ApiDefect)(msg: $NotcursesDirectFailedToInitialize)
+  if cPtr.isNil: raise (ref ApiDefect)(msg: failedMsg)
   T(cPtr: cPtr)
+
+macro init*(T: typedesc[NotcursesDirect], init: Init, options = Options.init,
+    file = stdout): NotcursesDirect =
+  let name = init.strVal
+  quote do: `T`.init(`init`, `name`, `options`, `file`)
 
 proc putStr*(ncd: NotcursesDirect, s: string, channel = Channel(0)):
     Result[ApiSuccess, ApiErrorCode] =
@@ -79,7 +85,7 @@ proc setStyles*(ncd: NotcursesDirect, styles: varargs[Styles]):
 
 proc stop*(ncd: NotcursesDirect) =
   if ncd.cPtr.ncdirect_stop < 0:
-    raise (ref ApiDefect)(msg: $NotcursesDirectFailedToStop)
+    raise (ref ApiDefect)(msg: $NcdStop)
 
 # ncdirect_supported_styles returns uint16, and in e.g. Notcurses headers "16
 # bits of NCSTYLE_* attributes" have specific uses, so will need to consider
