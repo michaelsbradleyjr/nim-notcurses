@@ -3,7 +3,7 @@ when (NimMajor, NimMinor) >= (1, 4):
 else:
   {.push raises: [Defect].}
 
-import std/[bitops, macros, sets]
+import std/[bitops, macros, sequtils, sets]
 import pkg/stew/results
 import ../../abi/direct/impl
 import ../common
@@ -35,10 +35,7 @@ type
 
 func init*(T: typedesc[Options], flags: openArray[InitFlags] = [],
     term = ""): T =
-  let iflags = @flags
-  var flags = 0'u64
-  for f in iflags[0..^1]:
-    flags = bitor(flags, f.uint64)
+  let flags = flags.foldl(bitor(a, b.uint64), 0'u64)
   T(flags: flags, term: term)
 
 proc init*(T: typedesc[NotcursesDirect], init: Init, initName: string,

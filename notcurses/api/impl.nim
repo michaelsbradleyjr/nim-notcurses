@@ -3,7 +3,7 @@ when (NimMajor, NimMinor) >= (1, 4):
 else:
   {.push raises: [Defect].}
 
-import std/[bitops, macros, sets, strformat, strutils]
+import std/[bitops, macros, sequtils, sets, strformat, strutils]
 import pkg/stew/[byteutils, results]
 import ../abi/impl
 import ./common
@@ -152,10 +152,7 @@ func init*(T: typedesc[Margins], top = 0'u32, right = 0'u32, bottom = 0'u32,
 
 func init*(T: typedesc[Options], flags: openArray[InitFlags] = [], term = "",
     logLevel = LogLevels.Panic, margins = Margins.init): T =
-  let iflags = @flags
-  var flags = 0'u64
-  for f in iflags[0..^1]:
-    flags = bitor(flags, f.uint64)
+  let flags = flags.foldl(bitor(a, b.uint64), 0'u64)
   var termtype: cstring
   if term != "": termtype = term.cstring
   let cObj = notcurses_options(termtype: termtype,
