@@ -25,5 +25,4 @@ putCentered("i̵̛̐͛̉̃͒̿̒͆̅̐̆͆͌͋̎̈́̓̔̓͌̌̀̽̾̈́̚̚̚͝͠͠
 nc.stop
 
 # `putStrAligned` sporadically returns errors, possibly related to
-# scrolling/rendering bugs mentioned in ./cli1.nim, which is the reason for
-# using `discard` instead of `.expect`
+# scrolling/rendering bugs mentioned in ./cli1.nim
