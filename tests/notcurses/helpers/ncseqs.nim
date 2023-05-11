@@ -92,7 +92,7 @@ const
   NCSUITSWHITE_ns* = "♡♢♤♧"
   NCCHESSBLACK_ns* = "♟♜♞♝♛♚"
   # https://github.com/dankamongmen/notcurses/pull/2712
-  # NCCHESSWHITE_ns     = "♙♖♘♗♕♔"
+  # NCCHESSWHITE_ns = "♙♖♘♗♕♔"
   NCCHESSWHITE_ns* = "♟♜♞♝♛♚"
   NCDICE_ns* = "⚀⚁⚂⚃⚄⚅"
   NCMUSICSYM_ns* = "♩♪♫♬♭♮♯"
