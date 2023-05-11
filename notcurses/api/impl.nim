@@ -111,11 +111,10 @@ func getScrolling*(plane: Plane): bool =
 proc gradient*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
     lr: ChannelPair, egc = "", styles: varargs[Styles]):
     Result[ApiSuccess, ApiErrorCode] =
-  var stylebits = 0'u32
-  for s in styles[0..^1]:
-    stylebits = bitor(stylebits, s.uint32)
-  let code = plane.cPtr.ncplane_gradient(y, x, ylen, xlen, egc.cstring,
-    stylebits.uint16, ul.uint64, ur.uint64, ll.uint64, lr.uint64)
+  let
+    styles = styles.foldl(bitor(a, b.uint32), 0'u32)
+    code = plane.cPtr.ncplane_gradient(y, x, ylen, xlen, egc.cstring,
+      styles.uint16, ul.uint64, ur.uint64, ll.uint64, lr.uint64)
   if code < 0:
     err ApiErrorCode(code: code, msg: $Grad)
   else:
@@ -250,10 +249,8 @@ proc setScrolling*(plane: Plane, enable: bool): bool =
   plane.cPtr.ncplane_set_scrolling enable.uint32
 
 proc setStyles*(plane: Plane, styles: varargs[Styles]) =
-  var stylebits = 0'u32
-  for s in styles[0..^1]:
-    stylebits = bitor(stylebits, s.uint32)
-  plane.cPtr.ncplane_set_styles stylebits
+  let styles = styles.foldl(bitor(a, b.uint32), 0'u32)
+  plane.cPtr.ncplane_set_styles styles
 
 proc stdDimYx*(nc: Notcurses, y, x: var uint32): Plane =
   let cPtr = nc.cPtr.notcurses_stddim_yx(addr y, addr x)

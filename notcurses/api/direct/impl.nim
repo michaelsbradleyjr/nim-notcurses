@@ -71,10 +71,9 @@ proc putStr*(ncd: NotcursesDirect, s: string, channel = Channel(0)):
 
 proc setStyles*(ncd: NotcursesDirect, styles: varargs[Styles]):
     Result[ApiSuccess, ApiErrorCode] =
-  var stylebits = 0'u32
-  for s in styles[0..^1]:
-    stylebits = bitor(stylebits, s.uint32)
-  let code = ncd.cPtr.ncdirect_set_styles stylebits
+  let
+    styles = styles.foldl(bitor(a, b.uint32), 0'u32)
+    code = ncd.cPtr.ncdirect_set_styles styles
   if code != 0:
     err ApiErrorCode(code: code, msg: $SetStyles)
   else:

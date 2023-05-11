@@ -7,11 +7,7 @@ let
   stdn = nc.stdPlane
 
 func fmtHex(bs: seq[byte]): string =
-  var hex = ""
-  for b in bs:
-    let h = b.uint64.toHex(2).toUpperAscii
-    hex &= " " & h
-  hex.strip
+  bs.foldl(a & " " & b.uint64.toHex(2).toUpperAscii, "").strip
 
 proc put(s = "") = stdn.putStr(s).expect
 
