@@ -82,7 +82,7 @@ func `$`*(codepoint: Ucs32): string =
   "U+" & hex
 
 func codepoint*(input: Input): Codepoint =
-  input.cObj.id.Codepoint
+  Codepoint(input.cObj.id)
 
 func cursorY*(plane: Plane): uint32 =
   plane.cPtr.ncplane_cursor_y
@@ -104,7 +104,7 @@ func event*(input: Input): InputEvents =
 # possibly need to wrap output in Result and return error if
 # notcurses_get_blocking returns high(uint32)
 proc getBlocking*(nc: Notcurses, input: var Input): Codepoint {.discardable.} =
-  nc.cPtr.notcurses_get_blocking(addr input.cObj).Codepoint
+  Codepoint(nc.cPtr.notcurses_get_blocking(addr input.cObj))
 
 func getScrolling*(plane: Plane): bool =
   plane.cPtr.ncplane_scrolling_p
@@ -131,10 +131,10 @@ proc gradient2x1*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
     ok code
 
 func init*(T: typedesc[Channel], r, g, b: uint32): T =
-  NCCHANNEL_INITIALIZER(r, g, b).T
+  T(NCCHANNEL_INITIALIZER(r, g, b))
 
 func init*(T: typedesc[ChannelPair], fr, fg, fb, br, bg, bb: uint32): T =
-  NCCHANNELS_INITIALIZER(fr, fg, fb, br, bg, bb).T
+  T(NCCHANNELS_INITIALIZER(fr, fg, fb, br, bg, bb))
 
 func init*(T: typedesc[Input]): T =
   T(cObj: ncinput())
@@ -286,11 +286,11 @@ func bytes*(input: Input): Opt[seq[byte]] =
   input.bytes(false)
 
 func toCodepoint*(u: PseudoCodepoint | Ucs32): Opt[Codepoint] =
-  if (u <= HighUcs32) or (u in AllKeys): Opt.some u.Codepoint
+  if (u <= HighUcs32) or (u in AllKeys): Opt.some Codepoint(u)
   else: Opt.none Codepoint
 
 func toUcs32*(u: Codepoint | PseudoCodepoint): Opt[Ucs32] =
-  if u <= HighUcs32: Opt.some u.Ucs32
+  if u <= HighUcs32: Opt.some Ucs32(u)
   else: Opt.none Ucs32
 
 func toUtf8*(codepoint: Codepoint | Ucs32): Opt[string] =

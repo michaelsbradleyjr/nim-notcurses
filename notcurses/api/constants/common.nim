@@ -13,18 +13,18 @@ type
   Style* = distinct uint32
 
   Styles* {.pure.} = enum
-    None = NCSTYLE_NONE.Style
-    Struck = NCSTYLE_STRUCK.Style
-    Bold = NCSTYLE_BOLD.Style
-    Undercurl = NCSTYLE_UNDERCURL.Style
-    Underline = NCSTYLE_UNDERLINE.Style
-    Italic = NCSTYLE_ITALIC.Style
-    Mask = NCSTYLE_MASK.Style
+    None = Style(NCSTYLE_NONE)
+    Struck = Style(NCSTYLE_STRUCK)
+    Bold = Style(NCSTYLE_BOLD)
+    Undercurl = Style(NCSTYLE_UNDERCURL)
+    Underline = Style(NCSTYLE_UNDERLINE)
+    Italic = Style(NCSTYLE_ITALIC)
+    Mask = Style(NCSTYLE_MASK)
 
   Ucs32* = distinct uint32
 
 const
-  HighUcs32* = 0x0010ffff'u32.Ucs32
+  HighUcs32* = Ucs32(0x0010ffff'u32)
 
   NimNotcursesMajor* = nim_notcurses_version.major.int
   NimNotcursesMinor* = nim_notcurses_version.minor.int
