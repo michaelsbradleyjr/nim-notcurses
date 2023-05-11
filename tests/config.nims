@@ -7,7 +7,8 @@ const
   topPath = cfgPath.parentDir
   cacheSubdirHead = joinPath(topPath, "nimcache")
   cacheSubdirTail = joinPath(relativePath(projectDir(), topPath), projectName())
-  cacheSubdir = joinPath(cacheSubdirHead, (if defined(release): "release" else: "debug"), cacheSubdirTail)
+  cacheSubdir = joinPath(cacheSubdirHead,
+    (if defined(release): "release" else: "debug"), cacheSubdirTail)
 
 switch("nimcache", cacheSubdir)
 

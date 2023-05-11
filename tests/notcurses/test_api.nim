@@ -49,10 +49,10 @@ macro compareN(names: static openArray[string]): untyped =
   result = newStmtList()
   for name in names:
     let
-      wa = ident name
+      const_id = ident name
       ns = ident(name & "_ns")
     result.add quote do:
-      let ns1 = string.fromWide `wa`
+      let ns1 = string.fromWide `const_id`
       check: ns1 == `ns`
       var wcs: seq[Wchar]
       let ws = ns1.toWide(wcs)
@@ -61,11 +61,11 @@ macro compareN(names: static openArray[string]): untyped =
         let wc = ws[][i]
         if wc == 0.wchar: break
         inc i
-      check: i + 1 == `wa`.len
-      for j in 0..<`wa`.len:
+      check: i + 1 == `const_id`.len
+      for j in 0..<`const_id`.len:
         check:
-          wcs[j] == `wa`[j]
-          ws[][j] == `wa`[j]
+          wcs[j] == `const_id`[j]
+          ws[][j] == `const_id`[j]
       let
         ns2 = string.fromWide wcs
         ns3 = string.fromWide ws
@@ -75,9 +75,11 @@ macro compareN(names: static openArray[string]): untyped =
   # debugEcho toStrLit(result)
 
 suite "API (no init)":
-  test "compare constants converted to Nim strings <-> wide strings with statics and originals":
-    compareN ncWideSeqsNames
-    for cs in [NCBOXLIGHT, NCBOXHEAVY, NCBOXROUND, NCBOXDOUBLE, NCBOXASCII, NCBOXOUTER]:
+  test "compare constants converted to Nim strings <-> wide strings with " &
+       "statics and originals":
+    compareN ncWideStringsNames
+    for cs in [NCBOXLIGHT, NCBOXHEAVY, NCBOXROUND, NCBOXDOUBLE, NCBOXASCII,
+        NCBOXOUTER]:
       var wcs: seq[Wchar]
       let ws = ($cs).toWide(wcs)
       let

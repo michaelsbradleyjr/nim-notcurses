@@ -3,7 +3,7 @@ when (NimMajor, NimMinor) >= (1, 4):
 else:
   {.push raises: [Defect].}
 
-import std/[bitops, sets]
+import std/[bitops, macros, sequtils, sets]
 import pkg/stew/results
 import ../../abi/direct/impl
 import ../common
@@ -35,28 +35,31 @@ type
 
 func init*(T: typedesc[Options], flags: openArray[InitFlags] = [],
     term = ""): T =
-  let iflags = @flags
-  var flags = 0'u64
-  for f in iflags[0..^1]:
-    flags = bitor(flags, f.uint64)
+  let flags = flags.foldl(bitor(a, b.uint64), 0'u64)
   T(flags: flags, term: term)
 
-proc init*(T: typedesc[NotcursesDirect], init: Init, options = Options.init,
-    file = stdout): T =
+proc init*(T: typedesc[NotcursesDirect], init: Init, initName: string,
+    options = Options.init, file = stdout): T =
   var
     cPtr: ptr ncdirect
     termtype: cstring
+  let failedMsg = initName & " failed"
   if options.term != "": termtype = options.term.cstring
   when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
     {.warning[BareExcept]: off.}
   try:
     cPtr = init(termtype, file, options.flags)
   except Exception:
-    raise (ref ApiDefect)(msg: $NotcursesDirectFailedToInitialize)
+    raise (ref ApiDefect)(msg: failedMsg)
   when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
     {.warning[BareExcept]: on.}
-  if cPtr.isNil: raise (ref ApiDefect)(msg: $NotcursesDirectFailedToInitialize)
+  if cPtr.isNil: raise (ref ApiDefect)(msg: failedMsg)
   T(cPtr: cPtr)
+
+macro init*(T: typedesc[NotcursesDirect], init: Init, options = Options.init,
+    file = stdout): NotcursesDirect =
+  let name = init.strVal
+  quote do: `T`.init(`init`, `name`, `options`, `file`)
 
 proc putStr*(ncd: NotcursesDirect, s: string, channel = Channel(0)):
     Result[ApiSuccess, ApiErrorCode] =
@@ -68,10 +71,9 @@ proc putStr*(ncd: NotcursesDirect, s: string, channel = Channel(0)):
 
 proc setStyles*(ncd: NotcursesDirect, styles: varargs[Styles]):
     Result[ApiSuccess, ApiErrorCode] =
-  var stylebits = 0'u32
-  for s in styles[0..^1]:
-    stylebits = bitor(stylebits, s.uint32)
-  let code = ncd.cPtr.ncdirect_set_styles stylebits
+  let
+    styles = styles.foldl(bitor(a, b.uint32), 0'u32)
+    code = ncd.cPtr.ncdirect_set_styles styles
   if code != 0:
     err ApiErrorCode(code: code, msg: $SetStyles)
   else:
@@ -79,7 +81,7 @@ proc setStyles*(ncd: NotcursesDirect, styles: varargs[Styles]):
 
 proc stop*(ncd: NotcursesDirect) =
   if ncd.cPtr.ncdirect_stop < 0:
-    raise (ref ApiDefect)(msg: $NotcursesDirectFailedToStop)
+    raise (ref ApiDefect)(msg: $NcdStop)
 
 # ncdirect_supported_styles returns uint16, and in e.g. Notcurses headers "16
 # bits of NCSTYLE_* attributes" have specific uses, so will need to consider

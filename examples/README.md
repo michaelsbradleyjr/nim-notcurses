@@ -14,12 +14,12 @@ Translating Notcurses' examples was not an end in itself; the process was iterat
 
 *Differences*, if any, reflect how a `.nim` example behaves compared to its `.c` counterpart
 
-| Nim                                  | C                            | Differences                               |
-| ------------------------------------ | ---------------------------- | ----------------------------------------- |
+| Nim                                  | C                    | Differences                               |
+| ------------------------------------ | -------------------- | ----------------------------------------- |
 | [`cjkscroll.nim`](cjkscroll.nim)     | [`cjkscroll.c`][1]   | renders per character instead of per line |
 | [`cli1.nim`](cli1.nim)               | [`cli2.c`][2]        | renders *"Hello..."*                      |
 | [`cli2.nim`](cli2.nim)               | [`cli1.c`][3]        | reports inputs                            |
-| [`direct1.nim`](direct1.nim)         | `n/a`                          |                                           |
+| [`direct1.nim`](direct1.nim)         | `n/a`                |                                           |
 | [`direct_sgr.nim`](direct_sgr.nim)   | [`sgr-direct.c`][4]  |                                           |
 | [`gradients.nim`](gradients.nim)     | [`gradients.c`][5]   |                                           |
 | [`multiselect.nim`](multiselect.nim) | [`multiselect.c`][6] |                                           |

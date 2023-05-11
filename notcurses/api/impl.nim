@@ -3,7 +3,7 @@ when (NimMajor, NimMinor) >= (1, 4):
 else:
   {.push raises: [Defect].}
 
-import std/[bitops, macros, sets, strformat, strutils]
+import std/[bitops, macros, sequtils, sets, strformat, strutils]
 import pkg/stew/[byteutils, results]
 import ../abi/impl
 import ./common
@@ -82,7 +82,7 @@ func `$`*(codepoint: Ucs32): string =
   "U+" & hex
 
 func codepoint*(input: Input): Codepoint =
-  input.cObj.id.Codepoint
+  Codepoint(input.cObj.id)
 
 func cursorY*(plane: Plane): uint32 =
   plane.cPtr.ncplane_cursor_y
@@ -95,7 +95,8 @@ proc dimYx*(plane: Plane): PlaneDimensions =
   plane.dimYx(y, x)
   (y, x)
 
-func event*(input: Input): InputEvents = cast[InputEvents](input.cObj.evtype)
+func event*(input: Input): InputEvents =
+  cast[InputEvents](input.cObj.evtype)
 
 # for `notcurses_get`, etc. (i.e. abi calls that return 0'u32 on timeout), use
 # `Opt.none Codepoint` for timeout and `Opt.some [codepoint]` otherwise
@@ -103,7 +104,7 @@ func event*(input: Input): InputEvents = cast[InputEvents](input.cObj.evtype)
 # possibly need to wrap output in Result and return error if
 # notcurses_get_blocking returns high(uint32)
 proc getBlocking*(nc: Notcurses, input: var Input): Codepoint {.discardable.} =
-  nc.cPtr.notcurses_get_blocking(addr input.cObj).Codepoint
+  Codepoint(nc.cPtr.notcurses_get_blocking(addr input.cObj))
 
 func getScrolling*(plane: Plane): bool =
   plane.cPtr.ncplane_scrolling_p
@@ -111,11 +112,10 @@ func getScrolling*(plane: Plane): bool =
 proc gradient*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
     lr: ChannelPair, egc = "", styles: varargs[Styles]):
     Result[ApiSuccess, ApiErrorCode] =
-  var stylebits = 0'u32
-  for s in styles[0..^1]:
-    stylebits = bitor(stylebits, s.uint32)
-  let code = plane.cPtr.ncplane_gradient(y, x, ylen, xlen, egc.cstring,
-    stylebits.uint16, ul.uint64, ur.uint64, ll.uint64, lr.uint64)
+  let
+    styles = styles.foldl(bitor(a, b.uint32), 0'u32)
+    code = plane.cPtr.ncplane_gradient(y, x, ylen, xlen, egc.cstring,
+      styles.uint16, ul.uint64, ur.uint64, ll.uint64, lr.uint64)
   if code < 0:
     err ApiErrorCode(code: code, msg: $Grad)
   else:
@@ -131,10 +131,10 @@ proc gradient2x1*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
     ok code
 
 func init*(T: typedesc[Channel], r, g, b: uint32): T =
-  NCCHANNEL_INITIALIZER(r, g, b).T
+  T(NCCHANNEL_INITIALIZER(r, g, b))
 
 func init*(T: typedesc[ChannelPair], fr, fg, fb, br, bg, bb: uint32): T =
-  NCCHANNELS_INITIALIZER(fr, fg, fb, br, bg, bb).T
+  T(NCCHANNELS_INITIALIZER(fr, fg, fb, br, bg, bb))
 
 func init*(T: typedesc[Input]): T =
   T(cObj: ncinput())
@@ -152,10 +152,7 @@ func init*(T: typedesc[Margins], top = 0'u32, right = 0'u32, bottom = 0'u32,
 
 func init*(T: typedesc[Options], flags: openArray[InitFlags] = [], term = "",
     logLevel = LogLevels.Panic, margins = Margins.init): T =
-  let iflags = @flags
-  var flags = 0'u64
-  for f in iflags[0..^1]:
-    flags = bitor(flags, f.uint64)
+  let flags = flags.foldl(bitor(a, b.uint64), 0'u64)
   var termtype: cstring
   if term != "": termtype = term.cstring
   let cObj = notcurses_options(termtype: termtype,
@@ -164,21 +161,27 @@ func init*(T: typedesc[Options], flags: openArray[InitFlags] = [], term = "",
     flags: flags)
   T(cObj: cObj)
 
-proc init*(T: typedesc[Notcurses], init: Init, options = Options.init,
-    file = stdout): T =
+proc init*(T: typedesc[Notcurses], init: Init, initName: string,
+    options = Options.init, file = stdout): T =
   var
     cOpts = options.cObj
     cPtr: ptr notcurses
+  let failedMsg = initName & " failed"
   when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
     {.warning[BareExcept]: off.}
   try:
     cPtr = init(addr cOpts, file)
   except Exception:
-    raise (ref ApiDefect)(msg: $NotcursesFailedToInitialize)
+    raise (ref ApiDefect)(msg: failedMsg)
   when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
     {.warning[BareExcept]: on.}
-  if cPtr.isNil: raise (ref ApiDefect)(msg: $NotcursesFailedToInitialize)
+  if cPtr.isNil: raise (ref ApiDefect)(msg: failedMsg)
   T(cPtr: cPtr)
+
+macro init*(T: typedesc[Notcurses], init: Init, options = Options.init,
+    file = stdout): Notcurses =
+  let name = init.strVal
+  quote do: `T`.init(`init`, `name`, `options`, `file`)
 
 func key*(input: Input): Opt[Keys] =
   let codepoint = input.codepoint
@@ -247,10 +250,8 @@ proc setScrolling*(plane: Plane, enable: bool): bool =
   plane.cPtr.ncplane_set_scrolling enable.uint32
 
 proc setStyles*(plane: Plane, styles: varargs[Styles]) =
-  var stylebits = 0'u32
-  for s in styles[0..^1]:
-    stylebits = bitor(stylebits, s.uint32)
-  plane.cPtr.ncplane_set_styles stylebits
+  let styles = styles.foldl(bitor(a, b.uint32), 0'u32)
+  plane.cPtr.ncplane_set_styles styles
 
 proc stdDimYx*(nc: Notcurses, y, x: var uint32): Plane =
   let cPtr = nc.cPtr.notcurses_stddim_yx(addr y, addr x)
@@ -262,7 +263,7 @@ proc stdPlane*(nc: Notcurses): Plane =
 
 proc stop*(nc: Notcurses) =
   if nc.cPtr.notcurses_stop < 0:
-    raise (ref ApiDefect)(msg: $NotcursesFailedToStop)
+    raise (ref ApiDefect)(msg: $NcStop)
 
 func toBytes(buf: array[5, char]): seq[byte] =
   const nullC = '\x00'.char
@@ -285,11 +286,11 @@ func bytes*(input: Input): Opt[seq[byte]] =
   input.bytes(false)
 
 func toCodepoint*(u: PseudoCodepoint | Ucs32): Opt[Codepoint] =
-  if (u <= HighUcs32) or (u in AllKeys): Opt.some u.Codepoint
+  if (u <= HighUcs32) or (u in AllKeys): Opt.some Codepoint(u)
   else: Opt.none Codepoint
 
 func toUcs32*(u: Codepoint | PseudoCodepoint): Opt[Ucs32] =
-  if u <= HighUcs32: Opt.some u.Ucs32
+  if u <= HighUcs32: Opt.some Ucs32(u)
   else: Opt.none Ucs32
 
 func toUtf8*(codepoint: Codepoint | Ucs32): Opt[string] =
