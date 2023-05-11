@@ -7,13 +7,15 @@ import ./helpers/ncseqs
 when not defined(windows):
   suite "ABI":
     setup:
-      let flags = NCOPTION_CLI_MODE or NCOPTION_DRAIN_INPUT or NCOPTION_SUPPRESS_BANNERS
+      let flags = NCOPTION_CLI_MODE or NCOPTION_DRAIN_INPUT or
+        NCOPTION_SUPPRESS_BANNERS
       var opts = notcurses_options(flags: flags)
       let nc = notcurses_init(addr opts, stdout)
       if isNil nc: raise (ref Defect)(msg: "notcurses_init failed")
 
     teardown:
-      if notcurses_stop(nc) < 0: raise (ref Defect)(msg: "notcurses_stop failed")
+      if notcurses_stop(nc) < 0:
+        raise (ref Defect)(msg: "notcurses_stop failed")
 
     test "init then stop":
       check: true

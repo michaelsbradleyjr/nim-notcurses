@@ -75,9 +75,11 @@ macro compareN(names: static openArray[string]): untyped =
   # debugEcho toStrLit(result)
 
 suite "API (no init)":
-  test "compare constants converted to Nim strings <-> wide strings with statics and originals":
+  test "compare constants converted to Nim strings <-> wide strings with " &
+       "statics and originals":
     compareN ncWideStringsNames
-    for cs in [NCBOXLIGHT, NCBOXHEAVY, NCBOXROUND, NCBOXDOUBLE, NCBOXASCII, NCBOXOUTER]:
+    for cs in [NCBOXLIGHT, NCBOXHEAVY, NCBOXROUND, NCBOXDOUBLE, NCBOXASCII,
+        NCBOXOUTER]:
       var wcs: seq[Wchar]
       let ws = ($cs).toWide(wcs)
       let
