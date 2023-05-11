@@ -152,15 +152,15 @@ type
     EOF = NCKEY_EOF.Key
 
 type
-  FakeKeys[T: static Keys] = distinct Keys
+  PseudoKeys[T: static Keys] = distinct Keys
 
-converter toKeys*(fake: FakeKeys): Keys = Keys(fake)
-func `$`*(fake: FakeKeys[Button4]): string = "ScrollUp"
-func `$`*(fake: FakeKeys[Button5]): string = "ScrollDown"
-func `$`*(fake: FakeKeys[Enter]): string = "Return"
-template ScrollUp*(_: typedesc[Keys]): auto = cast[FakeKeys[Button4]](Button4)
-template ScrollDown*(_: typedesc[Keys]): auto = cast[FakeKeys[Button5]](Button5)
-template Return*(_: typedesc[Keys]): auto = cast[FakeKeys[Enter]](Enter)
+converter toKeys*(key: PseudoKeys): Keys = Keys(key)
+func `$`*(key: PseudoKeys[Button4]): string = "ScrollUp"
+func `$`*(key: PseudoKeys[Button5]): string = "ScrollDown"
+func `$`*(key: PseudoKeys[Enter]): string = "Return"
+template ScrollUp*(_: typedesc[Keys]): auto = cast[PseudoKeys[Button4]](Button4)
+template ScrollDown*(_: typedesc[Keys]): auto = cast[PseudoKeys[Button5]](Button5)
+template Return*(_: typedesc[Keys]): auto = cast[PseudoKeys[Enter]](Enter)
 
 const AllKeys* =
   toHashSet(
