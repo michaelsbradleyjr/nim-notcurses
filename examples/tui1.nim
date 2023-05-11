@@ -3,8 +3,8 @@ import pkg/notcurses
 
 let nc = Nc.init
 
-nc.stdPlane.putStr("Hello, Notcurses!").expect # cursor advanced in x with y=0
-nc.stdPlane.putStrYx("press q to quit", 2, 0).expect
+discard nc.stdPlane.putStr("Hello, Notcurses!") # cursor advanced in x with y=0
+discard nc.stdPlane.putStrYx("press q to quit", 2, 0)
 nc.render.expect
 
 while nc.getBlocking.codepoint != 'q': discard
