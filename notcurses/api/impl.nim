@@ -95,7 +95,8 @@ proc dimYx*(plane: Plane): PlaneDimensions =
   plane.dimYx(y, x)
   (y, x)
 
-func event*(input: Input): InputEvents = cast[InputEvents](input.cObj.evtype)
+func event*(input: Input): InputEvents =
+  cast[InputEvents](input.cObj.evtype)
 
 # for `notcurses_get`, etc. (i.e. abi calls that return 0'u32 on timeout), use
 # `Opt.none Codepoint` for timeout and `Opt.some [codepoint]` otherwise
