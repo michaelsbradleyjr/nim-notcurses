@@ -1,4 +1,4 @@
-import std/[sequtils, strutils]
+import std/[sequtils, sets, strutils]
 import pkg/notcurses/direct/core
 # or: import pkg/notcurses/direct
 
@@ -11,11 +11,11 @@ let
 var e, i = 0'u32
 while i < (Styles.Italic.uint32 shl 1):
   let styles = ncd.supportedStyles(Style(i)).intersection supportedStyles
-  ncd.setStyles(styles.toSeq).expect
-  ncd.putStr(i.uint64.toHex(8).toLower & " ").expect
-  ncd.setStyles(Styles.None).expect
+  ncd.setStyles styles.toSeq
+  ncd.putStr i.uint64.toHex(8).toLower & " "
+  ncd.setStyles Styles.None
   inc e
-  if e mod 8 == 0: ncd.putStr("\n").expect
+  if e mod 8 == 0: ncd.putStr "\n"
   inc i
 
 ncd.stop

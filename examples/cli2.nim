@@ -1,4 +1,4 @@
-import std/[sequtils, strutils]
+import std/[sequtils, sets, strutils]
 import pkg/notcurses/core
 # or: import pkg/notcurses
 
@@ -9,7 +9,7 @@ let
 func fmtHex(bs: seq[byte]): string =
   bs.foldl(a & " " & b.uint64.toHex(2).toUpperAscii, "").strip
 
-proc put(s = "") = stdn.putStr(s).expect
+proc put(s = "") = stdn.putStr s
 
 proc putLn(s = "") = put s & "\n"
 
@@ -24,10 +24,11 @@ while true:
   putLn()
 
   let ni = nc.getBlocking
-  var prefix: string
 
   putLn "event : " & $ni.event
   putLn "point : " & $ni.codepoint
+
+  var prefix: string
 
   prefix = "key   : "
   let key = ni.key
