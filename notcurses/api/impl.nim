@@ -9,7 +9,7 @@ import ../abi/impl
 import ./common
 import ./constants
 
-export Time, Timespec, sets
+export Time, Timespec
 export common except ApiDefect, PseudoCodepoint, contains
 export constants except AllKeys, DefectMessages
 
@@ -111,7 +111,7 @@ func getScrolling*(plane: Plane): bool =
 
 proc gradient*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
     lr: ChannelPair, egc = "", styles: varargs[Styles]):
-    Result[ApiSuccess, ApiErrorCode] =
+    Result[ApiSuccess, ApiErrorCode] {.discardable.} =
   let
     styles = styles.foldl(bitor(a, b.uint32), 0'u32)
     code = plane.cPtr.ncplane_gradient(y, x, ylen, xlen, egc.cstring,
@@ -122,7 +122,7 @@ proc gradient*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
     ok code
 
 proc gradient2x1*(plane: Plane, y, x: int32, ylen, xlen: uint32, ul, ur, ll,
-    lr: Channel): Result[ApiSuccess, ApiErrorCode] =
+    lr: Channel): Result[ApiSuccess, ApiErrorCode] {.discardable.} =
   let code = plane.cPtr.ncplane_gradient2x1(y, x, ylen, xlen, ul.uint32,
     ur.uint32, ll.uint32, lr.uint32)
   if code < 0:
@@ -208,7 +208,8 @@ func modifiers*(input: Input,
       mods.incl m
   mods
 
-proc putStr*(plane: Plane, s: string): Result[ApiSuccess, ApiErrorCode] =
+proc putStr*(plane: Plane, s: string): Result[ApiSuccess, ApiErrorCode]
+    {.discardable.} =
   let code = plane.cPtr.ncplane_putstr s.cstring
   if code <= 0:
     err ApiErrorCode(code: code, msg: $PutStr)
@@ -216,7 +217,7 @@ proc putStr*(plane: Plane, s: string): Result[ApiSuccess, ApiErrorCode] =
     ok code
 
 proc putStrAligned*(plane: Plane, s: string, alignment: Align, y = -1'i32):
-    Result[ApiSuccess, ApiErrorCode] =
+    Result[ApiSuccess, ApiErrorCode] {.discardable.} =
   let code = plane.cPtr.ncplane_putstr_aligned(y, cast[ncalign_e](alignment),
     s.cstring)
   if code <= 0:
@@ -225,21 +226,22 @@ proc putStrAligned*(plane: Plane, s: string, alignment: Align, y = -1'i32):
     ok code
 
 proc putStrYx*(plane: Plane, s: string, y = -1'i32, x = -1'i32):
-    Result[ApiSuccess, ApiErrorCode] =
+    Result[ApiSuccess, ApiErrorCode] {.discardable.} =
   let code = plane.cPtr.ncplane_putstr_yx(y, x, s.cstring)
   if code <= 0:
     err ApiErrorCode(code: code, msg: $PutStrYx)
   else:
     ok code
 
-proc putWc*(plane: Plane, wc: Wchar): Result[ApiSuccess, ApiErrorCode] =
+proc putWc*(plane: Plane, wc: Wchar): Result[ApiSuccess, ApiErrorCode]
+    {.discardable.} =
   let code = plane.cPtr.ncplane_putwc wc
   if code < 0:
     err ApiErrorCode(code: code, msg: $PutWc)
   else:
     ok code
 
-proc render*(nc: Notcurses): Result[void, ApiErrorCode] =
+proc render*(nc: Notcurses): Result[void, ApiErrorCode] {.discardable.} =
   let code = nc.cPtr.notcurses_render
   if code < 0:
     err ApiErrorCode(code: code, msg: $Render)

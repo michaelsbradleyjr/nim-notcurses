@@ -11,7 +11,6 @@ import ./constants
 
 export common except ApiDefect, PseudoCodepoint, contains
 export constants except AllKeys, DefectMessages
-export sets
 
 type
   Channel = common.Channel
@@ -62,7 +61,7 @@ macro init*(T: typedesc[NotcursesDirect], init: Init, options = Options.init,
   quote do: `T`.init(`init`, `name`, `options`, `file`)
 
 proc putStr*(ncd: NotcursesDirect, s: string, channel = Channel(0)):
-    Result[ApiSuccess, ApiErrorCode] =
+    Result[ApiSuccess, ApiErrorCode] {.discardable.} =
   let code = ncd.cPtr.ncdirect_putstr(channel.uint64, s.cstring)
   if code < 0:
     err ApiErrorCode(code: code, msg: $PutStr)
@@ -70,7 +69,7 @@ proc putStr*(ncd: NotcursesDirect, s: string, channel = Channel(0)):
     ok code
 
 proc setStyles*(ncd: NotcursesDirect, styles: varargs[Styles]):
-    Result[ApiSuccess, ApiErrorCode] =
+    Result[ApiSuccess, ApiErrorCode] {.discardable.} =
   let
     styles = styles.foldl(bitor(a, b.uint32), 0'u32)
     code = ncd.cPtr.ncdirect_set_styles styles

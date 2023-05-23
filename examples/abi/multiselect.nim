@@ -1,5 +1,3 @@
-# refactor when nim-notcurses high-level api supports ncmselector
-
 import std/os
 import pkg/notcurses/abi
 
@@ -8,7 +6,7 @@ import pkg/notcurses/abi
 
 var opts = notcurses_options(loglevel: NCLOGLEVEL_ERROR)
 let nc = notcurses_init(addr opts, stdout)
-if isNil nc: raise (ref Defect)(msg: "notcurses_init failed")
+if nc.isNil: raise (ref Defect)(msg: "notcurses_init failed")
 let stdn = notcurses_stdplane nc
 
 discard notcurses_mice_enable(nc, NCMICE_BUTTON_EVENT)
@@ -23,9 +21,9 @@ if notcurses_canopen_images nc:
   let
     path = joinPath(currentSourcePath.parentDir, "data/covid19.jpg")
     ncv = ncvisual_from_file path.cstring
-  if isNil ncv: stopAndRaise "ncvisual_from_file failed"
+  if ncv.isNil: stopAndRaise "ncvisual_from_file failed"
   var vopts = ncvisual_options(n: stdn, scaling: NCSCALE_STRETCH)
-  if isNil ncvisual_blit(nc, ncv, addr vopts):
+  if ncvisual_blit(nc, ncv, addr vopts).isNil:
     stopAndRaise "ncvisual_blit failed"
 
 discard ncplane_set_fg_rgb(stdn, 0x40f040)
@@ -96,11 +94,11 @@ var
 template run(body: untyped): untyped =
   body
   let mseln = ncplane_create(stdn, addr nopts)
-  if isNil mseln: stopAndRaise "ncplane_create failed"
+  if mseln.isNil: stopAndRaise "ncplane_create failed"
   discard ncplane_set_base(mseln, "", 0, bgchannels)
   let ns = ncmultiselector_create(mseln, addr sopts)
   inc item
-  if isNil ns:
+  if ns.isNil:
     stopAndRaise "ncmultiselector_create failed to create selector " & $item
   run_mselect ns
 

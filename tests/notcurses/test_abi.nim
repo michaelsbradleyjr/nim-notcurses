@@ -11,7 +11,7 @@ when not defined(windows):
         NCOPTION_SUPPRESS_BANNERS
       var opts = notcurses_options(flags: flags)
       let nc = notcurses_init(addr opts, stdout)
-      if isNil nc: raise (ref Defect)(msg: "notcurses_init failed")
+      if nc.isNil: raise (ref Defect)(msg: "notcurses_init failed")
 
     teardown:
       if notcurses_stop(nc) < 0:
@@ -28,7 +28,7 @@ when not defined(windows):
       let
         flags = NCDIRECT_OPTION_DRAIN_INPUT
         ncd = ncdirect_init(nil, stdout, flags)
-      if isNil ncd: raise (ref Defect)(msg: "ncdirect_init failed")
+      if ncd.isNil: raise (ref Defect)(msg: "ncdirect_init failed")
 
     teardown:
       if ncdirect_stop(ncd) < 0: raise (ref Defect)(msg: "ncdirect_stop failed")

@@ -11,10 +11,11 @@ let
   flags = [InitFlags.CliMode, DrainInput, InhibitSetLocale]
   nc = Nc.init NcOpts.init flags
   stdn = nc.stdPlane
-  notice = "\nThis program is *not* indicative of real scrolling speed.\n\n"
+
+const notice = "\nThis program is *not* indicative of real scrolling speed\n\n"
 
 stdn.setStyles Styles.Bold
-stdn.putStr(notice).expect
+stdn.putStr notice
 stdn.setStyles Styles.None
 
 # https://codepoints.net/cjk_unified_ideographs
@@ -24,15 +25,15 @@ const
 
 var u = first
 while true:
-  stdn.putWc(u.wchar).expect
-  nc.render.expect
+  stdn.putWc u.wchar
+  nc.render
   if u < last: inc u
   else: u = first
   sleep 10
 
 nc.stop
 
-# rendering after each putWc() isn't necessary but it makes the auto-scroll
+# rendering after each putWc isn't necessary but it makes the auto-scroll
 # behavior of Notcurses' CLI mode visually more apparent in the compiled
 # program's output
 

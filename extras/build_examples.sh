@@ -3,13 +3,21 @@
 set -eo pipefail
 
 declare -a modules=(
+  abi/cjkscroll
+  abi/cli1
+  abi/cli2
+  abi/direct1
+  abi/direct_sgr
+  abi/gradients
+  abi/multiselect
+  abi/tui1
+  abi/zalgo
   cjkscroll
   cli1
   cli2
   direct1
   direct_sgr
   gradients
-  multiselect
   tui1
   zalgo
 )
@@ -21,7 +29,7 @@ for module in ${modules[@]}; do
 done
 
 if [[ -v MSYSTEM ]]; then
-  ls -ladh examples/*.exe
+  ls -ladh examples/abi/*.exe examples/*.exe
 else
-  find examples -maxdepth 1 -type f | grep -v '\..*$' | xargs ls -ladh
+  find examples -maxdepth 2 -type f | grep -v '\..*$' | xargs ls -ladh
 fi

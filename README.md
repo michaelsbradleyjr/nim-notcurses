@@ -93,11 +93,14 @@ import notcurses/abi
 # or: import notcurses/abi/core
 
 var opts = notcurses_options()
-let nc = notcurses_init(addr opts, stdout)
-# or: let nc = notcurses_core_init(addr opts, stdout)
-if isNil nc: raise (ref Defect)(msg: "Notcurses failed to initialize")
 
-if notcurses_stop(nc) < 0: raise (ref Defect)(msg: "Notcurses failed to stop")
+let nc = notcurses_init(addr opts, stdout)
+if nc.isNil: raise (ref Defect)(msg: "notcurses_init failed")
+
+# or: let nc = notcurses_core_init(addr opts, stdout)
+# or: if nc.isNil: raise (ref Defect)(msg: "notcurses_core_init failed")
+
+if notcurses_stop(nc) < 0: raise (ref Defect)(msg: "notcurses_stop failed")
 ```
 
 #### Direct mode
@@ -106,19 +109,21 @@ if notcurses_stop(nc) < 0: raise (ref Defect)(msg: "Notcurses failed to stop")
 import notcurses/abi/direct
 # or: import notcurses/abi/direct/core
 
-let ncd = ncdirect_init(nil, stdout, 0)
-# or: let ncd = ncdirect_core_init(nil, stdout, 0)
-if isNil ncd: raise (ref Defect)(msg: "Direct mode failed to initialize")
+let ncd = ncdirect_init(nil, stdout, flags)
+if ncd.isNil: raise (ref Defect)(msg: "ncdirect_init failed")
 
-if ncdirect_stop(ncd) < 0: raise (ref Defect)(msg: "Direct mode failed to stop")
+# or: let ncd = ncdirect_core_init(nil, stdout, flags)
+# or: if ncd.isNil: raise (ref Defect)(msg: "ncdirect_core_init failed")
+
+if ncdirect_stop(ncd) < 0: raise (ref Defect)(msg: "ncdirect_stop failed")
 ```
 
 ## Examples
 
-See the modules in [`examples`](examples). To build and run the [`cli1`](examples/cli1.nim) example do
+See the modules in [`examples`](examples). To build and run the [`tui1`](examples/tui1.nim) example do
 
 ```text
-$ nim c -r examples/cli1.nim
+$ nim c -r examples/tui1.nim
 ```
 
 You can use additional compiler options, cf. [requirements](#requirements)
@@ -126,7 +131,7 @@ You can use additional compiler options, cf. [requirements](#requirements)
 ```text
 $ nim c --passC:"-I${HOME}/repos/notcurses/include" \
         --passL:"-L${HOME}/repos/notcurses/build -rpath ${HOME}/repos/notcurses/build" \
-        -r examples/cli1.nim
+        -r examples/tui1.nim
 ```
 
 ## Requirements

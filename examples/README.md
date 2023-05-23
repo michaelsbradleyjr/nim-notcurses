@@ -22,7 +22,7 @@ Translating Notcurses' examples was not an end in itself; the process was iterat
 | [`direct1.nim`](direct1.nim)         | `n/a`                |                                           |
 | [`direct_sgr.nim`](direct_sgr.nim)   | [`sgr-direct.c`][4]  |                                           |
 | [`gradients.nim`](gradients.nim)     | [`gradients.c`][5]   |                                           |
-| [`multiselect.nim`](multiselect.nim) | [`multiselect.c`][6] |                                           |
+| [`multiselect.nim`](abi/multiselect.nim) | [`multiselect.c`][6] |                                           |
 | [`tui1.nim`](tui1.nim)               | [`cli3.c`][7]        | renders *"Hello..."*                      |
 | [`zalgo.nim`](zalgo.nim)             | [`zalgo.c`][8]       |                                           |
 
@@ -34,6 +34,8 @@ Translating Notcurses' examples was not an end in itself; the process was iterat
 [6]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/multiselect.c
 [7]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/cli3.c
 [8]: https://github.com/dankamongmen/notcurses/blob/v3.0.9/src/poc/zalgo.c
+
+Modules in [`examples/abi`](abi) demonstrate working with the wrapper for the raw C API instead of the high-level API. They match the behavior of their counterparts in the parent directory and, naturally, that involves borrowing some code from the internals of the high-level API or otherwise providing for equivalent behavior. For example, see [`abi/cli2.nim`](abi/cli2.nim). There is also some boilerplate code (e.g. initialization and shutdown) but it is intentionally not captured in a helpers module because doing so is beside the point. C-style invocation is used for Notcurses' facilities in [`examples/abi`](abi) modules because it looks more natural in that context, e.g. `ncplane_putstr(stdn, s)` vs. `stdn.ncplane_putstr(s)`.
 
 ## Notcurses license
 
