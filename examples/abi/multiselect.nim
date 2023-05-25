@@ -19,7 +19,7 @@ proc stopAndRaise(msg: string) =
 
 if notcurses_canopen_images nc:
   let
-    path = joinPath(currentSourcePath.parentDir, "data/covid19.jpg")
+    path = joinPath(currentSourcePath.parentDir.parentDir, "data/covid19.jpg")
     ncv = ncvisual_from_file path.cstring
   if ncv.isNil: stopAndRaise "ncvisual_from_file failed"
   var vopts = ncvisual_options(n: stdn, scaling: NCSCALE_STRETCH)
