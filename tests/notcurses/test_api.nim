@@ -41,7 +41,7 @@ when not defined(windows):
 
 # to ensure that `string.fromWide` and `[string].toWide` are implemented
 # correctly, tests are provided below that compare wide strings converted to
-# Nim strings with Nim string literals they should match, and then converts
+# Nim strings with Nim string literals they should match, and then convert
 # those Nim strings back to wide strings to compare them with the originals
 
 macro compareN(names: static openArray[string]): untyped =
