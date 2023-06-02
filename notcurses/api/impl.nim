@@ -98,13 +98,17 @@ proc dimYx*(plane: Plane): PlaneDimensions =
 func event*(input: Input): InputEvents =
   cast[InputEvents](input.cObj.evtype)
 
-# for `notcurses_get`, etc. (i.e. abi calls that return 0'u32 on timeout), use
-# `Opt.none Codepoint` for timeout and `Opt.some [codepoint]` otherwise
-
 # possibly need to wrap output in Result and return error if
 # notcurses_get_blocking returns high(uint32)
 proc getBlocking*(nc: Notcurses, input: var Input): Codepoint {.discardable.} =
   Codepoint(nc.cPtr.notcurses_get_blocking(addr input.cObj))
+
+# possibly need to wrap output in Result and return error if
+# notcurses_get_nblock returns high(uint32)
+proc getNonblocking*(nc: Notcurses, input: var Input): Opt[Codepoint] {.discardable.} =
+  let codepoint = nc.cPtr.notcurses_get_nblock(addr input.cObj)
+  if codepoint == 0: Opt.none Codepoint
+  else: Opt.some Codepoint(codepoint)
 
 func getScrolling*(plane: Plane): bool =
   plane.cPtr.ncplane_scrolling_p
@@ -143,8 +147,16 @@ func init*(T: typedesc[Input]): T =
 # notcurses_get_blocking returns high(uint32)
 proc getBlocking*(nc: Notcurses): Input =
   var input = Input.init
-  discard nc.getBlocking input
+  nc.getBlocking input
   input
+
+# possibly need to wrap output in Result and return error if
+# notcurses_get_nblock returns high(uint32)
+proc getNonblocking*(nc: Notcurses): Opt[Input] {.discardable.} =
+  var input = Input.init
+  let codepoint = nc.getNonblocking input
+  if codepoint.isNone: Opt.none Input
+  else: Opt.some input
 
 func init*(T: typedesc[Margins], top = 0'u32, right = 0'u32, bottom = 0'u32,
     left = 0'u32): T =
