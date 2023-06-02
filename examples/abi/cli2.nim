@@ -16,7 +16,6 @@ let stdn = notcurses_stdplane nc
 
 const
   HighUcs32 = 0x0010ffff'u32
-
   ReplacementChar* = string.fromBytes hexToByteArray("0xefbfbd", 3)
 
 func bytes(input: ncinput): seq[byte] =
