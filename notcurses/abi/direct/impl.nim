@@ -17,7 +17,15 @@ const
   ncd_header = "notcurses/direct.h"
 
 {.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
-{.pragma: ncd, cdecl, header: ncd_header, importc.}
+
+when defined(coverage):
+  import std/macros
+  import ../coverage
+  macro ncd(procedure: untyped): untyped =
+    result = quote do:
+      coverageWrapper(`procedure`, ncd_header)
+else:
+  {.pragma: ncd, cdecl, header: ncd_header, importc.}
 
 # L60 - notcurses/notcurses.h
 type ncdirect* {.nc_incomplete, importc: "struct ncdirect".} = object

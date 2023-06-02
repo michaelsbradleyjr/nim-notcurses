@@ -2,32 +2,16 @@
 
 set -eo pipefail
 
-declare -a modules=(
-  abi/cjkscroll
-  abi/cli1
-  abi/cli2
-  abi/direct1
-  abi/direct_sgr
-  abi/gradients
-  abi/multiselect
-  abi/tui1
-  abi/zalgo
-  cjkscroll
-  cli1
-  cli2
-  direct1
-  direct_sgr
-  gradients
-  tui1
-  zalgo
-)
+source extras/examples.sh
 
 for module in ${modules[@]}; do
-  echo nim c "$@" examples/${module}.nim
-  nim c "$@" examples/${module}.nim
   echo
+  echo nim c "$@" examples/${module}.nim
+  echo
+  nim c "$@" examples/${module}.nim
 done
 
+echo
 if [[ -v MSYSTEM ]]; then
   ls -ladh examples/abi/*.exe examples/*.exe
 else

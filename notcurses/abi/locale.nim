@@ -6,28 +6,38 @@ when (NimMajor, NimMinor) >= (1, 4):
 else:
   {.push raises: [Defect].}
 
-const loc_header = "<locale.h>"
-{.pragma: loc, header: loc_header, importc, nodecl.}
+const locale_header = "<locale.h>"
+
+when defined(coverage):
+  import std/macros
+  import ./coverage
+  macro locale(procedure: untyped): untyped =
+    result = quote do:
+      coverageWrapper(`procedure`, locale_header)
+else:
+  {.pragma: locale, cdecl, header: locale_header, importc.}
+
+{.pragma: locale_const, header: locale_header, importc, nodecl.}
 
 when (NimMajor, NimMinor) >= (1, 4):
   let
-    LC_ALL* {.loc.}: cint
-    LC_COLLATE* {.loc.}: cint
-    LC_CTYPE* {.loc.}: cint
-    LC_MONETARY* {.loc.}: cint
-    LC_NUMERIC* {.loc.}: cint
-    LC_TIME* {.loc.}: cint
+    LC_ALL* {.locale_const.}: cint
+    LC_COLLATE* {.locale_const.}: cint
+    LC_CTYPE* {.locale_const.}: cint
+    LC_MONETARY* {.locale_const.}: cint
+    LC_NUMERIC* {.locale_const.}: cint
+    LC_TIME* {.locale_const.}: cint
   when defined(posix):
-    let LC_MESSAGES* {.loc.}: cint
+    let LC_MESSAGES* {.locale_const.}: cint
 else:
   var
-    LC_ALL* {.loc.}: cint
-    LC_COLLATE* {.loc.}: cint
-    LC_CTYPE* {.loc.}: cint
-    LC_MONETARY* {.loc.}: cint
-    LC_NUMERIC* {.loc.}: cint
-    LC_TIME* {.loc.}: cint
+    LC_ALL* {.locale_const.}: cint
+    LC_COLLATE* {.locale_const.}: cint
+    LC_CTYPE* {.locale_const.}: cint
+    LC_MONETARY* {.locale_const.}: cint
+    LC_NUMERIC* {.locale_const.}: cint
+    LC_TIME* {.locale_const.}: cint
   when defined(posix):
-    var LC_MESSAGES* {.loc.}: cint
+    var LC_MESSAGES* {.locale_const.}: cint
 
-proc setlocale*(category: cint, locale: cstring): cstring {.cdecl, header: loc_header, importc.}
+proc setlocale*(category: cint, locale: cstring): cstring {.locale.}

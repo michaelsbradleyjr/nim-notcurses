@@ -31,7 +31,15 @@ func nckey_supppuab_p*(w: uint32): bool =
   (w >= 0x00100000'u32) and (w <= 0x0010fffd'u32)
 
 const nc_header = "notcurses/notcurses.h"
-{.pragma: nc, cdecl, header: nc_header, importc.}
+
+when defined(coverage):
+  import std/macros
+  import ./coverage
+  macro nc(procedure: untyped): untyped =
+    result = quote do:
+      coverageWrapper(`procedure`, nc_header)
+else:
+  {.pragma: nc, cdecl, header: nc_header, importc.}
 
 # L39 - notcurses/notcurses.h
 proc notcurses_version*(): cstring {.nc.}
