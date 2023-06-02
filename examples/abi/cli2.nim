@@ -20,7 +20,7 @@ const
   ReplacementChar* = string.fromBytes hexToByteArray("0xefbfbd", 3)
 
 func bytes(input: ncinput): seq[byte] =
-  const nullC = '\x00'.char
+  const nullC = '\x00'
   var bytes: seq[byte]
   bytes.add input.utf8[0].byte
   for c in input.utf8[1..3]:

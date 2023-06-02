@@ -280,7 +280,7 @@ proc stop*(nc: Notcurses) =
     raise (ref ApiDefect)(msg: $NcStop)
 
 func toBytes(buf: array[5, char]): seq[byte] =
-  const nullC = '\x00'.char
+  const nullC = '\x00'
   var bytes: seq[byte]
   bytes.add buf[0].byte
   for c in buf[1..3]:
