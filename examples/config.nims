@@ -47,6 +47,11 @@ else:
   --define:debug
   --linetrace:on
   --stacktrace:on
+when defined(coverage):
+  when defined(release):
+    --debugger:native
+  --passC:"--coverage"
+  --passL:"--coverage"
 
 # with `--passL:"-s"` macOS Xcode's `ld` will report: "ld: warning: option -s
 # is obsolete and being ignored"; however, the resulting binary will still be

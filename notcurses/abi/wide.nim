@@ -10,6 +10,14 @@ const
   wchar_header = "<wchar.h>"
   wchar_t = "wchar_t"
 
+when defined(coverage):
+  import ./coverage
+  macro wide(procedure: untyped): untyped =
+    result = quote do:
+      coverageWrapper(`procedure`, wchar_header)
+else:
+  {.pragma: wide, cdecl, header: wchar_header, importc.}
+
 # wchar_t is implementation-defined so use of that type as specified below may
 # produce incorrect results on some platforms
 when defined(windows):
@@ -26,7 +34,7 @@ func `==`*(x, y: Wchar): bool =
 template wchar*(u: untyped): Wchar =
   Wchar(u)
 
-proc wcwidth*(wc: Wchar): cint {.cdecl, header: wchar_header, importc.}
+proc wcwidth*(wc: Wchar): cint {.wide.}
 
 # adapted from: https://stackoverflow.com/a/148766
 func toSeqB*(ws: ptr UncheckedArray[Wchar]): seq[byte] =

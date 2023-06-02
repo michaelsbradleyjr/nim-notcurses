@@ -18,7 +18,15 @@ export common except lib_notcurses_major, lib_notcurses_minor, lib_notcurses_pat
 export constants except PRETERUNICODEBASE, nim_notcurses_version
 
 const nc_header = "notcurses/notcurses.h"
-{.pragma: nc, cdecl, header: nc_header, importc.}
+
+when defined(coverage):
+  import ./coverage
+  macro nc(procedure: untyped): untyped =
+    result = quote do:
+      coverageWrapper(`procedure`, nc_header)
+else:
+  {.pragma: nc, cdecl, header: nc_header, importc.}
+
 {.pragma: nc_bycopy, bycopy, header: nc_header.}
 {.pragma: nc_incomplete, header: nc_header, incompleteStruct.}
 
