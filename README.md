@@ -2,7 +2,6 @@
 
 [![License: Apache](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![ABI: experimental](https://img.shields.io/badge/ABI-experimental-orange.svg)](#stability)
 [![API: experimental](https://img.shields.io/badge/API-experimental-orange.svg)](#stability)
 [![Builds (GitHub Actions)](https://github.com/michaelsbradleyjr/nim-notcurses/workflows/Builds/badge.svg?branch=master)](https://github.com/michaelsbradleyjr/nim-notcurses/actions?query=workflow%3ABuilds+branch%3Amaster)
 
