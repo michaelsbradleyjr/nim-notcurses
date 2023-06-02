@@ -51,12 +51,18 @@ import notcurses/core
 
 :bulb: The *core* does not link against Notcurses' multimedia stack, as explained in its [FAQs](https://github.com/dankamongmen/notcurses#faqs).
 
-#### Initialize
+#### Initialization
 
 *TUI mode* is the default and facilitates high-performance, non-scrolling, full-screen applications
 
 ```nim
 let nc = Nc.init
+```
+
+#### Shutdown
+
+```nim
+nc.stop
 ```
 
 #### CLI mode
@@ -68,6 +74,8 @@ import notcurses
 # or: import notcurses/core
 
 let nc = Nc.init NcOpts.init [InitFlags.CliMode]
+
+nc.stop
 ```
 
 #### Direct mode
@@ -79,6 +87,8 @@ import notcurses/direct
 # or: import notcurses/direct/core
 
 let ncd = Ncd.init
+
+ncd.stop
 ```
 
 :bulb: It's generally recommended to use [CLI mode](#cli-mode) instead of Direct mode. See Notcurses' [FAQs](https://github.com/dankamongmen/notcurses#faqs), and for more context see [dankamongmen/notcurses#1853](https://github.com/dankamongmen/notcurses/discussions/1853) and [dankamongmen/notcurses#1834](https://github.com/dankamongmen/notcurses/issues/1834).
@@ -108,6 +118,8 @@ if notcurses_stop(nc) < 0: raise (ref Defect)(msg: "notcurses_stop failed")
 import notcurses/abi/direct
 # or: import notcurses/abi/direct/core
 
+let flags = 0'u64
+
 let ncd = ncdirect_init(nil, stdout, flags)
 if ncd.isNil: raise (ref Defect)(msg: "ncdirect_init failed")
 
@@ -129,9 +141,38 @@ You can use additional compiler options, cf. [requirements](#requirements)
 
 ```text
 $ nim c --passC:"-I${HOME}/repos/notcurses/include" \
-        --passL:"-L${HOME}/repos/notcurses/build -rpath ${HOME}/repos/notcurses/build" \
+        --passL:"-L${HOME}/repos/notcurses/build" \
+        --passL:"-rpath ${HOME}/repos/notcurses/build" \
         -r examples/tui1.nim
 ```
+
+To build all the examples do
+
+``` text
+$ extras/build_examples.sh
+```
+
+Additional options are supported
+
+``` text
+$ extras/build_examples.sh -d:release --passC ...
+```
+
+## Tests
+
+Unit tests for nim-notcurses can be run with [`nimble`](https://github.com/nim-lang/nimble#readme)
+
+``` text
+$ nimble test
+```
+
+You can use additional `nimble` and compiler options
+
+``` text
+$ nimble --verbose test --passC ...
+```
+
+The test suites are rather thin at present but will be expanded eventually.
 
 ## Requirements
 
@@ -171,7 +212,8 @@ For example, on macOS, if your own build of Notcurses is in `${HOME}/repos/notcu
 
 ```text
 $ nim c --passC:"-I${HOME}/repos/notcurses/include" \
-        --passL:"-L${HOME}/repos/notcurses/build -rpath ${HOME}/repos/notcurses/build" \
+        --passL:"-L${HOME}/repos/notcurses/build" \
+        --passL:"-rpath ${HOME}/repos/notcurses/build" \
         ...
 ```
 
