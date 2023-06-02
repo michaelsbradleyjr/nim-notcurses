@@ -8,15 +8,18 @@ setLocale(LC_ALL, "").expect
 
 # if locale was set manually then use flag InhibitSetLocale
 let
-  flags = [InitFlags.CliMode, DrainInput, InhibitSetLocale]
+  flags = [InitFlags.CliMode, InhibitSetLocale]
   nc = Nc.init NcOpts.init flags
   stdn = nc.stdPlane
 
-const notice = "\nThis program is *not* indicative of real scrolling speed\n\n"
+const
+  notice1 = "\nThis program is *not* indicative of real scrolling speed\n"
+  notice2 = "\npress q to quit\n\n"
 
 stdn.setStyles Styles.Bold
-stdn.putStr notice
+stdn.putStr notice1
 stdn.setStyles Styles.None
+stdn.putStr notice2
 
 # https://codepoints.net/cjk_unified_ideographs
 const
@@ -25,11 +28,15 @@ const
 
 var u = first
 while true:
+  let input = nc.getNonblocking
+  if input.isSome and input.get.codepoint == 'q': break
   stdn.putWc u.wchar
   nc.render
   if u < last: inc u
   else: u = first
   sleep 10
+
+stdn.putStr "\n\n"
 
 nc.stop
 
