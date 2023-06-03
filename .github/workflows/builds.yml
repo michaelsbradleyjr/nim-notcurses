@@ -229,7 +229,6 @@ jobs:
         run: |
           source "${HOME}/.bash_env"
           extras/build_examples.sh --nimblePath:"${NIMBLE_DIR}/pkgs2"
-          echo
           extras/build_examples.sh -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2"
 
       # Notcurses is currently not able to access Windows ConPTY in GitHub Actions
