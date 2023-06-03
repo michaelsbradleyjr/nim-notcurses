@@ -97,7 +97,17 @@ genhtml coverage/extracted.info \
 
 if [[ ! -z "${CODECOV_TOKEN}" ]]; then
   cd coverage
-  curl -Os https://uploader.codecov.io/latest/macos/codecov
+  if [[ $(uname) = "Linux" ]]; then
+    curl -Os https://uploader.codecov.io/latest/linux/codecov
+  elif [[ $(uname) = "Darwin" ]]; then
+    curl -Os https://uploader.codecov.io/latest/macos/codecov
+  elif [[ -v MSYSTEM ]]; then
+    curl -Os https://uploader.codecov.io/latest/windows/codecov.exe
+  else
+    echo -e ${bred}Error${none}: codecov uploader binary is only available for \
+            Linux, macOS, and Windows
+    exit 1
+  fi
   chmod +x codecov
   cd - 1>/dev/null
   echo
