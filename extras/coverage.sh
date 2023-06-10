@@ -86,6 +86,7 @@ lcov --add-tracefile \
 
 echo
 lcov --extract coverage/coverage.info \
+     --ignore-errors unused \
      "${PWD}"/notcurses.nim \
      "${PWD}"/notcurses/\*.nim \
      >> coverage/extracted.info
