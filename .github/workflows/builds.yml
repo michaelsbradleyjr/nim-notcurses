@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache_marker: [ 34 ]
+        cache_marker: [ 37 ]
         platform:
           - {
             icon: 🐧,
@@ -100,7 +100,7 @@ jobs:
               git clone --depth 1 $2 $1 \
                         --branch $3 2>/dev/null && \
               cd $1 && git rev-parse HEAD \
-              | cut -c1-7)" >> ${GITHUB_OUTPUT}
+              | cut -c1-10)" >> ${GITHUB_OUTPUT}
           }
           clone1b choosenim \
                   https://github.com/dom96/choosenim.git \
@@ -194,14 +194,20 @@ jobs:
           if [[ ${{ matrix.platform.os }} = windows ]]; then
             mkdir -p "$(cygpath "${USERPROFILE}")/.nimble/bin"
           fi
-          CHOOSENIM_CHOOSE_VERSION=\#${{ matrix.nim_version }} \
-          CHOOSENIM_NO_ANALYTICS=1 \
+          export CHOOSENIM_CHOOSE_VERSION=\#${{ steps.cache-key.outputs.nim_commit }}
+          export CHOOSENIM_NO_ANALYTICS=1
           ./init.sh -y
           if [[ ${{ matrix.platform.os }} = windows ]]; then
             mv "$(cygpath "${USERPROFILE}")/.nimble" "${HOME}/"
           fi
+          export NIMBLE_DIR="${HOME}/.nimble"
+          export PATH="${NIMBLE_DIR}/bin:${PATH}"
           echo 'export NIMBLE_DIR="${HOME}/.nimble"' >> "${HOME}/.bash_env"
           echo 'export PATH="${NIMBLE_DIR}/bin:${PATH}"' >> "${HOME}/.bash_env"
+          echo
+          nim --version
+          echo
+          nimble --version
 
       # maybe can be reworked (along with caching logic) re: Nimble
       # corresponding to Nim v2, with conditional logic for older Nim/Nimble
