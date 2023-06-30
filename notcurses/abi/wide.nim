@@ -1,7 +1,4 @@
-when (NimMajor, NimMinor) >= (1, 4):
-  {.push raises: [].}
-else:
-  {.push raises: [Defect].}
+{.push raises: [].}
 
 import std/[bitops, macros, typetraits]
 import pkg/stew/byteutils
@@ -143,11 +140,8 @@ macro L*(s: static string): untyped =
       for i, wc in `wcs`:
         # when (NimMajor, NimMinor) < (2, 0):
         when (NimMajor, NimMinor, NimPatch) < (1, 9, 3):
-          # at this point in macro expansion `wc` is a literal so must
-          # explicitly convert to Wchar
           ws[i] = wc.wchar
         else:
-          # not an issue in Nim 2.0+
           ws[i] = wc
       ws
     `toArrayW`()

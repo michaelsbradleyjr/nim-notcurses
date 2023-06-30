@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache_marker: [ 37 ]
+        cache_marker: [ 40 ]
         platform:
           - {
             icon: 🐧,
@@ -39,7 +39,7 @@ jobs:
             os: windows,
             shell: msys2
           }
-        nim_version: [ v1.2.8, version-1-2, version-1-4, version-1-6, version-2-0, devel ]
+        nim_version: [ v1.6.0, version-1-6, version-2-0, devel ]
     name: ${{ matrix.platform.icon }} ${{ matrix.platform.label }} - Nim ${{ matrix.nim_version }}
     runs-on: ${{ matrix.platform.os }}-latest
     defaults:
@@ -228,7 +228,7 @@ jobs:
       # Nim's version-2-0 branch still sets package search path to pkgs instead
       # of pkgs2 when NIMBLE_DIR environment variable is set
       # https://github.com/nim-lang/nimble/issues/1061
-      # https://github.com/nim-lang/Nim/blob/version-2-0/compiler/commands.nim#L613
+      # https://github.com/nim-lang/Nim/blob/version-2-0/compiler/commands.nim#L614-L616
       # it's harmless to set an additional --nimblePath that isn't relevant
       # (doesn't exist) for a particular version of Nim/Nimble
       - name: Build examples

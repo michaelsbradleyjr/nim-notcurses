@@ -1,10 +1,8 @@
-when (NimMajor, NimMinor) >= (1, 4):
-  {.push raises: [].}
-else:
-  {.push raises: [Defect].}
+{.push raises: [].}
 
 import std/[bitops, macros, sequtils, sets, strformat, strutils]
-import pkg/stew/[byteutils, results]
+import pkg/results
+import pkg/stew/byteutils
 import ../abi/impl
 import ./common
 import ./constants
@@ -180,13 +178,13 @@ proc init*(T: typedesc[Notcurses], init: Init, initName: string,
     cPtr: ptr notcurses
   let failedMsg = initName & " failed"
   when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-    {.warning[BareExcept]: off.}
+    {.push warning[BareExcept]: off.}
   try:
     cPtr = init(addr cOpts, file)
   except Exception:
     raise (ref ApiDefect)(msg: failedMsg)
   when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-    {.warning[BareExcept]: on.}
+    {.pop.}
   if cPtr.isNil: raise (ref ApiDefect)(msg: failedMsg)
   T(cPtr: cPtr)
 

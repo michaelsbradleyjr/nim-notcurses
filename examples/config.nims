@@ -25,14 +25,7 @@ else:
 --threads:on
 --tlsEmulation:off
 
-when (NimMajor, NimMinor) == (1, 2):
-  switch("hint", "Processing:off")
-  switch("hint", "XDeclaredButNotUsed:off")
-  switch("warning", "ObservableStores:off")
-elif (NimMajor, NimMinor) == (1, 4):
-  switch("hint", "XCannotRaiseY:off")
-else:
-  --hint:"XCannotRaiseY:off"
+--hint:"XCannotRaiseY:off"
 when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
   --warning:"BareExcept:on"
 

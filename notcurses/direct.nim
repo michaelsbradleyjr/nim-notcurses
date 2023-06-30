@@ -1,9 +1,6 @@
 {.passL: "-lnotcurses -lnotcurses-core".}
 
-when (NimMajor, NimMinor) >= (1, 4):
-  {.push raises: [].}
-else:
-  {.push raises: [Defect].}
+{.push raises: [].}
 
 import ./abi/direct/impl as abi_impl
 import ./api/direct/impl

@@ -1,10 +1,7 @@
-when (NimMajor, NimMinor) >= (1, 4):
-  {.push raises: [].}
-else:
-  {.push raises: [Defect].}
+{.push raises: [].}
 
 import std/[hashes, sets]
-import pkg/stew/results
+import pkg/results
 import ../abi/common
 import ../locale
 import ../wide

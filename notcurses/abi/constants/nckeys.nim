@@ -3,10 +3,7 @@
 
 # this module uses extra whitespace so it can be visually scanned more easily
 
-when (NimMajor, NimMinor) >= (1, 4):
-  {.push raises: [].}
-else:
-  {.push raises: [Defect].}
+{.push raises: [].}
 
 # L31 - notcurses/nckeys.h
 const PRETERUNICODEBASE* = 1115000'u32
