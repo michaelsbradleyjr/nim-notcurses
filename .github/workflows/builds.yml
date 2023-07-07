@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache_marker: [ 34 ]
+        cache_marker: [ 40 ]
         platform:
           - {
             icon: 🐧,
@@ -39,7 +39,7 @@ jobs:
             os: windows,
             shell: msys2
           }
-        nim_version: [ v1.2.8, version-1-2, version-1-4, version-1-6, version-2-0, devel ]
+        nim_version: [ v1.6.0, version-1-6, version-2-0, devel ]
     name: ${{ matrix.platform.icon }} ${{ matrix.platform.label }} - Nim ${{ matrix.nim_version }}
     runs-on: ${{ matrix.platform.os }}-latest
     defaults:
@@ -100,7 +100,7 @@ jobs:
               git clone --depth 1 $2 $1 \
                         --branch $3 2>/dev/null && \
               cd $1 && git rev-parse HEAD \
-              | cut -c1-7)" >> ${GITHUB_OUTPUT}
+              | cut -c1-10)" >> ${GITHUB_OUTPUT}
           }
           clone1b choosenim \
                   https://github.com/dom96/choosenim.git \
@@ -194,14 +194,20 @@ jobs:
           if [[ ${{ matrix.platform.os }} = windows ]]; then
             mkdir -p "$(cygpath "${USERPROFILE}")/.nimble/bin"
           fi
-          CHOOSENIM_CHOOSE_VERSION=\#${{ matrix.nim_version }} \
-          CHOOSENIM_NO_ANALYTICS=1 \
+          export CHOOSENIM_CHOOSE_VERSION=\#${{ steps.cache-key.outputs.nim_commit }}
+          export CHOOSENIM_NO_ANALYTICS=1
           ./init.sh -y
           if [[ ${{ matrix.platform.os }} = windows ]]; then
             mv "$(cygpath "${USERPROFILE}")/.nimble" "${HOME}/"
           fi
+          export NIMBLE_DIR="${HOME}/.nimble"
+          export PATH="${NIMBLE_DIR}/bin:${PATH}"
           echo 'export NIMBLE_DIR="${HOME}/.nimble"' >> "${HOME}/.bash_env"
           echo 'export PATH="${NIMBLE_DIR}/bin:${PATH}"' >> "${HOME}/.bash_env"
+          echo
+          nim --version
+          echo
+          nimble --version
 
       # maybe can be reworked (along with caching logic) re: Nimble
       # corresponding to Nim v2, with conditional logic for older Nim/Nimble
@@ -222,14 +228,13 @@ jobs:
       # Nim's version-2-0 branch still sets package search path to pkgs instead
       # of pkgs2 when NIMBLE_DIR environment variable is set
       # https://github.com/nim-lang/nimble/issues/1061
-      # https://github.com/nim-lang/Nim/blob/version-2-0/compiler/commands.nim#L613
+      # https://github.com/nim-lang/Nim/blob/version-2-0/compiler/commands.nim#L614-L616
       # it's harmless to set an additional --nimblePath that isn't relevant
       # (doesn't exist) for a particular version of Nim/Nimble
       - name: Build examples
         run: |
           source "${HOME}/.bash_env"
           extras/build_examples.sh --nimblePath:"${NIMBLE_DIR}/pkgs2"
-          echo
           extras/build_examples.sh -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2"
 
       # Notcurses is currently not able to access Windows ConPTY in GitHub Actions

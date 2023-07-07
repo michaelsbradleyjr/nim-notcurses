@@ -1,10 +1,7 @@
-when (NimMajor, NimMinor) >= (1, 4):
-  {.push raises: [].}
-else:
-  {.push raises: [Defect].}
+{.push raises: [].}
 
 import std/[bitops, macros, sequtils, sets]
-import pkg/stew/results
+import pkg/results
 import ../../abi/direct/impl
 import ../common
 import ./constants
@@ -45,13 +42,13 @@ proc init*(T: typedesc[NotcursesDirect], init: Init, initName: string,
   let failedMsg = initName & " failed"
   if options.term != "": termtype = options.term.cstring
   when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-    {.warning[BareExcept]: off.}
+    {.push warning[BareExcept]: off.}
   try:
     cPtr = init(termtype, file, options.flags)
   except Exception:
     raise (ref ApiDefect)(msg: failedMsg)
   when (NimMajor, NimMinor, NimPatch) > (1, 6, 10):
-    {.warning[BareExcept]: on.}
+    {.pop.}
   if cPtr.isNil: raise (ref ApiDefect)(msg: failedMsg)
   T(cPtr: cPtr)
 

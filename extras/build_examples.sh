@@ -7,7 +7,9 @@ source extras/examples.sh
 for module in ${modules[@]}; do
   echo
   echo nim c "$@" examples/${module}.nim
-  echo
+  if [[ ! ("$@" = *"-d:release"* || "$@" = *"--define:release"*) ]]; then
+    echo
+  fi
   nim c "$@" examples/${module}.nim
 done
 

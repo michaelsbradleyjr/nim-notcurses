@@ -25,6 +25,7 @@ import
   notcurses,
   notcurses/abi,
   notcurses/abi/core,
+  notcurses/abi/coverage,
   notcurses/abi/direct,
   notcurses/abi/direct/core as notcurses_abi_direct_core,
   notcurses/core as notcurses_core,

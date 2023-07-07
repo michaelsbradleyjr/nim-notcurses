@@ -1,10 +1,7 @@
 # L[num] comments below pertain to sources for Notcurses v3.0.9
 # https://github.com/dankamongmen/notcurses/tree/v3.0.9/include
 
-when (NimMajor, NimMinor) >= (1, 4):
-  {.push raises: [].}
-else:
-  {.push raises: [Defect].}
+{.push raises: [].}
 
 import std/[strutils, terminal]
 import ./constants

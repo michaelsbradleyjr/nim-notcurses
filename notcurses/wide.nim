@@ -1,7 +1,4 @@
-when (NimMajor, NimMinor) >= (1, 4):
-  {.push raises: [].}
-else:
-  {.push raises: [Defect].}
+{.push raises: [].}
 
 import pkg/stew/byteutils
 import ./abi/wide

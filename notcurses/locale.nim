@@ -1,10 +1,7 @@
-when (NimMajor, NimMinor) >= (1, 4):
-  {.push raises: [].}
-else:
-  {.push raises: [Defect].}
+{.push raises: [].}
 
 import std/macros
-import pkg/stew/results
+import pkg/results
 import ./abi/locale
 
 export results

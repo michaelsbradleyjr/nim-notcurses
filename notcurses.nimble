@@ -6,6 +6,7 @@ license      = "Apache License 2.0 or MIT"
 installDirs  = @["notcurses"]
 installFiles = @["LICENSE", "LICENSE-APACHEv2", "LICENSE-MIT", "LICENSE-NOTCURSES", "notcurses.nim"]
 
-requires "nim >= 1.2.8",
+requires "nim >= 1.6.0",
+         "results",
          "stew",
          "unittest2"

@@ -1,7 +1,4 @@
-when (NimMajor, NimMinor) >= (1, 4):
-  {.push raises: [].}
-else:
-  {.push raises: [Defect].}
+{.push raises: [].}
 
 import std/[sequtils, sets]
 import ../../abi/constants/nckeys
