@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache_marker: [ 40 ]
+        cache_marker: [ 42 ]
         platform:
           - {
             icon: 🐧,
@@ -225,17 +225,11 @@ jobs:
           source "${HOME}/.bash_env"
           nimble --accept install --depsOnly
 
-      # Nim's version-2-0 branch still sets package search path to pkgs instead
-      # of pkgs2 when NIMBLE_DIR environment variable is set
-      # https://github.com/nim-lang/nimble/issues/1061
-      # https://github.com/nim-lang/Nim/blob/version-2-0/compiler/commands.nim#L614-L616
-      # it's harmless to set an additional --nimblePath that isn't relevant
-      # (doesn't exist) for a particular version of Nim/Nimble
       - name: Build examples
         run: |
           source "${HOME}/.bash_env"
-          extras/build_examples.sh --nimblePath:"${NIMBLE_DIR}/pkgs2"
-          extras/build_examples.sh -d:release --nimblePath:"${NIMBLE_DIR}/pkgs2"
+          extras/build_examples.sh
+          extras/build_examples.sh -d:release
 
       # Notcurses is currently not able to access Windows ConPTY in GitHub Actions
       - name: Build and run tests
