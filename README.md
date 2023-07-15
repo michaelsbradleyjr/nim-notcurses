@@ -6,7 +6,7 @@
 [![Builds (GitHub Actions)](https://github.com/michaelsbradleyjr/nim-notcurses/workflows/Builds/badge.svg?branch=master)](https://github.com/michaelsbradleyjr/nim-notcurses/actions?query=workflow%3ABuilds+branch%3Amaster)
 [![codecov](https://codecov.io/gh/michaelsbradleyjr/nim-notcurses/branch/master/graph/badge.svg?token=VLN0VLATJS)](https://codecov.io/gh/michaelsbradleyjr/nim-notcurses)
 
-Nim wrapper for [Notcurses](https://github.com/dankamongmen/notcurses#readme): blingful TUIs and character graphics.
+[Nim](https://nim-lang.org) wrapper for [Notcurses](https://github.com/dankamongmen/notcurses#readme): blingful TUIs and character graphics.
 
 This package provides a Nim API and a lower-level wrapper for Notcurses' raw C API.
 
