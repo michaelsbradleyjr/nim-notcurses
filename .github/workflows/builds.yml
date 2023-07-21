@@ -74,15 +74,15 @@ jobs:
         if: matrix.platform.os == 'windows'
         uses: msys2/setup-msys2@v2
         with:
-          msystem: UCRT64
+          msystem: CLANG64
           install: >
             base-devel
             git
-            mingw-w64-ucrt-x86_64-cmake
-            mingw-w64-ucrt-x86_64-ffmpeg
-            mingw-w64-ucrt-x86_64-libdeflate
-            mingw-w64-ucrt-x86_64-libunistring
-            mingw-w64-ucrt-x86_64-toolchain
+            mingw-w64-clang-x86_64-cmake
+            mingw-w64-clang-x86_64-ffmpeg
+            mingw-w64-clang-x86_64-libdeflate
+            mingw-w64-clang-x86_64-libunistring
+            mingw-w64-clang-x86_64-toolchain
 
       - name: Checkout nim-notcurses sources
         uses: actions/checkout@v3
@@ -179,10 +179,10 @@ jobs:
               sudo ldconfig
             fi
           else
-            cp -R ../include/notcurses /ucrt64/include
-            cp -R ../include/ncpp /ucrt64/include
-            cp *.dll /ucrt64/bin
-            cp *.dll.a /ucrt64/lib
+            cp -R ../include/notcurses /clang64/include
+            cp -R ../include/ncpp /clang64/include
+            cp *.dll /clang64/bin
+            cp *.dll.a /clang64/lib
           fi
 
       - name: Install choosenim and Nim
