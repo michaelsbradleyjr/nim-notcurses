@@ -134,14 +134,14 @@ jobs:
             ${{ steps.cache-key.outputs.nimble }}/bin
             ${{ steps.cache-key.outputs.notcurses }}
           key: "${{ matrix.platform.os }}\
-                +choosenim_version:${{ steps.cache-key.outputs.choosenim_version }}\
+                +choosenim:${{ steps.cache-key.outputs.choosenim_version }}\
                 +choosenim_commit:${{ steps.cache-key.outputs.choosenim_commit }}\
                 +nim:${{ matrix.nim_version }}\
                 +nim_commit:${{ steps.cache-key.outputs.nim_commit }}\
-                +notcurses_version:${{ steps.cache-key.outputs.notcurses_version }}\
+                +notcurses:${{ steps.cache-key.outputs.notcurses_version }}\
                 +notcurses_commit:${{ steps.cache-key.outputs.notcurses_commit }}\
-                +cmake_version:${{ steps.cache-key.outputs.cmake_version }}\
-                +cache_marker:${{ matrix.cache_marker }}"
+                +cmake:${{ steps.cache-key.outputs.cmake_version }}\
+                +cache:${{ matrix.cache_marker }}"
 
       - name: Checkout Notcurses sources and compile
         if: steps.artifacts-cache.outputs.cache-hit != 'true'
