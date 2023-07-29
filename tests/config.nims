@@ -52,3 +52,7 @@ when defined(coverage):
 # in config.nims does not produce an equivalent binary, though manually passing
 # the same `--define/-d:strip` as an option to `nim c` on the command-line does
 # produce an equivalent binary
+
+# https://discourse.llvm.org/t/clang-16-notice-of-potentially-breaking-changes/65562
+when getEnv("MSYSTEM") == "CLANG64":
+  --passC:"-Wno-error=incompatible-function-pointer-types"
