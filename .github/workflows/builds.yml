@@ -167,23 +167,6 @@ jobs:
           fi
           make -j${NPROC}
 
-      - name: Install Notcurses
-        run: |
-          cd "${HOME}/repos/notcurses/build"
-          if [[ ${{ matrix.platform.os }} != windows ]]; then
-            if [[ ${{ matrix.platform.os }} = macos ]]; then
-              make install
-            else
-              sudo make install
-              sudo ldconfig
-            fi
-          else
-            cp -R ../include/notcurses /clang64/include
-            cp -R ../include/ncpp /clang64/include
-            cp *.dll /clang64/bin
-            cp *.dll.a /clang64/lib
-          fi
-
       - name: Install choosenim and Nim
         if: steps.artifacts-cache.outputs.cache-hit != 'true'
         run: |
@@ -203,6 +186,12 @@ jobs:
           export PATH="${NIMBLE_DIR}/bin:${PATH}"
           echo 'export NIMBLE_DIR="${HOME}/.nimble"' >> "${HOME}/.bash_env"
           echo 'export PATH="${NIMBLE_DIR}/bin:${PATH}"' >> "${HOME}/.bash_env"
+          if [[ ${{ matrix.platform.os }} = ubuntu ]]; then
+            echo 'export LD_LIBRARY_PATH="${HOME}/repos/notcurses/build${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"' >> "${HOME}/.bash_env"
+          fi
+          if [[ ${{ matrix.platform.os }} = windows ]]; then
+            echo 'export PATH="${HOME}/repos/notcurses/build:${PATH}"' >> "${HOME}/.bash_env"
+          fi
           echo
           nim --version
           echo
@@ -227,11 +216,20 @@ jobs:
       - name: Build examples
         run: |
           source "${HOME}/.bash_env"
-          extras/build_examples.sh
-          extras/build_examples.sh -d:release
+          if [[ ${{ matrix.platform.os }} = macos ]]; then
+            extras/build_examples.sh --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build -rpath ${HOME}/repos/notcurses/build"
+            extras/build_examples.sh --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build -rpath ${HOME}/repos/notcurses/build" -d:release
+          else
+            extras/build_examples.sh --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build"
+            extras/build_examples.sh --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build" -d:release
+          fi
 
       # Notcurses is currently not able to access Windows ConPTY in GitHub Actions
       - name: Build and run tests
         run: |
           source "${HOME}/.bash_env"
-          nimble --verbose test
+          if [[ ${{ matrix.platform.os }} = macos ]]; then
+            nimble --verbose test --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build -rpath ${HOME}/repos/notcurses/build"
+          else
+            nimble --verbose test --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build"
+          fi
