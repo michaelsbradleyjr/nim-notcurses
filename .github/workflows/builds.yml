@@ -52,13 +52,14 @@ jobs:
         if: matrix.platform.os == 'ubuntu'
         run: |
           sudo apt-fast update -qq
-          sudo DEBIAN_FRONTEND=noninteractive apt-fast install --no-install-recommends -yq \
-            ffmpeg \
-            libavcodec-dev \
-            libavformat-dev \
-            libdeflate-dev \
-            libswscale-dev \
-            libunistring-dev
+          sudo DEBIAN_FRONTEND=noninteractive apt-fast \
+            install --no-install-recommends -yq \
+              ffmpeg \
+              libavcodec-dev \
+              libavformat-dev \
+              libdeflate-dev \
+              libswscale-dev \
+              libunistring-dev
 
       - name: Install tools and libraries via Homebrew (macOS)
         if: matrix.platform.os == 'macos'
@@ -217,11 +218,23 @@ jobs:
         run: |
           source "${HOME}/.bash_env"
           if [[ ${{ matrix.platform.os }} = macos ]]; then
-            extras/build_examples.sh --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build -rpath ${HOME}/repos/notcurses/build"
-            extras/build_examples.sh --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build -rpath ${HOME}/repos/notcurses/build" -d:release
+            extras/build_examples.sh \
+              --passC:"-I${HOME}/repos/notcurses/include" \
+              --passL:"-L${HOME}/repos/notcurses/build" \
+              --passL:"-rpath ${HOME}/repos/notcurses/build"
+            extras/build_examples.sh \
+              --passC:"-I${HOME}/repos/notcurses/include" \
+              --passL:"-L${HOME}/repos/notcurses/build" \
+              --passL:"-rpath ${HOME}/repos/notcurses/build" \
+              -d:release
           else
-            extras/build_examples.sh --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build"
-            extras/build_examples.sh --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build" -d:release
+            extras/build_examples.sh \
+              --passC:"-I${HOME}/repos/notcurses/include" \
+              --passL:"-L${HOME}/repos/notcurses/build"
+            extras/build_examples.sh \
+              --passC:"-I${HOME}/repos/notcurses/include" \
+              --passL:"-L${HOME}/repos/notcurses/build" \
+              -d:release
           fi
 
       # Notcurses is currently not able to access Windows ConPTY in GitHub Actions
@@ -229,7 +242,14 @@ jobs:
         run: |
           source "${HOME}/.bash_env"
           if [[ ${{ matrix.platform.os }} = macos ]]; then
-            nimble --verbose test --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build -rpath ${HOME}/repos/notcurses/build"
+            nimble \
+              --verbose test \
+              --passC:"-I${HOME}/repos/notcurses/include" \
+              --passL:"-L${HOME}/repos/notcurses/build" \
+              --passL:"-rpath ${HOME}/repos/notcurses/build"
           else
-            nimble --verbose test --passC:"-I${HOME}/repos/notcurses/include" --passL:"-L${HOME}/repos/notcurses/build"
+            nimble \
+              --verbose test \
+              --passC:"-I${HOME}/repos/notcurses/include" \
+              --passL:"-L${HOME}/repos/notcurses/build"
           fi
