@@ -749,11 +749,149 @@ proc ncplane_set_base*(n: ptr ncplane, egc: cstring, stylemask: uint16, channels
 # L1879 - notcurses/notcurses.h
 proc ncplane_base*(n: ptr ncplane, c: ptr nccell): cint {.nc.}
 
-# L... - notcurses/notcurses.h
-# ...
+# L1883 - notcurses/notcurses.h
+proc ncplane_yx*(n: ptr ncplane, y, x: ptr cint) {.nc.}
+
+# L1885 - notcurses/notcurses.h
+proc ncplane_y*(n: ptr ncplane): cint {.nc.}
+
+# L1886 - notcurses/notcurses.h
+proc ncplane_x*(n: ptr ncplane): cint {.nc.}
+
+# L1891 - notcurses/notcurses.h
+proc ncplane_move_yx*(n: ptr ncplane, y, x: cint): cint {.nc.}
+
+# L1896 - notcurses/notcurses.h
+proc ncplane_move_rel*(n: ptr ncplane, y, x: cint): cint {.nc.}
+
+# L1904 - notcurses/notcurses.h
+proc ncplane_abs_yx*(n: ptr ncplane, y, x: ptr cint) {.nc.}
+
+# L1906 - notcurses/notcurses.h
+proc ncplane_abs_y*(n: ptr ncplane): cint {.nc.}
+
+# L1907 - notcurses/notcurses.h
+proc ncplane_abs_x*(n: ptr ncplane): cint {.nc.}
+
+# L1910 - notcurses/notcurses.h
+proc ncplane_parent*(n: ptr ncplane): ptr ncplane {.nc.}
+
+# L1912 - notcurses/notcurses.h
+proc ncplane_parent_const*(n: ptr ncplane): ptr ncplane {.nc.}
+
+# L1917 - notcurses/notcurses.h
+proc ncplane_descendant_p*(n, ancestor: ptr ncplane): cint {.nc.}
+
+# L1930 - notcurses/notcurses.h
+proc ncplane_move_above*(n, above: ptr ncplane): cint {.nc.}
+
+# L1938 - notcurses/notcurses.h
+proc ncplane_move_below*(n, below: ptr ncplane): cint {.nc.}
+
+# L1945 - notcurses/notcurses.h
+proc ncplane_move_top*(n: ptr ncplane) {.nc.}
+
+# L1951 - notcurses/notcurses.h
+proc ncplane_move_bottom*(n: ptr ncplane) {.nc.}
+
+# L1960 - notcurses/notcurses.h
+proc ncplane_move_family_above*(n, targ: ptr ncplane): cint {.nc.}
+
+# L1963 - notcurses/notcurses.h
+proc ncplane_move_family_below*(n, targ: ptr ncplane): cint {.nc.}
+
+# L1968 - notcurses/notcurses.h
+proc ncplane_move_family_top*(n: ptr ncplane) {.nc.}
+
+# L1974 - notcurses/notcurses.h
+proc ncplane_move_family_bottom*(n: ptr ncplane) {.nc.}
+
+# L1979 - notcurses/notcurses.h
+proc ncplane_below*(n: ptr ncplane): ptr ncplane {.nc.}
+
+# L1983 - notcurses/notcurses.h
+proc ncplane_above*(n: ptr ncplane): ptr ncplane {.nc.}
+
+# L1988 - notcurses/notcurses.h
+proc ncplane_scrollup*(n: ptr ncplane, r: cint): cint {.nc.}
+
+# L1995 - notcurses/notcurses.h
+proc ncplane_scrollup_child*(n, child: ptr ncplane): cint {.nc.}
+
+# L2004 - notcurses/notcurses.h
+proc ncplane_rotate_cw*(n: ptr ncplane) {.nc.}
+
+# L2006 - notcurses/notcurses.h
+proc ncplane_rotate_ccw*(n: ptr ncplane) {.nc.}
+
+# L2012 - notcurses/notcurses.h
+proc ncplane_at_cursor*(n: ptr ncplane, stylemask: ptr uint16, channels: ptr uint64): cstring {.nc.}
+
+# L2018 - notcurses/notcurses.h
+proc ncplane_at_cursor_cell*(n: ptr ncplane, c: ptr nccell): cint {.nc.}
+
+# L2029 - notcurses/notcurses.h
+proc ncplane_at_yx*(n: ptr ncplane, y, x: cint, stylemask: ptr uint16, channels: ptr uint64): cstring {.nc.}
+
+# L2039 - notcurses/notcurses.h
+proc ncplane_at_yx_cell*(n: ptr ncplane, y, x: cint, c: ptr nccell): cint {.nc.}
+
+# L2047 - notcurses/notcurses.h
+proc ncplane_contents*(n: ptr ncplane, begy, begx: cint, leny, lenx: cuint): cstring {.nc.}
+
+# L2054 - notcurses/notcurses.h
+proc ncplane_set_userptr*(n: ptr ncplane, opaque: pointer): pointer {.nc.}
+
+# L2056 - notcurses/notcurses.h
+proc ncplane_userptr*(n: ptr ncplane): pointer {.nc.}
+
+# L2063 - notcurses/notcurses.h
+proc ncplane_center_abs*(n: ptr ncplane, y, x: ptr cint) {.nc.}
+
+# L2073 - notcurses/notcurses.h
+proc ncplane_as_rgba*(n: ptr ncplane, blit: ncblitter_e, begy, begx: cint, leny, lenx, pxdimy, pxdimx: cuint): uint32 {.nc.}
+
+# L2083 - notcurses/notcurses.h
+proc notcurses_align*(availu: cint, align: ncalign_e, u: cint): cint {.nc.}
+
+# L2100 - notcurses/notcurses.h
+proc ncplane_halign*(n: ptr ncplane, align: ncalign_e, c: cint): cint {.nc.}
+
+# L2108 - notcurses/notcurses.h
+proc ncplane_valign*(n: ptr ncplane, align: ncalign_e, r: cint): cint {.nc.}
+
+# L2115 - notcurses/notcurses.h
+proc ncplane_cursor_move_yx*(n: ptr ncplane, y, x: cint): cint {.nc.}
+
+# L2121 - notcurses/notcurses.h
+proc ncplane_cursor_move_rel*(n: ptr ncplane, y, x: cint): cint {.nc.}
+
+# L2125 - notcurses/notcurses.h
+proc ncplane_home*(n: ptr ncplane) {.nc.}
 
 # L2133 - notcurses/notcurses.h
 proc ncplane_cursor_y*(n: ptr ncplane): cuint {.nc.}
+
+# L2140 - notcurses/notcurses.h
+proc ncplane_cursor_x*(n: ptr ncplane): cuint {.nc.}
+
+# L2147 - notcurses/notcurses.h
+proc ncplane_channels*(n: ptr ncplane): uint64 {.nc.}
+
+# L2151 - notcurses/notcurses.h
+proc ncplane_styles*(n: ptr ncplane): uint16 {.nc.}
+
+# L2158 - notcurses/notcurses.h
+proc ncplane_putc_yx*(n: ptr ncplane, y, x: cint, c: ptr nccell): cint {.nc.}
+
+# L2163 - notcurses/notcurses.h
+proc ncplane_putc*(n: ptr ncplane, c: ptr nccell): cint {.nc.}
+
+# L2172 - notcurses/notcurses.h
+proc ncplane_putchar_yx*(n: ptr ncplane, y, x: cint, c: cchar): cint {.nc.}
+
+# L... - notcurses/notcurses.h
+# ...
 
 # L2264 - notcurses/notcurses.h
 proc ncplane_putstr_yx*(n: ptr ncplane, y, x: cint, gclusters: cstring): cint {.nc.}
