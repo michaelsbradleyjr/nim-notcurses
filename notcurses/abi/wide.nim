@@ -138,8 +138,7 @@ macro L*(s: static string): untyped =
     func `toArrayW`(): array[`l`, Wchar] {.compileTime.} =
       var ws: array[`l`, Wchar]
       for i, wc in `wcs`:
-        # when (NimMajor, NimMinor) < (2, 0):
-        when (NimMajor, NimMinor, NimPatch) < (1, 9, 3):
+        when (NimMajor, NimMinor) < (2, 0):
           ws[i] = wc.wchar
         else:
           ws[i] = wc

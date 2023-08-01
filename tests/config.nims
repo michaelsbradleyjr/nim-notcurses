@@ -15,8 +15,7 @@ switch("nimcache", cacheSubdir)
 # same as defaults for these versions, but convenient for experimentation
 when (NimMajor, NimMinor, NimPatch) < (1, 6, 2):
   --gc:refc
-# elif (NimMajor, NimMinor) < (2, 0):
-elif (NimMajor, NimMinor, NimPatch) < (1, 9, 1):
+elif (NimMajor, NimMinor) < (2, 0):
   --mm:refc
 else:
   --mm:orc
