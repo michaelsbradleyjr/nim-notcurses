@@ -890,8 +890,32 @@ proc ncplane_putc*(n: ptr ncplane, c: ptr nccell): cint {.nc.}
 # L2172 - notcurses/notcurses.h
 proc ncplane_putchar_yx*(n: ptr ncplane, y, x: cint, c: cchar): cint {.nc.}
 
-# L... - notcurses/notcurses.h
-# ...
+# L2179 - notcurses/notcurses.h
+proc ncplane_putchar*(n: ptr ncplane, c: cchar): cint {.nc.}
+
+# L2185 - notcurses/notcurses.h
+proc ncplane_putchar_stained*(n: ptr ncplane, c: cchar): cint {.nc.}
+
+# L2193 - notcurses/notcurses.h
+proc ncplane_putegc_yx*(n: ptr ncplane, y, x: cint, gclust: cstring, sbytes: csize_t): cint {.nc.}
+
+# L2199 - notcurses/notcurses.h
+proc ncplane_putegc*(n: ptr ncplane, gclust: cstring, sbytes: csize_t): cint {.nc.}
+
+# L2205 - notcurses/notcurses.h
+proc ncplane_putegc_stained*(n: ptr ncplane, gclust: cstring, sbytes: csize_t): cint {.nc.}
+
+# L2210 - notcurses/notcurses.h
+proc ncwcsrtombs*(src: Wchar): cstring {.nc.}
+
+# L2232 - notcurses/notcurses.h
+proc ncplane_putwegc*(n: ptr ncplane, gclust: Wchar, sbytes: csize_t): cint {.nc.}
+
+# L2244 - notcurses/notcurses.h
+proc ncplane_putwegc_yx*(n: ptr ncplane, y, x: cint, gclust: Wchar, sbytes: csize_t): cint {.nc.}
+
+# L2254 - notcurses/notcurses.h
+proc ncplane_putwegc_stained*(n: ptr ncplane, gclust: Wchar, sbytes: csize_t): cint {.nc.}
 
 # L2264 - notcurses/notcurses.h
 proc ncplane_putstr_yx*(n: ptr ncplane, y, x: cint, gclusters: cstring): cint {.nc.}
@@ -902,8 +926,86 @@ proc ncplane_putstr*(n: ptr ncplane, gclustarr: cstring): cint {.nc.}
 # L2292 - notcurses/notcurses.h
 proc ncplane_putstr_aligned*(n: ptr ncplane, y: cint, align: ncalign_e, s: cstring): cint {.nc.}
 
+# L2306 - notcurses/notcurses.h
+proc ncplane_putstr_stained*(n: ptr ncplane, gclusters: cstring): cint {.nc.}
+
+# L2323 - notcurses/notcurses.h
+proc ncplane_putnstr_aligned*(n: ptr ncplane, y: cint, align: ncalign_e, s: csize_t, str: cstring): cint {.nc.}
+
+# L2333 - notcurses/notcurses.h
+proc ncplane_putnstr_yx*(n: ptr ncplane, y, x: cint, s: csize_t, gclusters: cstring): cint {.nc.}
+
+# L2357 - notcurses/notcurses.h
+proc ncplane_putnstr*(n: ptr ncplane, s: csize_t, gclustarr: cstring): cint {.nc.}
+
+# L2364 - notcurses/notcurses.h
+proc ncplane_putwstr_yx*(n: ptr ncplane, y, x: cint, gclustarr: ptr Wchar): cint {.nc.}
+
+# L2385 - notcurses/notcurses.h
+proc ncplane_putwstr_aligned*(n: ptr ncplane, y: cint, align: ncalign_e, gclustarr: ptr Wchar): cint {.nc.}
+
+# L2395 - notcurses/notcurses.h
+proc ncplane_putwstr_stained*(n: ptr ncplane, gclustarr: ptr Wchar): cint {.nc.}
+
+# L2399 - notcurses/notcurses.h
+proc ncplane_putwstr*(n: ptr ncplane, gclustarr: ptr Wchar): cint {.nc.}
+
+# L2407 - notcurses/notcurses.h
+proc ncplane_pututf32_yx*(n: ptr ncplane, y, x: cint, u: uint32): cint {.nc.}
+
+# L2427 - notcurses/notcurses.h
+proc ncplane_putwc_yx*(n: ptr ncplane, y, x: cint, w: Wchar): cint {.nc.}
+
 # L2433 - notcurses/notcurses.h
 proc ncplane_putwc*(n: ptr ncplane, w: Wchar): cint {.nc.}
+
+# L2447 - notcurses/notcurses.h
+proc ncplane_putwc_utf32*(n: ptr ncplane, w: ptr Wchar, wchars: ptr cuint): cint {.nc.}
+
+# L2466 - notcurses/notcurses.h
+proc ncplane_putwc_stained*(n: ptr ncplane, w: Wchar): cint {.nc.}
+
+# L2472 - notcurses/notcurses.h
+# proc ncplane_vprintf_aligned*(n: ptr ncplane, y: cint, align: ncalign_e, format: cstring, ap: ??va_list??): cint {.nc.}
+
+# L2477 - notcurses/notcurses.h
+# proc ncplane_vprintf_yx*(n: ptr ncplane, y, x: cint, format: cstring, ap: ??va_list??): cint {.nc.}
+
+# L2483 - notcurses/notcurses.h
+# proc ncplane_vprintf*(n: ptr ncplane, format: cstring, ap: ??va_list??): cint {.nc.}
+
+# L2487 - notcurses/notcurses.h
+# proc ncplane_vprintf_stained*(n: ptr ncplane, format: cstring, ap: ??va_list??): cint {.nc.}
+
+# L2492 - notcurses/notcurses.h
+# proc ncplane_printf*(n: ptr ncplane, format: cstring, ...): cint {.nc.}
+
+# L2497 - notcurses/notcurses.h
+# proc ncplane_printf*(n: ptr ncplane, format: cstring, ...): cint {.nc.}
+
+# L2506 - notcurses/notcurses.h
+# proc ncplane_printf_yx*(n: ptr ncplane, y, x: cint, format: cstring, ...): cint {.nc.}
+
+# L2510 - notcurses/notcurses.h
+# proc ncplane_printf_yx*(n: ptr ncplane, y, x: cint, format: cstring, ...): cint {.nc.}
+
+# L2519 - notcurses/notcurses.h
+# proc ncplane_printf_aligned*(n: ptr ncplane, y: cint, align: ncalign_e, format: cstring, ...): cint {.nc.}
+
+# L2524 - notcurses/notcurses.h
+# proc ncplane_printf_aligned*(n: ptr ncplane, y: cint, align: ncalign_e, format: cstring, ...): cint {.nc.}
+
+# L2533 - notcurses/notcurses.h
+# proc ncplane_printf_stained*(n: ptr ncplane, format: cstring, ...): cint {.nc.}
+
+# L2537 - notcurses/notcurses.h
+# proc ncplane_printf_stained*(n: ptr ncplane, format: cstring, ...): cint {.nc.}
+
+# L2564 - notcurses/notcurses.h
+proc ncplane_puttext*(n: ptr ncplane, y: cint, align: ncalign_e, text: cstring, bytes: csize_t): cint {.nc.}
+
+# L... - notcurses/notcurses.h
+# ...
 
 # L2680 - notcurses/notcurses.h
 proc ncplane_gradient*(n: ptr ncplane, y, x: cint, ylen, xlen: cuint, egc: cstring, styles: uint16, ul, ur, ll, lr: uint64): cint {.nc.}
