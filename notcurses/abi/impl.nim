@@ -1004,14 +1004,122 @@ proc ncplane_putwc_stained*(n: ptr ncplane, w: Wchar): cint {.nc.}
 # L2564 - notcurses/notcurses.h
 proc ncplane_puttext*(n: ptr ncplane, y: cint, align: ncalign_e, text: cstring, bytes: csize_t): cint {.nc.}
 
-# L... - notcurses/notcurses.h
-# ...
+# L2574 - notcurses/notcurses.h
+proc ncplane_hline_interp*(n: ptr ncplane, c: ptr nccell, len: cuint, c1, c2: uint64): cint {.nc.}
+
+# L2579 - notcurses/notcurses.h
+proc ncplane_hline*(n: ptr ncplane, c: ptr nccell, len: cuint): cint {.nc.}
+
+# L2583 - notcurses/notcurses.h
+proc ncplane_vline_interp*(n: ptr ncplane, c: ptr nccell, len: cuint, c1, c2: uint64): cint {.nc.}
+
+# L2588 - notcurses/notcurses.h
+proc ncplane_vline*(n: ptr ncplane, c: ptr nccell, len: cuint): cint {.nc.}
+
+# L2621 - notcurses/notcurses.h
+proc ncplane_box*(n: ptr ncplane, ul, ur, ll, lr, hline, vline: ptr nccell, ystop, xstop, ctlword: cuint): cint {.nc.}
+
+# L2630 - notcurses/notcurses.h
+proc ncplane_box_sized*(n: ptr ncplane, ul, ur, ll, lr, hline, vline: ptr nccell, ystop, xstop, ctlword: cuint): cint {.nc.}
+
+# L2641 - notcurses/notcurses.h
+proc ncplane_perimeter*(n: ptr ncplane, ul, ur, ll, lr, hline, vline: ptr nccell, ctlword: cuint): cint {.nc.}
+
+# L2657 - notcurses/notcurses.h
+proc ncplane_polyfill_yx*(n: ptr ncplane, y, x: cint, c: ptr nccell): cint {.nc.}
 
 # L2680 - notcurses/notcurses.h
 proc ncplane_gradient*(n: ptr ncplane, y, x: cint, ylen, xlen: cuint, egc: cstring, styles: uint16, ul, ur, ll, lr: uint64): cint {.nc.}
 
 # L2689 - notcurses/notcurses.h
 proc ncplane_gradient2x1*(n: ptr ncplane, y, x: cint, ylen, xlen: cuint, ul, ur, ll, lr: uint32): cint {.nc.}
+
+# L2701 - notcurses/notcurses.h
+proc ncplane_format*(n: ptr ncplane, y, x: cint, ylen, xlen: cuint, stylemask: uint16): cint {.nc.}
+
+# L2712 - notcurses/notcurses.h
+proc ncplane_stain*(n: ptr ncplane, y, x: cint, ylen, xlen: cuint, ul, ur, ll, lr: uint64): cint {.nc.}
+
+# L2719 - notcurses/notcurses.h
+proc ncplane_mergedown_simple*(src, dst: ptr ncplane): cint {.nc.}
+
+# L2734 - notcurses/notcurses.h
+proc ncplane_mergedown*(src, dst: ptr ncplane, begsrcy, begsrcx: cint, leny, lenx: cuint, dsty, dstx: cint): cint {.nc.}
+
+# L2745 - notcurses/notcurses.h
+proc ncplane_erase*(n: ptr ncplane) {.nc.}
+
+# L2769 - notcurses/notcurses.h
+proc ncplane_erase_region*(n: ptr ncplane, ystart, xstart, ylen, xlen: cint): cint {.nc.}
+
+# L2775 - notcurses/notcurses.h
+proc nccell_fg_rgb*(cl: ptr nccell): uint32 {.nc.}
+
+# L2781 - notcurses/notcurses.h
+proc nccell_bg_rgb*(cl: ptr nccell): uint32 {.nc.}
+
+# L2787 - notcurses/notcurses.h
+proc nccell_fg_alpha*(cl: ptr nccell): uint32 {.nc.}
+
+# L2793 - notcurses/notcurses.h
+proc nccell_bg_alpha*(cl: ptr nccell): uint32 {.nc.}
+
+# L2799 - notcurses/notcurses.h
+proc nccell_fg_rgb8*(cl: ptr nccell, r, g, b: ptr cuint): uint32 {.nc.}
+
+# L2805 - notcurses/notcurses.h
+proc nccell_bg_rgb8*(cl: ptr nccell, r, g, b: ptr cuint): uint32 {.nc.}
+
+# L2812 - notcurses/notcurses.h
+proc nccell_set_fg_rgb8*(cl: ptr nccell, r, g, b: cuint): cint {.nc.}
+
+# L2818 - notcurses/notcurses.h
+proc nccell_set_fg_rgb8_clipped*(cl: ptr nccell, r, g, b: cint) {.nc.}
+
+# L2824 - notcurses/notcurses.h
+proc nccell_set_fg_rgb*(c: ptr nccell, channel: uint32): cint {.nc.}
+
+# L2831 - notcurses/notcurses.h
+proc nccell_set_fg_palindex*(cl: ptr nccell, idx: cuint): cint {.nc.}
+
+# L2836 - notcurses/notcurses.h
+proc nccell_fg_palindex*(cl: ptr nccell): uint32 {.nc.}
+
+# L2843 - notcurses/notcurses.h
+proc nccell_set_bg_rgb8*(cl: ptr nccell, r, g, b: cuint): cint {.nc.}
+
+# L2849 - notcurses/notcurses.h
+proc nccell_set_bg_rgb8_clipped*(cl: ptr nccell, r, g, b: cint) {.nc.}
+
+# L2856 - notcurses/notcurses.h
+proc nccell_set_bg_rgb*(c: ptr nccell, channel: uint32): cint {.nc.}
+
+# L2863 - notcurses/notcurses.h
+proc nccell_set_bg_palindex*(cl: ptr nccell, idx: cuint): cint {.nc.}
+
+# L2868 - notcurses/notcurses.h
+proc nccell_bg_palindex*(cl: ptr nccell): uint32 {.nc.}
+
+# L2874 - notcurses/notcurses.h
+proc nccell_fg_default_p*(cl: ptr nccell): bool {.nc.}
+
+# L2879 - notcurses/notcurses.h
+proc nccell_fg_palindex_p*(cl: ptr nccell): bool {.nc.}
+
+# L2887 - notcurses/notcurses.h
+proc nccell_bg_default_p*(cl: ptr nccell): bool {.nc.}
+
+# L2892 - notcurses/notcurses.h
+proc nccell_bg_palindex_p*(cl: ptr nccell): bool {.nc.}
+
+# L2899 - notcurses/notcurses.h
+proc ncplane_bchannel*(n: ptr ncplane): uint32 {.nc.}
+
+# L2906 - notcurses/notcurses.h
+proc ncplane_fchannel*(n: ptr ncplane): uint32 {.nc.}
+
+# L... - notcurses/notcurses.h
+# ...
 
 # L2927 - notcurses/notcurses.h
 proc ncplane_set_styles*(n: ptr ncplane, stylebits: cuint) {.nc.}
