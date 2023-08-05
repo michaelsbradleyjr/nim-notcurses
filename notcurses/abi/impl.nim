@@ -558,10 +558,10 @@ proc ncplane_resize_realign*(n: ptr ncplane): cint {.nc.}
 proc ncplane_resize_placewithin*(n: ptr ncplane): cint {.nc.}
 
 # L1508 - notcurses/notcurses.h
-proc ncplane_set_resizecb*(n: ptr ncplane, resizecb: proc (n: ptr ncplane): cint {.noconv.}) {.nc.}
+proc ncplane_set_resizecb*(n: ptr ncplane, resizecb: (proc (n: ptr ncplane): cint {.noconv.})) {.nc.}
 
 # L1511 - notcurses/notcurses.h
-proc ncplane_resizecb*(n: ptr ncplane): proc (n: ptr ncplane): cint {.noconv.} {.nc.}
+proc ncplane_resizecb*(n: ptr ncplane): (proc (n: ptr ncplane): cint {.noconv.}) {.nc.}
 
 # L1514 - notcurses/notcurses.h
 proc ncplane_set_name*(n: ptr ncplane, name: cstring): cint {.nc.}
@@ -1118,17 +1118,98 @@ proc ncplane_bchannel*(n: ptr ncplane): uint32 {.nc.}
 # L2906 - notcurses/notcurses.h
 proc ncplane_fchannel*(n: ptr ncplane): uint32 {.nc.}
 
-# L... - notcurses/notcurses.h
-# ...
+# L2912 - notcurses/notcurses.h
+proc ncplane_set_channels*(n: ptr ncplane, channels: uint64) {.nc.}
+
+# L2917 - notcurses/notcurses.h
+proc ncplane_set_bchannel*(n: ptr ncplane, channel: uint32): uint64 {.nc.}
+
+# L2922 - notcurses/notcurses.h
+proc ncplane_set_fchannel*(n: ptr ncplane, channel: uint32): uint64 {.nc.}
 
 # L2927 - notcurses/notcurses.h
 proc ncplane_set_styles*(n: ptr ncplane, stylebits: cuint) {.nc.}
+
+# L2931 - notcurses/notcurses.h
+proc ncplane_on_styles*(n: ptr ncplane, stylebits: cuint) {.nc.}
+
+# L2935 - notcurses/notcurses.h
+proc ncplane_off_styles*(n: ptr ncplane, stylebits: cuint) {.nc.}
+
+# L2940 - notcurses/notcurses.h
+proc ncplane_fg_rgb*(n: ptr ncplane): uint32 {.nc.}
+
+# L2946 - notcurses/notcurses.h
+proc ncplane_bg_rgb*(n: ptr ncplane): uint32 {.nc.}
+
+# L2952 - notcurses/notcurses.h
+proc ncplane_fg_alpha*(n: ptr ncplane): uint32 {.nc.}
+
+# L2958 - notcurses/notcurses.h
+proc ncplane_fg_default_p*(n: ptr ncplane): bool {.nc.}
+
+# L2964 - notcurses/notcurses.h
+proc ncplane_bg_alpha*(n: ptr ncplane): uint32 {.nc.}
+
+# L2970 - notcurses/notcurses.h
+proc ncplane_bg_default_p*(n: ptr ncplane): bool {.nc.}
+
+# L2976 - notcurses/notcurses.h
+proc ncplane_fg_rgb8*(n: ptr ncplane, r, g, b: ptr cuint): uint32 {.nc.}
+
+# L2982 - notcurses/notcurses.h
+proc ncplane_bg_rgb8*(n: ptr ncplane, r, g, b: ptr cuint): uint32 {.nc.}
+
+# L2992 - notcurses/notcurses.h
+proc ncplane_set_fg_rgb8*(n: ptr ncplane, r, g, b: cuint): cint {.nc.}
+
+# L2993 - notcurses/notcurses.h
+proc ncplane_set_bg_rgb8*(n: ptr ncplane, r, g, b: cuint): cint {.nc.}
+
+# L2996 - notcurses/notcurses.h
+proc ncplane_set_bg_rgb8_clipped*(n: ptr ncplane, r, g, b: cint) {.nc.}
+
+# L2997 - notcurses/notcurses.h
+proc ncplane_set_fg_rgb8_clipped*(n: ptr ncplane, r, g, b: cint) {.nc.}
 
 # L3000 - notcurses/notcurses.h
 proc ncplane_set_fg_rgb*(n: ptr ncplane, channel: uint32): cint {.nc.}
 
 # L3001 - notcurses/notcurses.h
 proc ncplane_set_bg_rgb*(n: ptr ncplane, channel: uint32): cint {.nc.}
+
+# L3004 - notcurses/notcurses.h
+proc ncplane_set_fg_default*(n: ptr ncplane) {.nc.}
+
+# L3005 - notcurses/notcurses.h
+proc ncplane_set_bg_default*(n: ptr ncplane) {.nc.}
+
+# L3009 - notcurses/notcurses.h
+proc ncplane_set_fg_palindex*(n: ptr ncplane, idx: cuint): cint {.nc.}
+
+# L3010 - notcurses/notcurses.h
+proc ncplane_set_bg_palindex*(n: ptr ncplane, idx: cuint): cint {.nc.}
+
+# L3013 - notcurses/notcurses.h
+proc ncplane_set_fg_alpha*(n: ptr ncplane, alpha: cint): cint {.nc.}
+
+# L3014 - notcurses/notcurses.h
+proc ncplane_set_bg_alpha*(n: ptr ncplane, alpha: cint): cint {.nc.}
+
+# L3019 - notcurses/notcurses.h
+type fadecb* = proc (nc: ptr notcurses, n: ptr ncplane, tspec: ptr Timespec, curry: pointer): cint {.noconv.}
+
+# L3026 - notcurses/notcurses.h
+proc ncplane_fadeout(n: ptr ncplane, ts: ptr Timespec, fader: fadecb, curry: pointer): cint {.nc.}
+
+# L3033 - notcurses/notcurses.h
+proc ncplane_fadein(n: ptr ncplane, ts: ptr Timespec, fader: fadecb, curry: pointer): cint {.nc.}
+
+# L3039 - notcurses/notcurses.h
+proc ncfadectx_setup*(n: ptr ncplane): ptr ncfadectx {.nc.}
+
+# L... - notcurses/notcurses.h
+# ...
 
 # L3257 - notcurses/notcurses.h
 proc ncvisual_from_file*(file: cstring): ptr ncvisual {.nc.}
