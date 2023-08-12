@@ -1200,13 +1200,61 @@ proc ncplane_set_bg_alpha*(n: ptr ncplane, alpha: cint): cint {.nc.}
 type fadecb* = proc (nc: ptr notcurses, n: ptr ncplane, tspec: ptr Timespec, curry: pointer): cint {.noconv.}
 
 # L3026 - notcurses/notcurses.h
-proc ncplane_fadeout(n: ptr ncplane, ts: ptr Timespec, fader: fadecb, curry: pointer): cint {.nc.}
+proc ncplane_fadeout*(n: ptr ncplane, ts: ptr Timespec, fader: fadecb, curry: pointer): cint {.nc.}
 
 # L3033 - notcurses/notcurses.h
-proc ncplane_fadein(n: ptr ncplane, ts: ptr Timespec, fader: fadecb, curry: pointer): cint {.nc.}
+proc ncplane_fadein*(n: ptr ncplane, ts: ptr Timespec, fader: fadecb, curry: pointer): cint {.nc.}
 
 # L3039 - notcurses/notcurses.h
 proc ncfadectx_setup*(n: ptr ncplane): ptr ncfadectx {.nc.}
+
+# L3043 - notcurses/notcurses.h
+proc ncfadectx_iterations*(nctx: ptr ncfadectx): cint {.nc.}
+
+# L3048 - notcurses/notcurses.h
+proc ncfadectx_fadeout_iteration*(n: ptr ncplane, nctx: ptr ncfadectx, iter: cint, fader: fadecb, curry: pointer): cint {.nc.}
+
+# L3054 - notcurses/notcurses.h
+proc ncfadectx_fadein_iteration*(n: ptr ncplane, nctx: ptr ncfadectx, iter: cint, fader: fadecb, curry: pointer): cint {.nc.}
+
+# L3063 - notcurses/notcurses.h
+proc ncplane_pulse*(n: ptr ncplane, ts: ptr Timespec, fader: fadecb, curry: pointer): cint {.nc.}
+
+# L3067 - notcurses/notcurses.h
+proc ncfadectx_free*(nctx: ptr ncfadectx) {.nc.}
+
+# L3074 - notcurses/notcurses.h
+proc nccells_load_box*(n: ptr ncplane, styles: uint16, channels: uint64, ul, ur, ll, lr, hl, vl: ptr nccell, gclusters: cstring): cint {.nc.}
+
+# L3100 - notcurses/notcurses.h
+proc nccells_ascii_box*(n: ptr ncplane, attr: uint16, channels: uint64, ul, ur, ll, lr, hl, vl: ptr nccell): cint {.nc.}
+
+# L3106 - notcurses/notcurses.h
+proc nccells_double_box*(n: ptr ncplane, attr: uint16, channels: uint64, ul, ur, ll, lr, hl, vl: ptr nccell): cint {.nc.}
+
+# L3115 - notcurses/notcurses.h
+proc nccells_rounded_box*(n: ptr ncplane, attr: uint16, channels: uint64, ul, ur, ll, lr, hl, vl: ptr nccell): cint {.nc.}
+
+# L3124 - notcurses/notcurses.h
+proc nccells_light_box*(n: ptr ncplane, attr: uint16, channels: uint64, ul, ur, ll, lr, hl, vl: ptr nccell): cint {.nc.}
+
+# L3133 - notcurses/notcurses.h
+proc nccells_heavy_box*(n: ptr ncplane, attr: uint16, channels: uint64, ul, ur, ll, lr, hl, vl: ptr nccell): cint {.nc.}
+
+# L3142 - notcurses/notcurses.h
+proc ncplane_rounded_box*(n: ptr ncplane, styles: uint16, channels: uint64, ystop, xstop, ctlword: cuint): cint {.nc.}
+
+# L3158 - notcurses/notcurses.h
+proc ncplane_perimeter_rounded*(n: ptr ncplane, stylemask: uint16, channels: uint64, ctlword: cuint): cint {.nc.}
+
+# L3182 - notcurses/notcurses.h
+proc ncplane_rounded_box_sized*(n: ptr ncplane, styles: uint16, channels: uint64, ylen, xlen, ctlword: cuint): cint {.nc.}
+
+# L3191 - notcurses/notcurses.h
+proc ncplane_double_box*(n: ptr ncplane, styles: uint16, channels: uint64, ylen, xlen, ctlword: cuint): cint {.nc.}
+
+# L3207 - notcurses/notcurses.h
+proc ncplane_ascii_box*(n: ptr ncplane, styles: uint16, channels: uint64, ylen, xlen, ctlword: cuint): cint {.nc.}
 
 # L... - notcurses/notcurses.h
 # ...
