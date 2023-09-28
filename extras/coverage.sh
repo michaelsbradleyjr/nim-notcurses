@@ -2,20 +2,28 @@
 
 set -eo pipefail
 
-bred='\033[1;31m'
-none='\033[0m'
-if [[ "$(lcov --version)" = *"version 1"* ]]; then
-  echo -e ${bred}Error${none}: lcov must be version 2 or newer
-  lcov --version
-  exit 1
-fi
-
 source extras/examples.sh
 
+maintainer=michaelsbradleyjr
+project=notcurses
+repo=nim-notcurses
+
+bred='\033[1;31m'
+byel='\033[1;33m'
+none='\033[0m'
+
+if [[ "$@" = *"-d:release"* || "$@" = *"--define:release"* ]]; then
+  kind=release
+else
+  kind=debug
+fi
+
+press_any () {
+  echo -e "\n${byel}Press any key to continue${none}"
+  read -n 1 -s -r
+}
+
 for module in ${modules[@]}; do
-  if [[ "${module}" = "abi/"* ]]; then
-    continue
-  fi
   echo
   echo nim c -d:coverage "$@" examples/${module}.nim
   if [[ ! ("$@" = *"-d:release"* || "$@" = *"--define:release"*) ]]; then
@@ -26,25 +34,19 @@ done
 
 echo
 if [[ -v MSYSTEM ]]; then
-  ls -ladh examples/abi/*.exe examples/*.exe
+  ls -ladh examples/*.exe
 else
-  find examples -maxdepth 2 -type f | grep -v '\..*$' | xargs ls -ladh
-fi
-
-if [[ "$@" = *"-d:release"* || "$@" = *"--define:release"* ]]; then
-  kind=release
-else
-  kind=debug
+  find examples -maxdepth 1 -type f | grep -v '\..*$' | xargs ls -ladh
 fi
 
 for module in ${modules[@]}; do
-  if [[ "${module}" = "abi/"* ]]; then
-    continue
+  if [[ ! -v GITHUB_ACTIONS ]]; then
+    press_any
+    clear && reset
+  else
+    echo
   fi
-  sleep 1
   mkdir -p coverage/examples/${module}
-  echo
-  clear && reset
   if [[ -v MSYSTEM ]]; then
     echo examples/${module}.exe
     echo
@@ -54,8 +56,14 @@ for module in ${modules[@]}; do
     echo
     examples/${module}
   fi
-  find nimcache/${kind}/examples/${module} | grep 'choosenim\|nimble' | xargs rm
-  echo
+  if [[ ! -v GITHUB_ACTIONS ]]; then
+    press_any
+    clear && reset
+  else
+    echo
+  fi
+  (find nimcache/${kind}/examples/${module} | grep 'choosenim\|nimble' \
+   | xargs rm) 2>/dev/null || true
   lcov --capture \
        --directory nimcache/${kind}/examples/${module} \
        --ignore-errors gcov,gcov \
@@ -66,15 +74,24 @@ for module in ${modules[@]}; do
        >> coverage/coverage.info
 done
 
-sleep 1
+if [[ ! -v GITHUB_ACTIONS ]]; then
+  press_any
+  clear && reset
+else
+  echo
+fi
 mkdir -p coverage/tests/test_all
-echo
-clear && reset
 echo nimble --verbose test -d:coverage "$@"
 echo
 nimble --verbose test -d:coverage "$@"
-find nimcache/${kind}/tests/test_all | grep 'choosenim\|nimble' | xargs rm
-echo
+if [[ ! -v GITHUB_ACTIONS ]]; then
+  press_any
+  clear && reset
+else
+  echo
+fi
+(find nimcache/${kind}/examples/${module} | grep 'choosenim\|nimble' \
+ | xargs rm) 2>/dev/null || true
 lcov --capture \
      --directory nimcache/${kind}/tests/test_all \
      --ignore-errors gcov,gcov \
@@ -84,21 +101,49 @@ lcov --add-tracefile \
      coverage/tests/test_all/coverage.info \
      >> coverage/coverage.info
 
+if [[ ! -v GITHUB_ACTIONS ]]; then
+  press_any
+  clear && reset
+else
+  echo
+fi
+echo Extracting tracefiles.
+if [[ -v MSYSTEM ]]; then
+  lcov --extract coverage/coverage.info \
+       --ignore-errors unused \
+       "$(cygpath -w "${PWD}"/${project}.nim)" \
+       "$(cygpath -w "${PWD}"/${project}/)"\*.nim \
+       >> coverage/extracted.info
+else
+  lcov --extract coverage/coverage.info \
+       --ignore-errors unused \
+       "${PWD}"/${project}.nim \
+       "${PWD}"/${project}/\*.nim \
+       >> coverage/extracted.info
+fi
 echo
-lcov --extract coverage/coverage.info \
-     --ignore-errors unused \
-     "${PWD}"/notcurses.nim \
-     "${PWD}"/notcurses/\*.nim \
-     >> coverage/extracted.info
-
-echo
-genhtml coverage/extracted.info \
-        --ignore-errors unmapped,unmapped \
-        --legend \
-        --output-directory coverage/report \
-        --title nim-notcurses
+echo Processing extracted tracefiles.
+if [[ "$(lcov --version)" = *"version 1"* ]]; then
+  genhtml coverage/extracted.info \
+          --legend \
+          --output-directory coverage/report \
+          --title ${repo}
+else
+  genhtml coverage/extracted.info \
+          --ignore-errors unmapped,unmapped \
+          --legend \
+          --output-directory coverage/report \
+          --title ${repo}
+fi
 
 if [[ ! -z "${CODECOV_TOKEN}" ]]; then
+  if [[ ! -v GITHUB_ACTIONS ]]; then
+    press_any
+    clear && reset
+  else
+    echo
+  fi
+  echo Uploading coverage report.
   cd coverage
   if [[ $(uname) = "Linux" ]]; then
     curl -Os https://uploader.codecov.io/latest/linux/codecov
@@ -108,21 +153,30 @@ if [[ ! -z "${CODECOV_TOKEN}" ]]; then
     curl -Os https://uploader.codecov.io/latest/windows/codecov.exe
   else
     echo -e ${bred}Error${none}: codecov uploader binary is only available for \
-            Linux, macOS, and Windows
+         Linux, macOS, and Windows
     exit 1
   fi
   chmod +x codecov
   cd - 1>/dev/null
-  echo
-  coverage/codecov \
-    --file coverage/extracted.info \
-    --branch "$(git rev-parse --abbrev-ref HEAD)" \
-    --sha "$(git rev-parse $(git rev-parse --abbrev-ref HEAD))"
-  if which open >/dev/null; then
-    (open https://codecov.io/gh/michaelsbradleyjr/nim-notcurses) || true
+  if [[ -v MSYSTEM ]]; then
+    coverage/codecov \
+      --branch "$(git rev-parse --abbrev-ref HEAD)" \
+      --file coverage\\extracted.info \
+      --rootDir "$(cygpath -w "${PWD}")" \
+      --sha "$(git rev-parse $(git rev-parse --abbrev-ref HEAD))"
+  else
+    coverage/codecov \
+      --branch "$(git rev-parse --abbrev-ref HEAD)" \
+      --file coverage/extracted.info \
+      --sha "$(git rev-parse $(git rev-parse --abbrev-ref HEAD))"
   fi
+  [[ -v GITHUB_ACTIONS ]] \
+    || (((open https://codecov.io/gh/${maintainer}/${repo}) 2>/dev/null \
+    && echo -e "\nopen https://codecov.io/gh/${maintainer}/${repo}") \
+    || true)
 fi
 
-if which open >/dev/null; then
-  (open coverage/report/index.html) || true
-fi
+[[ -v GITHUB_ACTIONS ]] \
+  || (((open coverage/report/index.html) 2>/dev/null \
+  && echo -e "\nopen coverage/report/index.html") \
+  || true)
