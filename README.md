@@ -1,6 +1,6 @@
 # nim-notcurses
 
-[![License: Apache](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Stability: experimental](https://img.shields.io/badge/Stability-experimental-orange.svg)](#stability)
 [![Builds (GitHub Actions)](https://github.com/michaelsbradleyjr/nim-notcurses/actions/workflows/builds.yml/badge.svg?branch=master)](https://github.com/michaelsbradleyjr/nim-notcurses/actions?query=workflow%3ABuilds+branch%3Amaster)
