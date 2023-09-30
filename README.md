@@ -1,12 +1,13 @@
 # nim-notcurses
 
-[![License: Apache](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Nimble Package: notcurses](https://img.shields.io/github/v/tag/michaelsbradleyjr/nim-notcurses?filter=v*&logo=Nim&label=nimble&labelColor=black&color=f3d400)](https://nimble.directory/pkg/notcurses)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![API: experimental](https://img.shields.io/badge/API-experimental-orange.svg)](#stability)
-[![Builds (GitHub Actions)](https://github.com/michaelsbradleyjr/nim-notcurses/workflows/Builds/badge.svg?branch=master)](https://github.com/michaelsbradleyjr/nim-notcurses/actions?query=workflow%3ABuilds+branch%3Amaster)
+[![Stability: experimental](https://img.shields.io/badge/Stability-experimental-orange.svg)](#stability)
+[![Builds (GitHub Actions)](https://github.com/michaelsbradleyjr/nim-notcurses/actions/workflows/builds.yml/badge.svg?branch=master)](https://github.com/michaelsbradleyjr/nim-notcurses/actions?query=workflow%3ABuilds+branch%3Amaster)
 [![codecov](https://codecov.io/gh/michaelsbradleyjr/nim-notcurses/branch/master/graph/badge.svg?token=VLN0VLATJS)](https://codecov.io/gh/michaelsbradleyjr/nim-notcurses)
 
-Nim wrapper for [Notcurses](https://github.com/dankamongmen/notcurses#readme): blingful TUIs and character graphics.
+[Nim](https://nim-lang.org) wrapper for [Notcurses](https://github.com/dankamongmen/notcurses#readme): blingful TUIs and character graphics.
 
 This package provides a Nim API and a lower-level wrapper for Notcurses' raw C API.
 
@@ -287,7 +288,7 @@ Notcurses' ABI is stable per major version, and this package's low-level wrapper
 
 Notcurses' ABI is stable per major version, and this package's low-level wrapper will likewise be stable once changes in `master` are included in a tagged version, cf. [versioning](#versioning).
 
-The Nim API (high-level wrapper) provided by this package is currently marked as experimental. Until it is marked as stable, it may be subject to breaking changes across patch and minor versions.
+The Nim API (high-level wrapper) provided by this package is currently experimental. Until it is marked as stable, it may be subject to breaking changes across patch and minor versions.
 
 ## License
 

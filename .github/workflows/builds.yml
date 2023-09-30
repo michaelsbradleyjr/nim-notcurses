@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cache_marker: [ 42 ]
+        cache_marker: [ 45 ]
         platform:
           - {
             icon: 🐧,
@@ -40,6 +40,7 @@ jobs:
             shell: msys2
           }
         nim_version: [ v1.6.0, version-1-6, version-2-0, devel ]
+        notcurses_version: [ v3.0.9 ]
     name: ${{ matrix.platform.icon }} ${{ matrix.platform.label }} - Nim ${{ matrix.nim_version }}
     runs-on: ${{ matrix.platform.os }}-latest
     defaults:
@@ -51,13 +52,14 @@ jobs:
         if: matrix.platform.os == 'ubuntu'
         run: |
           sudo apt-fast update -qq
-          sudo DEBIAN_FRONTEND=noninteractive apt-fast install --no-install-recommends -yq \
-            ffmpeg \
-            libavcodec-dev \
-            libavformat-dev \
-            libdeflate-dev \
-            libswscale-dev \
-            libunistring-dev
+          sudo DEBIAN_FRONTEND=noninteractive apt-fast \
+            install --no-install-recommends -yq \
+              ffmpeg \
+              libavcodec-dev \
+              libavformat-dev \
+              libdeflate-dev \
+              libswscale-dev \
+              libunistring-dev
 
       - name: Install tools and libraries via Homebrew (macOS)
         if: matrix.platform.os == 'macos'
@@ -74,15 +76,15 @@ jobs:
         if: matrix.platform.os == 'windows'
         uses: msys2/setup-msys2@v2
         with:
-          msystem: UCRT64
+          msystem: CLANG64
           install: >
             base-devel
             git
-            mingw-w64-ucrt-x86_64-cmake
-            mingw-w64-ucrt-x86_64-ffmpeg
-            mingw-w64-ucrt-x86_64-libdeflate
-            mingw-w64-ucrt-x86_64-libunistring
-            mingw-w64-ucrt-x86_64-toolchain
+            mingw-w64-clang-x86_64-cmake
+            mingw-w64-clang-x86_64-ffmpeg
+            mingw-w64-clang-x86_64-libdeflate
+            mingw-w64-clang-x86_64-libunistring
+            mingw-w64-clang-x86_64-toolchain
 
       - name: Checkout nim-notcurses sources
         uses: actions/checkout@v3
@@ -91,9 +93,7 @@ jobs:
         id: cache-key
         run: |
           export CHOOSENIM_VERSION=$(curl -sSfL https://nim-lang.org/choosenim/stable)
-          export NOTCURSES_VERSION=$(cat .notcurses_version)
           echo "choosenim_version=${CHOOSENIM_VERSION}" >> ${GITHUB_OUTPUT}
-          echo "notcurses_version=${NOTCURSES_VERSION}" >> ${GITHUB_OUTPUT}
           tmpdir="$(mktemp -d)" && cd "${tmpdir}"
           clone1b () {
             echo "$1_commit=$( \
@@ -110,7 +110,7 @@ jobs:
                   ${{ matrix.nim_version }}
           clone1b notcurses \
                   https://github.com/dankamongmen/notcurses.git \
-                  v${NOTCURSES_VERSION}
+                  ${{ matrix.notcurses_version }}
           if [[ ${{ matrix.platform.os }} = windows ]]; then
             echo "bash_env=$(cygpath -m "${HOME}")/.bash_env" >> ${GITHUB_OUTPUT}
             echo "choosenim=$(cygpath -m "${USERPROFILE}")/.choosenim" >> ${GITHUB_OUTPUT}
@@ -134,21 +134,21 @@ jobs:
             ${{ steps.cache-key.outputs.nimble }}/bin
             ${{ steps.cache-key.outputs.notcurses }}
           key: "${{ matrix.platform.os }}\
-                +choosenim_version:${{ steps.cache-key.outputs.choosenim_version }}\
+                +choosenim:${{ steps.cache-key.outputs.choosenim_version }}\
                 +choosenim_commit:${{ steps.cache-key.outputs.choosenim_commit }}\
                 +nim:${{ matrix.nim_version }}\
                 +nim_commit:${{ steps.cache-key.outputs.nim_commit }}\
-                +notcurses_version:${{ steps.cache-key.outputs.notcurses_version }}\
+                +notcurses:${{ matrix.notcurses_version }}\
                 +notcurses_commit:${{ steps.cache-key.outputs.notcurses_commit }}\
-                +cmake_version:${{ steps.cache-key.outputs.cmake_version }}\
-                +cache_marker:${{ matrix.cache_marker }}"
+                +cmake:${{ steps.cache-key.outputs.cmake_version }}\
+                +cache:${{ matrix.cache_marker }}"
 
       - name: Checkout Notcurses sources and compile
         if: steps.artifacts-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p "${HOME}/repos" && cd "${HOME}/repos"
           git clone --depth 1 https://github.com/dankamongmen/notcurses.git \
-                    --branch v${{ steps.cache-key.outputs.notcurses_version }}
+                    --branch ${{ matrix.notcurses_version }}
           cd notcurses
           mkdir build && cd build
           if [[ ${{ matrix.platform.os }} = windows ]]; then
@@ -167,23 +167,6 @@ jobs:
                      -DUSE_PANDOC=off
           fi
           make -j${NPROC}
-
-      - name: Install Notcurses
-        run: |
-          cd "${HOME}/repos/notcurses/build"
-          if [[ ${{ matrix.platform.os }} != windows ]]; then
-            if [[ ${{ matrix.platform.os }} = macos ]]; then
-              make install
-            else
-              sudo make install
-              sudo ldconfig
-            fi
-          else
-            cp -R ../include/notcurses /ucrt64/include
-            cp -R ../include/ncpp /ucrt64/include
-            cp *.dll /ucrt64/bin
-            cp *.dll.a /ucrt64/lib
-          fi
 
       - name: Install choosenim and Nim
         if: steps.artifacts-cache.outputs.cache-hit != 'true'
@@ -204,6 +187,12 @@ jobs:
           export PATH="${NIMBLE_DIR}/bin:${PATH}"
           echo 'export NIMBLE_DIR="${HOME}/.nimble"' >> "${HOME}/.bash_env"
           echo 'export PATH="${NIMBLE_DIR}/bin:${PATH}"' >> "${HOME}/.bash_env"
+          if [[ ${{ matrix.platform.os }} = ubuntu ]]; then
+            echo 'export LD_LIBRARY_PATH="${HOME}/repos/notcurses/build${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"' >> "${HOME}/.bash_env"
+          fi
+          if [[ ${{ matrix.platform.os }} = windows ]]; then
+            echo 'export PATH="${HOME}/repos/notcurses/build:${PATH}"' >> "${HOME}/.bash_env"
+          fi
           echo
           nim --version
           echo
@@ -228,11 +217,39 @@ jobs:
       - name: Build examples
         run: |
           source "${HOME}/.bash_env"
-          extras/build_examples.sh
-          extras/build_examples.sh -d:release
+          if [[ ${{ matrix.platform.os }} = macos ]]; then
+            extras/build_examples.sh \
+              --passC:"-I${HOME}/repos/notcurses/include" \
+              --passL:"-L${HOME}/repos/notcurses/build" \
+              --passL:"-rpath ${HOME}/repos/notcurses/build"
+            extras/build_examples.sh \
+              --passC:"-I${HOME}/repos/notcurses/include" \
+              --passL:"-L${HOME}/repos/notcurses/build" \
+              --passL:"-rpath ${HOME}/repos/notcurses/build" \
+              -d:release
+          else
+            extras/build_examples.sh \
+              --passC:"-I${HOME}/repos/notcurses/include" \
+              --passL:"-L${HOME}/repos/notcurses/build"
+            extras/build_examples.sh \
+              --passC:"-I${HOME}/repos/notcurses/include" \
+              --passL:"-L${HOME}/repos/notcurses/build" \
+              -d:release
+          fi
 
       # Notcurses is currently not able to access Windows ConPTY in GitHub Actions
       - name: Build and run tests
         run: |
           source "${HOME}/.bash_env"
-          nimble --verbose test
+          if [[ ${{ matrix.platform.os }} = macos ]]; then
+            nimble \
+              --verbose test \
+              --passC:"-I${HOME}/repos/notcurses/include" \
+              --passL:"-L${HOME}/repos/notcurses/build" \
+              --passL:"-rpath ${HOME}/repos/notcurses/build"
+          else
+            nimble \
+              --verbose test \
+              --passC:"-I${HOME}/repos/notcurses/include" \
+              --passL:"-L${HOME}/repos/notcurses/build"
+          fi

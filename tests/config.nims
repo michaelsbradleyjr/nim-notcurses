@@ -15,8 +15,7 @@ switch("nimcache", cacheSubdir)
 # same as defaults for these versions, but convenient for experimentation
 when (NimMajor, NimMinor, NimPatch) < (1, 6, 2):
   --gc:refc
-# elif (NimMajor, NimMinor) < (2, 0):
-elif (NimMajor, NimMinor, NimPatch) < (1, 9, 1):
+elif (NimMajor, NimMinor) < (2, 0):
   --mm:refc
 else:
   --mm:orc
@@ -52,3 +51,7 @@ when defined(coverage):
 # in config.nims does not produce an equivalent binary, though manually passing
 # the same `--define/-d:strip` as an option to `nim c` on the command-line does
 # produce an equivalent binary
+
+# https://discourse.llvm.org/t/clang-16-notice-of-potentially-breaking-changes/65562
+when getEnv("MSYSTEM") == "CLANG64":
+  --passC:"-Wno-error=incompatible-function-pointer-types"
