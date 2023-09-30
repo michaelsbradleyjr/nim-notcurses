@@ -1,5 +1,6 @@
 # nim-notcurses
 
+[![Nimble Package: notcurses](https://img.shields.io/github/v/tag/michaelsbradleyjr/nim-notcurses?filter=v*&logo=Nim&label=nimble&labelColor=black&color=f3d400)](https://nimble.directory/pkg/notcurses)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Stability: experimental](https://img.shields.io/badge/Stability-experimental-orange.svg)](#stability)
